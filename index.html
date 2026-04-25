@@ -1,0 +1,1031 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>BNDR Palette Tinker &middot; Enterprise Design Tokens</title>
+    <style>
+        :root {
+            --bone: #F4F4F6;
+            --charcoal: #1D1D1F;
+            --plasma: #0066CC;
+            --magenta: #E0004D;
+            --void: #000000;
+            --page-bg: #f8f9fa;
+            --surface: #ffffff;
+            --text: #1D1D1F;
+            --text-secondary: #6e6e73;
+            --border: #e0e0e5;
+            --radius: 12px;
+            --shadow: 0 4px 12px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.02);
+            --font: 'Inter', system-ui, -apple-system, sans-serif;
+        }
+        html[data-theme="dark"] {
+            --page-bg: #000;
+            --surface: #121214;
+            --text: #f5f5f7;
+            --text-secondary: #98989e;
+            --border: #2c2c30;
+            --shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: var(--font);
+            background: var(--page-bg);
+            color: var(--text);
+            line-height: 1.5;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            transition: background 0.3s, color 0.3s;
+        }
+        .container {
+            max-width: 1300px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 1.2rem 1rem;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        .logo {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+        .logo h1 {
+            font-size: clamp(1.5rem, 5vw, 1.8rem);
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            color: var(--text);
+        }
+        .logo h1 svg {
+            width: 24px;
+            height: 24px;
+            fill: var(--plasma);
+            flex-shrink: 0;
+        }
+        .subtitle {
+            color: var(--text-secondary);
+            max-width: 500px;
+            font-size: 0.85rem;
+        }
+        .theme-btn {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            transition: 0.2s;
+            white-space: nowrap;
+        }
+        .theme-btn:hover {
+            background: var(--border);
+        }
+        .theme-btn svg {
+            width: 16px;
+            height: 16px;
+            flex-shrink: 0;
+            fill: currentColor;
+        }
+
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.2rem;
+            box-shadow: var(--shadow);
+        }
+        .token-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.2rem;
+        }
+        .token-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        .token-header {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+        .token-header svg {
+            width: 16px;
+            height: 16px;
+            fill: currentColor;
+        }
+        .color-wrap {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            background: rgba(128,128,128,0.06);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 0.4rem 0.6rem;
+        }
+        .color-wrap input[type="color"] {
+            width: 32px;
+            height: 32px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+        .hex {
+            font-family: 'SF Mono', monospace;
+            font-size: 0.78rem;
+            color: var(--text);
+            flex: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .compare-add-btn {
+            background: none;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 0.2rem 0.5rem;
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.2rem;
+            transition: 0.2s;
+            margin-top: 0.2rem;
+        }
+        .compare-add-btn:hover {
+            background: rgba(128,128,128,0.08);
+            color: var(--text);
+        }
+        .compare-add-btn svg {
+            width: 12px;
+            height: 12px;
+            fill: currentColor;
+        }
+
+        .actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            align-items: center;
+        }
+        .btn {
+            padding: 0.55rem 1rem;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.8rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            border: 1px solid transparent;
+            transition: 0.2s;
+            white-space: nowrap;
+            background: transparent;
+            color: var(--text);
+            border-color: var(--border);
+        }
+        .btn-primary {
+            background: var(--plasma);
+            color: #000;
+            border-color: rgba(0,0,0,0.05);
+        }
+        .btn-primary:hover {
+            filter: brightness(0.95);
+        }
+        .btn-secondary:hover {
+            background: rgba(128,128,128,0.05);
+        }
+        .btn-danger {
+            background: var(--magenta);
+            color: #fff;
+            border-color: transparent;
+        }
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .history-strip {
+            display: flex;
+            gap: 0.4rem;
+            margin-top: 0.8rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .history-dot {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 2px solid var(--border);
+            cursor: pointer;
+            transition: 0.2s;
+            background-color: var(--surface);
+        }
+        .history-dot:hover {
+            transform: scale(1.15);
+            border-color: var(--text);
+        }
+
+        .previews-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.2rem;
+        }
+        @media (max-width: 700px) {
+            .previews-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        .preview-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.2rem;
+            box-shadow: var(--shadow);
+        }
+        .mock-ui {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+        .mock-dock {
+            display: flex;
+            gap: 6px;
+            background: rgba(128,128,128,0.05);
+            border-radius: 8px;
+            padding: 6px;
+            flex-wrap: wrap;
+        }
+        .mock-btn {
+            height: 30px;
+            padding: 0 10px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            border: none;
+            background: transparent;
+            color: inherit;
+        }
+        .mock-node {
+            background: rgba(255,255,255,0.85);
+            border: 1px solid rgba(0,0,0,0.05);
+            border-radius: 10px;
+            padding: 0.6rem 1rem;
+            font-size: 0.8rem;
+            color: var(--charcoal);
+            width: fit-content;
+        }
+
+        .combined-panel {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.2rem;
+        }
+        @media (max-width: 700px) {
+            .combined-panel {
+                grid-template-columns: 1fr;
+            }
+        }
+        .contrast-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+        }
+        .contrast-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.8rem;
+            gap: 0.5rem;
+        }
+        .contrast-pair {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            min-width: 0;
+        }
+        .contrast-swatch {
+            width: 16px;
+            height: 16px;
+            border-radius: 4px;
+            border: 1px solid var(--border);
+            flex-shrink: 0;
+        }
+        .contrast-badge {
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 0.15em 0.7em;
+            font-weight: 600;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            gap: 0.2rem;
+            white-space: nowrap;
+        }
+        .badge-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+        .badge-dot.aaa { background: #2e7d32; }
+        .badge-dot.aa { background: #f9a825; }
+        .badge-dot.fail { background: #c62828; }
+
+        .compare-panel-inner {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+        .compare-slots {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            min-height: 56px;
+            align-items: flex-start;
+        }
+        .compare-swatch {
+            width: 52px;
+            height: 52px;
+            border-radius: 12px;
+            border: 2px solid var(--border);
+            box-shadow: var(--shadow);
+            position: relative;
+            transition: 0.2s;
+            touch-action: none;
+            user-select: none;
+        }
+        .compare-swatch:active {
+            cursor: grabbing;
+        }
+        .compare-swatch .remove-sw {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: var(--surface);
+            color: var(--text);
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            border: 1px solid var(--border);
+            cursor: pointer;
+            line-height: 1;
+        }
+        .dragging {
+            opacity: 0.5;
+            outline: 2px dashed var(--plasma);
+        }
+
+        .footer {
+            text-align: center;
+            padding: 1.5rem;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            border-top: 1px solid var(--border);
+            margin-top: 1rem;
+        }
+        .footer a {
+            color: var(--text);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 1rem;
+        }
+        .modal.open {
+            display: flex;
+        }
+        .modal-card {
+            background: var(--surface);
+            padding: 2rem 1.5rem;
+            border-radius: var(--radius);
+            max-width: 400px;
+            width: 100%;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+        .modal-card h3 {
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+        .modal-card input,
+        .modal-card textarea,
+        .modal-card button {
+            width: 100%;
+            margin: 0.4rem 0;
+            padding: 0.7rem;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            font-family: inherit;
+            font-size: 0.9rem;
+            background: var(--surface);
+            color: var(--text);
+            resize: vertical;
+        }
+        .modal-card button {
+            cursor: pointer;
+            font-weight: 600;
+        }
+        .modal-card small {
+            display: block;
+            margin-top: 0.5rem;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <header>
+        <div class="logo">
+            <h1>
+                <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/></svg>
+                BNDR Palette Tinker
+            </h1>
+            <p class="subtitle">Perceptually uniform Oklch blending. Random, harmony, WCAG checks, AI assist.</p>
+        </div>
+        <button id="themeToggle" class="theme-btn" aria-label="Switch color theme">
+            <svg id="themeIcon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 1 0 9 9c0-4.97-4.03-9-9-9zm0 2c3.87 0 7 3.13 7 7s-3.13 7-7 7V5z"/></svg>
+            Dark Mode
+        </button>
+    </header>
+
+    <section class="card">
+        <div class="token-grid" id="tokenGrid"></div>
+        <div class="actions" id="actionBar">
+            <button id="loadBNDR" class="btn">Load BNDR</button>
+            <button id="resetPro" class="btn">Professional</button>
+            <button id="randomBtn" class="btn btn-primary">Random</button>
+            <button id="backBtn" class="btn" disabled>Back</button>
+            <button id="harmonyBtn" class="btn">Harmony</button>
+            <button id="wcagBtn" class="btn">Enforce WCAG</button>
+            <button id="exportBtn" class="btn">Export CSS</button>
+            <button id="aiBtn" class="btn">AI Suggest</button>
+        </div>
+        <div class="history-strip" id="historyStrip"></div>
+    </section>
+
+    <div class="previews-grid" id="previewContainer"></div>
+
+    <div class="combined-panel">
+        <div class="card">
+            <h3 style="margin-bottom:0.8rem; font-size:0.9rem; color:var(--text-secondary);">Contrast Ratios</h3>
+            <div class="contrast-list" id="contrastList"></div>
+        </div>
+        <div class="card">
+            <div class="compare-panel-inner">
+                <h3 style="font-size:0.9rem; color:var(--text-secondary);">Compare Swatches</h3>
+                <div class="compare-slots" id="compareSlots"></div>
+                <small style="color:var(--text-secondary);">Drag to reorder, tap + on tokens to add</small>
+            </div>
+        </div>
+    </div>
+
+    <div id="exportModal" class="modal">
+        <div class="modal-card">
+            <h3>Export CSS Variables</h3>
+            <pre id="exportOutput" style="white-space:pre-wrap; font-family:monospace; font-size:0.75rem; background:var(--page-bg); padding:1rem; border-radius:8px; margin:0.5rem 0;"></pre>
+            <button id="copyExport" class="btn btn-primary">Copy to Clipboard</button>
+            <button id="closeExport" class="btn">Close</button>
+        </div>
+    </div>
+
+    <div class="modal" id="aiModal">
+        <div class="modal-card">
+            <h3>DeepSeek Palette AI</h3>
+            <input type="password" id="apiKeyInput" placeholder="Your DeepSeek API Key" autocomplete="off">
+            <textarea id="aiPrompt" rows="2" placeholder="Describe your brand vibe..."></textarea>
+            <button id="generateAI" class="btn btn-primary">Generate Palette</button>
+            <button id="closeModal" class="btn">Cancel</button>
+            <small>Your key stays only in this session.</small>
+            <div id="aiStatus" style="margin-top:0.5rem; font-size:0.8rem; color:var(--text-secondary);"></div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        BNDR LLC All Rights Reserved &middot; <a href="https://bndrllc.com">bndrllc.com</a>
+    </footer>
+</div>
+
+<script>
+(function() {
+    // ---------- Oklch Conversion ----------
+    function hexToRgb(hex) {
+        const c = hex.slice(1);
+        return [parseInt(c.substr(0,2),16), parseInt(c.substr(2,2),16), parseInt(c.substr(4,2),16)];
+    }
+    function rgbToHex(r,g,b) {
+        return '#' + [r,g,b].map(v => v.toString(16).padStart(2,'0')).join('');
+    }
+    function srgbToLinear(c) {
+        c /= 255;
+        return c <= 0.04045 ? c/12.92 : Math.pow((c+0.055)/1.055, 2.4);
+    }
+    function linearToSrgb(c) {
+        return c <= 0.0031308 ? 12.92*c : 1.055*Math.pow(c,1/2.4)-0.055;
+    }
+    function rgbToOklab(r,g,b) {
+        let lr = srgbToLinear(r), lg = srgbToLinear(g), lb = srgbToLinear(b);
+        let l = 0.4122214708*lr + 0.5363325363*lg + 0.0514459929*lb;
+        let m = 0.2119034982*lr + 0.6806995451*lg + 0.1073969566*lb;
+        let s = 0.0883024619*lr + 0.2817188376*lg + 0.6299787005*lb;
+        l = Math.cbrt(l); m = Math.cbrt(m); s = Math.cbrt(s);
+        return [
+            0.2104542553*l + 0.7936177850*m - 0.0040720468*s,
+            1.9779984951*l - 2.4285922050*m + 0.4505937099*s,
+            0.0259040371*l + 0.7827717662*m - 0.8086757660*s
+        ];
+    }
+    function oklabToRgb(L,a,b) {
+        let l = L + 0.3963377774*a + 0.2158037573*b;
+        let m = L - 0.1055613458*a - 0.0638541728*b;
+        let s = L - 0.0894841775*a - 1.2914855480*b;
+        l = l*l*l; m = m*m*m; s = s*s*s;
+        let lr =  4.0767416621*l - 3.3077115913*m + 0.2309699292*s;
+        let lg = -1.2684380046*l + 2.6097574011*m - 0.3413193965*s;
+        let lb = -0.0041960863*l - 0.7034186147*m + 1.7076147010*s;
+        return [
+            Math.round(Math.max(0, Math.min(1, linearToSrgb(lr))) * 255),
+            Math.round(Math.max(0, Math.min(1, linearToSrgb(lg))) * 255),
+            Math.round(Math.max(0, Math.min(1, linearToSrgb(lb))) * 255)
+        ];
+    }
+    function oklabToOklch(L,a,b) {
+        let C = Math.sqrt(a*a + b*b);
+        let h = Math.atan2(b,a) * 180 / Math.PI;
+        if (h < 0) h += 360;
+        return [L, C, h];
+    }
+    function oklchToOklab(L,C,h) {
+        let rad = h * Math.PI / 180;
+        return [L, C * Math.cos(rad), C * Math.sin(rad)];
+    }
+    function hexToOklch(hex) {
+        let [r,g,b] = hexToRgb(hex);
+        let [L,a,bLab] = rgbToOklab(r,g,b);
+        return oklabToOklch(L,a,bLab);
+    }
+    function oklchToHex(L,C,h) {
+        let [l,a,b] = oklchToOklab(L,C,h);
+        let [r,g,bCol] = oklabToRgb(l,a,b);
+        return rgbToHex(r,g,bCol);
+    }
+
+    // ---------- WCAG Contrast ----------
+    function luminance(hex) {
+        let [r,g,b] = hexToRgb(hex);
+        let rs = srgbToLinear(r), gs = srgbToLinear(g), bs = srgbToLinear(b);
+        return 0.2126*rs + 0.7152*gs + 0.0722*bs;
+    }
+    function contrast(hex1, hex2) {
+        let l1 = luminance(hex1), l2 = luminance(hex2);
+        let light = Math.max(l1,l2), dark = Math.min(l1,l2);
+        return (light+0.05)/(dark+0.05);
+    }
+
+    // ---------- State ----------
+    const defaultPro = {
+        bone: '#F4F4F6',
+        charcoal: '#1D1D1F',
+        plasma: '#0066CC',
+        magenta: '#E0004D',
+        void: '#000000'
+    };
+    const bndrColors = {
+        bone: '#E8E4DF',
+        charcoal: '#0A0A0B',
+        plasma: '#CCFF00',
+        magenta: '#ff0055',
+        void: '#020202'
+    };
+    let currentPalette = { ...defaultPro };
+    let historyStack = [];
+    let compareSwatches = [];
+
+    // DOM refs
+    const $ = (id) => document.getElementById(id);
+    const tokenGrid = $('tokenGrid');
+    const previewContainer = $('previewContainer');
+    const contrastList = $('contrastList');
+    const compareSlots = $('compareSlots');
+    const historyStrip = $('historyStrip');
+    const backBtn = $('backBtn');
+
+    function applyPalette(pal) {
+        currentPalette = { ...pal };
+        renderTokens();
+        updateAll();
+    }
+
+    function updateAll() {
+        updatePreview();
+        updateContrast();
+        renderCompare();
+        updateHistoryStrip();
+        backBtn.disabled = historyStack.length === 0;
+    }
+
+    // ---------- Token Rendering ----------
+    function renderTokens() {
+        const tokens = ['bone', 'charcoal', 'plasma', 'magenta', 'void'];
+        tokenGrid.innerHTML = tokens.map(t => `
+            <div class="token-item">
+                <div class="token-header">
+                    <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6" fill="${currentPalette[t]}"/></svg>
+                    ${t}
+                </div>
+                <div class="color-wrap">
+                    <input type="color" id="color-${t}" value="${currentPalette[t]}" aria-label="Select ${t} color">
+                    <span class="hex" id="hex-${t}">${currentPalette[t]}</span>
+                </div>
+                <button class="compare-add-btn" data-token="${t}" aria-label="Add ${t} to compare">
+                    <svg viewBox="0 0 12 12" aria-hidden="true"><rect x="5" y="0" width="2" height="12"/><rect x="0" y="5" width="12" height="2"/></svg>
+                    Compare
+                </button>
+            </div>
+        `).join('');
+
+        tokens.forEach(t => {
+            const input = $(`color-${t}`);
+            const hexSpan = $(`hex-${t}`);
+            input.addEventListener('input', () => {
+                const val = input.value;
+                currentPalette[t] = val;
+                hexSpan.textContent = val;
+                updateAll();
+            });
+        });
+
+        document.querySelectorAll('.compare-add-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const token = btn.dataset.token;
+                addToCompare(currentPalette[token], token);
+            });
+        });
+    }
+
+    // ---------- Previews ----------
+    function updatePreview() {
+        const { bone, charcoal, plasma, magenta, void: v } = currentPalette;
+        previewContainer.innerHTML = `
+            <div class="preview-card" style="background:${bone};">
+                <div class="mock-ui">
+                    <div style="color:${charcoal}; font-weight:600;">Primary text on bone</div>
+                    <div style="color:rgba(${hexToRgb(charcoal)},0.6);">Secondary</div>
+                    <div class="mock-dock">
+                        <button class="mock-btn" style="color:rgba(${hexToRgb(charcoal)},0.6);">Default</button>
+                        <button class="mock-btn" style="background:${plasma}; color:#000;">Plasma</button>
+                        <button class="mock-btn" style="background:${magenta}; color:#fff;">Magenta</button>
+                    </div>
+                    <div class="mock-node" style="color:${charcoal};">BNDR node</div>
+                </div>
+            </div>
+            <div class="preview-card" style="background:${v};">
+                <div class="mock-ui">
+                    <div style="color:${bone}; font-weight:600;">Bone text on void</div>
+                    <div style="color:rgba(${hexToRgb(bone)},0.6);">Secondary</div>
+                    <div class="mock-dock" style="background:rgba(${hexToRgb(charcoal)},0.4);">
+                        <button class="mock-btn" style="color:rgba(${hexToRgb(bone)},0.7);">Default</button>
+                        <button class="mock-btn" style="background:${plasma}; color:#000;">Plasma</button>
+                        <button class="mock-btn" style="background:${magenta}; color:#fff;">Magenta</button>
+                    </div>
+                    <div class="mock-node" style="background:rgba(${hexToRgb(charcoal)},0.8); color:${bone};">BNDR node</div>
+                </div>
+            </div>
+        `;
+    }
+
+    // ---------- Contrast ----------
+    function updateContrast() {
+        const { bone, charcoal, plasma, magenta } = currentPalette;
+        const pairs = [
+            { label: 'Charcoal on bone', fg: charcoal, bg: bone },
+            { label: 'Plasma on bone', fg: plasma, bg: bone },
+            { label: 'Magenta on bone', fg: magenta, bg: bone },
+            { label: 'Bone on charcoal', fg: bone, bg: charcoal }
+        ];
+        contrastList.innerHTML = pairs.map(p => {
+            const ratio = contrast(p.fg, p.bg);
+            const level = ratio >= 7 ? 'AAA' : (ratio >= 4.5 ? 'AA' : 'FAIL');
+            const levelClass = level === 'AAA' ? 'aaa' : (level === 'AA' ? 'aa' : 'fail');
+            return `
+                <div class="contrast-row">
+                    <div class="contrast-pair">
+                        <span class="contrast-swatch" style="background:${p.fg};" aria-hidden="true"></span>
+                        <span class="contrast-swatch" style="background:${p.bg};" aria-hidden="true"></span>
+                        <span>${p.label}</span>
+                    </div>
+                    <span class="contrast-badge">
+                        <span class="badge-dot ${levelClass}" aria-hidden="true"></span>
+                        ${ratio.toFixed(1)}:1 ${level}
+                    </span>
+                </div>
+            `;
+        }).join('');
+    }
+
+    // ---------- Compare Bucket ----------
+    function addToCompare(hex, role) {
+        if (compareSwatches.length >= 4) return;
+        compareSwatches.push({ hex, role, id: Date.now() });
+        renderCompare();
+    }
+
+    function renderCompare() {
+        compareSlots.innerHTML = compareSwatches.map((s, i) => `
+            <div class="compare-swatch" style="background:${s.hex};" data-id="${s.id}" draggable="false">
+                <span class="remove-sw" data-id="${s.id}" aria-label="Remove swatch">&times;</span>
+            </div>
+        `).join('');
+        initCompareDrag();
+    }
+
+    // ---------- Touch/pointer drag reorder ----------
+    function initCompareDrag() {
+        const swatches = compareSlots.querySelectorAll('.compare-swatch');
+        let dragEl = null;
+        let startX, startY;
+        let clone, offsetX, offsetY;
+        let initialIndex;
+
+        function onPointerDown(e) {
+            if (e.target.classList.contains('remove-sw')) return;
+            dragEl = e.currentTarget;
+            initialIndex = [...compareSlots.children].indexOf(dragEl);
+            const rect = dragEl.getBoundingClientRect();
+            offsetX = e.clientX - rect.left;
+            offsetY = e.clientY - rect.top;
+            startX = e.clientX;
+            startY = e.clientY;
+            dragEl.setPointerCapture(e.pointerId);
+            dragEl.classList.add('dragging');
+            e.preventDefault();
+        }
+
+        function onPointerMove(e) {
+            if (!dragEl) return;
+            const target = document.elementFromPoint(e.clientX, e.clientY);
+            if (target && target.classList.contains('compare-swatch') && target !== dragEl) {
+                const targetId = target.dataset.id;
+                const dragId = dragEl.dataset.id;
+                const fromIdx = compareSwatches.findIndex(s => s.id == dragId);
+                const toIdx = compareSwatches.findIndex(s => s.id == targetId);
+                if (fromIdx !== -1 && toIdx !== -1 && fromIdx !== toIdx) {
+                    const [moved] = compareSwatches.splice(fromIdx, 1);
+                    compareSwatches.splice(toIdx, 0, moved);
+                    renderCompare();
+                    // re-cache dragEl because DOM changed
+                    dragEl = compareSlots.querySelector(`[data-id="${dragId}"]`);
+                    if (dragEl) dragEl.classList.add('dragging');
+                }
+            }
+        }
+
+        function onPointerUp(e) {
+            if (!dragEl) return;
+            dragEl.classList.remove('dragging');
+            dragEl.releasePointerCapture(e.pointerId);
+            dragEl = null;
+        }
+
+        swatches.forEach(sw => {
+            sw.addEventListener('pointerdown', onPointerDown);
+            sw.addEventListener('pointermove', onPointerMove);
+            sw.addEventListener('pointerup', onPointerUp);
+            sw.addEventListener('pointercancel', onPointerUp);
+        });
+
+        // Remove buttons
+        compareSlots.querySelectorAll('.remove-sw').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const id = btn.dataset.id;
+                compareSwatches = compareSwatches.filter(s => s.id != id);
+                renderCompare();
+            });
+        });
+    }
+
+    // ---------- History ----------
+    function pushHistory(pal) {
+        historyStack.unshift({ ...pal });
+        if (historyStack.length > 5) historyStack.pop();
+        updateHistoryStrip();
+        backBtn.disabled = false;
+    }
+
+    function updateHistoryStrip() {
+        historyStrip.innerHTML = historyStack.map((pal, i) =>
+            `<button class="history-dot" style="background:${pal.plasma};" title="Restore palette ${i+1}" data-index="${i}" aria-label="Restore palette ${i+1}"></button>`
+        ).join('');
+        document.querySelectorAll('.history-dot').forEach(dot => {
+            dot.addEventListener('click', () => {
+                const idx = parseInt(dot.dataset.index);
+                applyPalette(historyStack[idx]);
+            });
+        });
+    }
+
+    // ---------- Random generation ----------
+    function randomOklchPalette() {
+        const baseH = Math.random() * 360;
+        const boneH = (baseH + 20) % 360;
+        const charcoalH = (baseH + 180) % 360;
+        const palette = {
+            bone: oklchToHex(0.95, 0.03, boneH),
+            charcoal: oklchToHex(0.18, 0.04, charcoalH),
+            plasma: oklchToHex(0.62, 0.18, baseH),
+            magenta: oklchToHex(0.62, 0.18, (baseH + 150) % 360),
+            void: '#020202'
+        };
+        if (contrast(palette.charcoal, palette.bone) < 7) {
+            palette.charcoal = oklchToHex(0.15, 0.02, charcoalH);
+        }
+        return palette;
+    }
+
+    // ---------- WCAG Enforcement (fixed) ----------
+    function enforceWCAG(pal) {
+        const newPal = { ...pal };
+        const targetText = 7;
+        const targetUI = 4.5;
+        const { bone } = newPal;
+
+        // Adjust charcoal against bone
+        if (contrast(newPal.charcoal, bone) < targetText) {
+            let [L, C, H] = hexToOklch(newPal.charcoal);
+            while (contrast(oklchToHex(L, C, H), bone) < targetText && L > 0.05) L -= 0.02;
+            newPal.charcoal = oklchToHex(L, C, H);
+        }
+        // Adjust plasma and magenta against bone individually
+        ['plasma', 'magenta'].forEach(token => {
+            if (contrast(newPal[token], bone) < targetUI) {
+                let [L, C, H] = hexToOklch(newPal[token]);
+                let steps = 0;
+                while (contrast(oklchToHex(L, C, H), bone) < targetUI && L > 0.1 && steps < 50) {
+                    L -= 0.02;
+                    steps++;
+                }
+                newPal[token] = oklchToHex(L, C, H);
+            }
+        });
+        return newPal;
+    }
+
+    // ---------- Event Listeners ----------
+    $('randomBtn').addEventListener('click', () => {
+        pushHistory(currentPalette);
+        applyPalette(randomOklchPalette());
+    });
+    backBtn.addEventListener('click', () => {
+        if (historyStack.length) {
+            const prev = historyStack.shift();
+            applyPalette(prev);
+            updateHistoryStrip();
+        }
+    });
+    $('harmonyBtn').addEventListener('click', () => {
+        const shift = 30;
+        const pal = { ...currentPalette };
+        const tokens = ['bone', 'charcoal', 'plasma', 'magenta'];
+        tokens.forEach(t => {
+            if (pal[t] !== undefined) {
+                const [L, C, H] = hexToOklch(pal[t]);
+                pal[t] = oklchToHex(L, C, (H + shift) % 360);
+            }
+        });
+        pushHistory(currentPalette);
+        applyPalette(pal);
+    });
+    $('wcagBtn').addEventListener('click', () => {
+        pushHistory(currentPalette);
+        applyPalette(enforceWCAG(currentPalette));
+    });
+    $('loadBNDR').addEventListener('click', () => applyPalette(bndrColors));
+    $('resetPro').addEventListener('click', () => applyPalette(defaultPro));
+
+    // Export modal
+    $('exportBtn').addEventListener('click', () => {
+        const p = currentPalette;
+        const css = `:root {\n  --bone: ${p.bone};\n  --charcoal: ${p.charcoal};\n  --plasma: ${p.plasma};\n  --magenta: ${p.magenta};\n  --void: ${p.void};\n}`;
+        $('exportOutput').textContent = css;
+        $('exportModal').classList.add('open');
+    });
+    $('closeExport').addEventListener('click', () => $('exportModal').classList.remove('open'));
+    $('copyExport').addEventListener('click', () => {
+        navigator.clipboard.writeText($('exportOutput').textContent).then(() => {
+            $('copyExport').textContent = 'Copied!';
+            setTimeout(() => $('copyExport').textContent = 'Copy to Clipboard', 1500);
+        });
+    });
+
+    // AI modal
+    $('aiBtn').addEventListener('click', () => $('aiModal').classList.add('open'));
+    $('closeModal').addEventListener('click', () => $('aiModal').classList.remove('open'));
+    $('generateAI').addEventListener('click', async () => {
+        const key = $('apiKeyInput').value.trim();
+        const prompt = $('aiPrompt').value.trim() || 'professional SaaS brand';
+        const status = $('aiStatus');
+        if (!key) { status.textContent = 'Please enter your API key.'; return; }
+        status.textContent = 'Generating...';
+        try {
+            const res = await fetch('https://api.deepseek.com/v1/chat/completions', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
+                body: JSON.stringify({
+                    model: 'deepseek-chat',
+                    messages: [
+                        { role: 'system', content: 'You are a design token generator. Reply with ONLY a JSON object containing keys: bone, charcoal, plasma, magenta, void (valid hex colors). No extra text.' },
+                        { role: 'user', content: `Generate a palette: ${prompt}` }
+                    ],
+                    temperature: 0.8
+                })
+            });
+            const data = await res.json();
+            const content = data.choices?.[0]?.message?.content;
+            if (!content) throw new Error('Empty response');
+            const json = JSON.parse(content);
+            if (json.bone && json.charcoal && json.plasma && json.magenta && json.void) {
+                applyPalette(json);
+                $('aiModal').classList.remove('open');
+                status.textContent = '';
+            } else {
+                throw new Error('Invalid palette structure');
+            }
+        } catch (e) {
+            status.textContent = 'AI error: ' + e.message;
+        }
+    });
+
+    // Theme toggle (persistent)
+    const themeBtn = $('themeToggle');
+    const themeIcon = $('themeIcon');
+    const setTheme = (isDark) => {
+        document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+        themeBtn.innerHTML = isDark
+            ? '<svg viewBox="0 0 24 24" aria-hidden="true" width="16" height="16" fill="currentColor"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg> Light Mode'
+            : '<svg viewBox="0 0 24 24" aria-hidden="true" width="16" height="16" fill="currentColor"><path d="M12 3a9 9 0 1 0 9 9c0-4.97-4.03-9-9-9zm0 2c3.87 0 7 3.13 7 7s-3.13 7-7 7V5z"/></svg> Dark Mode';
+        localStorage.setItem('bndr-theme', isDark ? 'dark' : 'light');
+    };
+    const savedTheme = localStorage.getItem('bndr-theme') || 'light';
+    setTheme(savedTheme === 'dark');
+    themeBtn.addEventListener('click', () => {
+        const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+        setTheme(!isDark);
+    });
+
+    // Close modals on outside click
+    window.addEventListener('click', (e) => {
+        if (e.target.classList.contains('modal')) {
+            e.target.classList.remove('open');
+        }
+    });
+
+    // Initial render
+    renderTokens();
+    updateAll();
+})();
+</script>
+</body>
+</html>
