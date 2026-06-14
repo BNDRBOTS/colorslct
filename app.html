@@ -1,0 +1,1074 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>BNDR ColorSLCT · Enterprise Engine</title>
+    
+    <style>
+        :root {
+            /* Application UI Theme - Achromatic Professional Neutrals */
+            --app-bg: #F5F5F5;
+            --app-sidebar: #FFFFFF;
+            --app-surface: #FFFFFF;
+            --app-border: #E5E5E5;
+            --app-border-hover: #D4D4D4;
+            --app-text: #171717;
+            --app-text-muted: #737373;
+            --app-focus: #4F46E5;
+            
+            /* Elevation & Metrics */
+            --radius-sm: 6px;
+            --radius-md: 10px;
+            --radius-lg: 16px;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.05), 0 4px 6px -4px rgb(0 0 0 / 0.05);
+            
+            /* Typography */
+            --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            --font-mono: 'JetBrains Mono', 'SF Mono', 'Roboto Mono', monospace;
+            --transition: 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+
+            /* Swatch Inner Stroke */
+            --swatch-ring: rgba(0, 0, 0, 0.1);
+
+            /* Output Palette Variables (Updated via JS) */
+            --bg-light: #F8FAFC;
+            --text-primary: #1E293B;
+            --primary: #4F46E5;
+            --accent1: #E11D48;
+            --bg-dark: #0F172A;
+        }
+
+        html[data-theme="dark"] {
+            /* Subdued, flat dark mode for color neutrality */
+            --app-bg: #121212;
+            --app-sidebar: #1A1A1A;
+            --app-surface: #242424;
+            --app-border: #333333;
+            --app-border-hover: #404040;
+            --app-text: #EDEDED;
+            --app-text-muted: #A3A3A3;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.5);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.4);
+            --swatch-ring: rgba(255, 255, 255, 0.15);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: var(--font-sans);
+            background: var(--app-bg);
+            color: var(--app-text);
+            line-height: 1.5;
+            min-height: 100vh;
+            display: flex;
+            transition: background var(--transition), color var(--transition);
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Responsive Workspace: Mobile column scroll default, Desktop locked grid */
+        .workspace {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            min-height: 100vh;
+        }
+
+        @media (min-width: 1024px) {
+            .workspace { 
+                display: grid; 
+                grid-template-columns: 380px 1fr; 
+                height: 100vh; 
+                overflow: hidden; 
+            }
+        }
+
+        /* --- LEFT SIDEBAR: Controls & Engine --- */
+        .sidebar {
+            background: var(--app-sidebar);
+            border-right: 1px solid var(--app-border);
+            border-bottom: 1px solid var(--app-border);
+            display: flex;
+            flex-direction: column;
+            z-index: 10;
+        }
+
+        @media (min-width: 1024px) {
+            .sidebar {
+                height: 100vh;
+                overflow-y: auto;
+                border-bottom: none;
+            }
+        }
+
+        .sidebar-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--app-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .brand h1 {
+            font-size: 1.125rem;
+            font-weight: 700;
+            letter-spacing: -0.03em;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .brand h1 svg { width: 18px; height: 18px; fill: var(--primary); }
+        .brand p { font-size: 0.75rem; color: var(--app-text-muted); margin-top: 0.25rem; line-height: 1.4; }
+
+        .theme-toggle {
+            background: transparent;
+            border: 1px solid var(--app-border);
+            border-radius: var(--radius-sm);
+            width: 32px; height: 32px;
+            display: flex; align-items: center; justify-content: center;
+            color: var(--app-text); cursor: pointer; transition: var(--transition);
+        }
+        .theme-toggle:hover { background: var(--app-bg); border-color: var(--app-border-hover); }
+        .theme-toggle:focus-visible { outline: 2px solid var(--app-focus); outline-offset: 2px; }
+
+        .token-list {
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            border-bottom: 1px solid var(--app-border);
+        }
+
+        .token-row {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .token-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .token-meta label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: flex; align-items: center; gap: 0.4rem;
+        }
+
+        .token-meta .hint { font-size: 0.7rem; color: var(--app-text-muted); font-weight: 400; }
+
+        .token-input-group {
+            display: flex;
+            gap: 0.5rem;
+            align-items: stretch;
+        }
+
+        .color-picker-wrapper {
+            position: relative;
+            width: 44px; height: 44px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--app-border);
+            overflow: hidden;
+            flex-shrink: 0;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .color-picker-wrapper::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            box-shadow: inset 0 0 0 1px var(--swatch-ring);
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* Opacity 0 bypasses buggy OS swatch borders, leaving only the pure wrapper background color */
+        .color-picker-wrapper input[type="color"] {
+            position: absolute; inset: 0; width: 100%; height: 100%;
+            opacity: 0; cursor: pointer; padding: 0; z-index: 2;
+        }
+
+        .token-data {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            background: var(--app-bg);
+            border: 1px solid var(--app-border);
+            border-radius: var(--radius-sm);
+            padding: 0.25rem 0.5rem;
+            min-width: 0;
+        }
+
+        .data-btn {
+            background: none; border: none; text-align: left;
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--app-text);
+            cursor: pointer;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+            border-radius: 4px; padding: 2px 4px; margin-left: -4px;
+            transition: var(--transition);
+        }
+        .data-btn:hover { background: rgba(128,128,128,0.1); }
+        .data-btn.oklch { color: var(--app-text-muted); font-size: 0.65rem; }
+
+        .token-tools {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+            flex-shrink: 0;
+        }
+
+        .icon-btn {
+            background: var(--app-surface);
+            border: 1px solid var(--app-border);
+            color: var(--app-text-muted);
+            width: 20px; height: 20px;
+            border-radius: 4px;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; transition: var(--transition);
+        }
+        .icon-btn:hover { border-color: var(--app-text); color: var(--app-text); }
+        .icon-btn.active.lock-btn {
+            background: rgba(225, 29, 72, 0.1);
+            color: var(--accent1);
+            border-color: rgba(225, 29, 72, 0.3);
+        }
+
+        .engine-controls {
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .action-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem;
+        }
+
+        .btn {
+            padding: 0.5rem 0.75rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--app-border);
+            background: var(--app-surface);
+            color: var(--app-text);
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex; justify-content: center; align-items: center; gap: 0.4rem;
+            box-shadow: var(--shadow-sm);
+        }
+        .btn:hover:not(:disabled) { background: var(--app-bg); border-color: var(--app-border-hover); }
+        .btn:focus-visible { outline: 2px solid var(--app-focus); outline-offset: 2px; }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; box-shadow: none; }
+
+        .btn-primary { background: var(--app-text); color: var(--app-bg); border-color: transparent; }
+        .btn-primary:hover:not(:disabled) { background: var(--app-text); opacity: 0.9; }
+
+        .btn.wcag-active { background: rgba(225, 29, 72, 0.1); color: var(--accent1); border-color: var(--accent1); }
+
+        .history-strip { display: flex; gap: 0.25rem; flex-wrap: wrap; margin-top: 0.5rem; }
+        .history-dot {
+            width: 24px; height: 24px; border-radius: 50%;
+            border: 2px solid var(--app-border); cursor: pointer;
+            overflow: hidden; display: flex; transition: var(--transition);
+        }
+        .history-dot:hover { transform: scale(1.1); border-color: var(--app-text); }
+        .h-slice { flex: 1; height: 100%; }
+
+        /* --- RIGHT CANVAS: Previews & Analysis --- */
+        .canvas-area {
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        @media (min-width: 1024px) {
+            .canvas-area {
+                padding: 2rem;
+                overflow-y: auto;
+                gap: 2rem;
+            }
+        }
+
+        .section-title {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--app-text-muted);
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            display: flex; justify-content: space-between; align-items: flex-end;
+        }
+
+        .board-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+
+        @media (min-width: 768px) {
+            .board-grid { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+            .analysis-grid { grid-template-columns: 1fr 1fr; }
+        }
+
+        .preview-board {
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--app-border);
+            padding: 2rem;
+            box-shadow: var(--shadow-md);
+            transition: background 0.3s, border-color 0.3s;
+        }
+
+        .mock-app { display: flex; flex-direction: column; gap: 1rem; font-family: var(--font-sans); }
+        .mock-header { display: flex; justify-content: space-between; align-items: center; }
+        .mock-title { font-weight: 600; font-size: 1.1rem; }
+        .mock-badge { padding: 0.2rem 0.6rem; border-radius: 99px; font-size: 0.7rem; font-weight: 600; }
+        .mock-content { opacity: 0.8; font-size: 0.85rem; line-height: 1.5; }
+        .mock-actions { display: flex; gap: 0.5rem; margin-top: 0.5rem; }
+        .mock-btn { padding: 0.5rem 1rem; border-radius: var(--radius-sm); font-size: 0.8rem; font-weight: 600; border: none; cursor: default; }
+        .mock-card { padding: 1rem; border-radius: var(--radius-md); font-size: 0.85rem; }
+
+        /* Analysis Panels */
+        .analysis-panel {
+            background: var(--app-surface);
+            border: 1px solid var(--app-border);
+            border-radius: var(--radius-md);
+            padding: 1.5rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .contrast-list { display: flex; flex-direction: column; gap: 0.75rem; }
+        .contrast-row {
+            display: flex; justify-content: space-between; align-items: center;
+            padding-bottom: 0.75rem; border-bottom: 1px solid var(--app-border);
+        }
+        .contrast-row:last-child { padding-bottom: 0; border-bottom: none; }
+        
+        .c-pair-info { display: flex; align-items: center; gap: 0.75rem; }
+        .c-swatches { display: flex; position: relative; width: 36px; height: 24px; }
+        .c-sw { width: 24px; height: 24px; border-radius: 50%; border: 2px solid var(--app-surface); position: absolute; box-shadow: inset 0 0 0 1px var(--swatch-ring); }
+        .c-sw:first-child { left: 0; z-index: 2; }
+        .c-sw:last-child { left: 12px; z-index: 1; }
+        .c-label { font-size: 0.8rem; font-weight: 500; color: var(--app-text); }
+        .c-sub { font-size: 0.7rem; color: var(--app-text-muted); display: block; }
+
+        .c-score { display: flex; align-items: center; gap: 0.5rem; }
+        .c-ratio { font-family: var(--font-mono); font-weight: 600; font-size: 0.85rem; }
+        .badge {
+            padding: 0.15rem 0.5rem; border-radius: 4px; font-size: 0.65rem; font-weight: 700;
+            background: var(--app-bg); border: 1px solid var(--app-border);
+        }
+        .badge.pass { background: rgba(16, 185, 129, 0.1); color: #059669; border-color: rgba(16, 185, 129, 0.2); }
+        .badge.fail { background: rgba(225, 29, 72, 0.1); color: #E11D48; border-color: rgba(225, 29, 72, 0.2); }
+
+        /* Compare Slots */
+        .compare-grid { display: flex; gap: 0.5rem; flex-wrap: wrap; min-height: 60px; }
+        .compare-item {
+            width: 60px; height: 60px; border-radius: var(--radius-sm);
+            border: 1px solid var(--app-border);
+            box-shadow: inset 0 0 0 1px var(--swatch-ring), var(--shadow-sm);
+            position: relative; cursor: grab; user-select: none;
+        }
+        .compare-item:active { cursor: grabbing; }
+        .compare-item .rm-btn {
+            position: absolute; top: -6px; right: -6px; width: 20px; height: 20px;
+            background: var(--app-surface); border: 1px solid var(--app-border);
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-size: 10px; cursor: pointer; color: var(--app-text); box-shadow: var(--shadow-sm);
+            opacity: 1; transition: opacity 0.2s; /* Visible by default for touch devices */
+        }
+        
+        /* Apply pristine hover state hide/show exclusively for precise cursors */
+        @media (hover: hover) {
+            .compare-item .rm-btn { opacity: 0; }
+            .compare-item:hover .rm-btn { opacity: 1; }
+        }
+        
+        .dragging { opacity: 0.4; outline: 2px dashed var(--app-text-muted); }
+
+        .modal {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px);
+            display: none; align-items: center; justify-content: center; z-index: 1000; padding: 1rem;
+        }
+        .modal.open { display: flex; }
+        .modal-content {
+            background: var(--app-surface); border: 1px solid var(--app-border);
+            border-radius: var(--radius-lg); padding: 1.5rem; width: 100%; max-width: 480px;
+            box-shadow: var(--shadow-lg); max-height: 90vh; overflow-y: auto;
+        }
+        @media (min-width: 768px) {
+            .modal-content { padding: 2rem; }
+        }
+        
+        .modal-content h3 { margin-bottom: 0.5rem; font-size: 1.25rem; }
+        .modal-content p { color: var(--app-text-muted); font-size: 0.85rem; margin-bottom: 1.5rem; line-height: 1.5; }
+        
+        .input-group { margin-bottom: 1rem; }
+        .input-group label { display: block; font-size: 0.75rem; font-weight: 600; margin-bottom: 0.4rem; }
+        .input-group input, .input-group textarea {
+            width: 100%; padding: 0.75rem; background: var(--app-bg); border: 1px solid var(--app-border);
+            border-radius: var(--radius-sm); color: var(--app-text); font-family: var(--font-sans); font-size: 0.85rem;
+        }
+        .input-group input:focus, .input-group textarea:focus { outline: 2px solid var(--app-focus); border-color: transparent; }
+
+        pre.code-block {
+            background: var(--app-bg); padding: 1rem; border-radius: var(--radius-sm);
+            border: 1px solid var(--app-border); font-family: var(--font-mono); font-size: 0.75rem;
+            overflow-x: auto; margin-bottom: 1.5rem; line-height: 1.6; color: var(--app-text);
+        }
+
+        .modal-actions { display: flex; gap: 0.5rem; justify-content: flex-end; }
+
+        /* Responsive Toasts - Bottom center on mobile to avoid off-screen clipping, Bottom right on desktop */
+        .toast {
+            position: fixed; bottom: 16px; left: 50%; transform: translate(-50%, 150%);
+            width: max-content; max-width: calc(100vw - 32px);
+            background: var(--app-text); color: var(--app-surface); text-align: center;
+            padding: 0.75rem 1.25rem; border-radius: var(--radius-sm); font-size: 0.8rem; font-weight: 500;
+            box-shadow: var(--shadow-lg); opacity: 0; transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            z-index: 2000; pointer-events: none;
+        }
+        .toast.show { transform: translate(-50%, 0); opacity: 1; }
+        
+        @media (min-width: 1024px) {
+            .toast { left: auto; right: 24px; bottom: 24px; transform: translateY(150%); }
+            .toast.show { transform: translateY(0); }
+        }
+
+        .visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); border: 0; }
+    </style>
+</head>
+<body>
+
+<div class="workspace">
+    
+    <aside class="sidebar" aria-label="Controls">
+        <header class="sidebar-header">
+            <div class="brand">
+                <h1><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/></svg> ColorSLCT</h1>
+                <p>Enterprise Palette Engine</p>
+            </div>
+            <button id="themeToggle" class="theme-toggle" aria-label="Toggle Theme">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+            </button>
+        </header>
+
+        <section class="token-list" id="tokenList" aria-label="Design Tokens">
+            <!-- Tokens rendered via JS to support locking state and OKLCH live data -->
+        </section>
+
+        <section class="engine-controls">
+            <div class="action-grid">
+                <button id="randomBtn" class="btn btn-primary" title="Generate random around unlocked tokens">
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.59-9.21l-5.69 5.69"/></svg>
+                    Randomize
+                </button>
+                <button id="aiBtn" class="btn">
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48 2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48 2.83-2.83"/></svg>
+                    AI Prompt
+                </button>
+                <button id="harmonyBtn" class="btn">Shift Hue</button>
+                <button id="wcagBtn" class="btn" aria-pressed="false">WCAG Auto: OFF</button>
+            </div>
+            
+            <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">
+                <button id="resetPro" class="btn" style="flex:1;">Reset Default</button>
+                <button id="exportBtn" class="btn" style="flex:1;">Export CSS</button>
+            </div>
+
+            <div style="margin-top: 0.5rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.25rem;">
+                    <span style="font-size: 0.7rem; font-weight: 600; color: var(--app-text-muted); text-transform: uppercase;">History</span>
+                    <button id="backBtn" class="icon-btn" disabled title="Undo" style="border:none; background:transparent;"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></button>
+                </div>
+                <div class="history-strip" id="historyStrip"></div>
+            </div>
+        </section>
+    </aside>
+
+    <main class="canvas-area" aria-label="Preview Canvas">
+        
+        <div class="board-grid">
+            <!-- Light Mode Board -->
+            <article class="preview-board" style="background: var(--bg-light); border-color: color-mix(in srgb, var(--text-primary) 15%, transparent);">
+                <div class="mock-app" style="color: var(--text-primary);">
+                    <header class="mock-header">
+                        <span class="mock-title">Dashboard</span>
+                        <span class="mock-badge" style="background: color-mix(in srgb, var(--text-primary) 5%, transparent); color: inherit;">Beta</span>
+                    </header>
+                    <div class="mock-card" style="background: color-mix(in srgb, var(--text-primary) 3%, var(--bg-light)); border: 1px solid color-mix(in srgb, var(--text-primary) 10%, transparent); box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+                        <h4 style="margin-bottom: 0.5rem;">Light Context Preview</h4>
+                        <p class="mock-content">This card evaluates structural hierarchy. The border and shadows rely on precise luminance scaling.</p>
+                        <div class="mock-actions">
+                            <button class="mock-btn" style="background: var(--primary); color: var(--bg-light);">Primary Action</button>
+                            <button class="mock-btn" style="background: transparent; border: 1px solid color-mix(in srgb, var(--text-primary) 20%, transparent); color: inherit;">Secondary</button>
+                        </div>
+                    </div>
+                    <div class="mock-card" style="background: color-mix(in srgb, var(--accent1) 5%, transparent); border: 1px dashed var(--accent1); color: var(--accent1);">
+                        <strong>Critical State:</strong> Evaluating secondary accent contrast and semantic warning legibility on light backgrounds.
+                    </div>
+                </div>
+            </article>
+
+            <!-- Dark Mode Board -->
+            <article class="preview-board" style="background: var(--bg-dark); border-color: color-mix(in srgb, var(--bg-light) 15%, transparent);">
+                <div class="mock-app" style="color: var(--bg-light);">
+                    <header class="mock-header">
+                        <span class="mock-title">Dashboard</span>
+                        <span class="mock-badge" style="background: color-mix(in srgb, var(--bg-light) 10%, transparent); color: inherit;">Beta</span>
+                    </header>
+                    <div class="mock-card" style="background: color-mix(in srgb, var(--bg-light) 5%, var(--bg-dark)); border: 1px solid color-mix(in srgb, var(--bg-light) 10%, transparent); box-shadow: 0 4px 12px rgba(0,0,0,0.4);">
+                        <h4 style="margin-bottom: 0.5rem;">Dark Context Preview</h4>
+                        <p class="mock-content" style="color: color-mix(in srgb, var(--bg-light) 70%, transparent);">Evaluating inversion rules. Does the primary color maintain sufficient chroma when the background luminance drops to near zero?</p>
+                        <div class="mock-actions">
+                            <button class="mock-btn" style="background: var(--primary); color: var(--bg-dark);">Primary Action</button>
+                            <button class="mock-btn" style="background: transparent; border: 1px solid color-mix(in srgb, var(--bg-light) 20%, transparent); color: inherit;">Secondary</button>
+                        </div>
+                    </div>
+                    <div class="mock-card" style="background: color-mix(in srgb, var(--accent1) 15%, transparent); border: 1px dashed var(--accent1); color: var(--bg-light);">
+                        Accent button test: <button class="mock-btn" style="background: var(--accent1); color: var(--bg-dark); margin-left: 0.5rem;">Execute</button>
+                    </div>
+                </div>
+            </article>
+        </div>
+
+        <div class="board-grid analysis-grid">
+            <!-- WCAG Metrics Engine -->
+            <section class="analysis-panel">
+                <div class="section-title">WCAG Contrast Matrix</div>
+                <div class="contrast-list" id="contrastList"></div>
+            </section>
+
+            <!-- Comparison Sandbox -->
+            <section class="analysis-panel">
+                <div class="section-title">
+                    Comparison Sandbox
+                    <span style="font-size: 0.65rem; font-weight: 400; text-transform: none;">Drag to reorder</span>
+                </div>
+                <div class="compare-grid" id="compareSlots"></div>
+                <p style="font-size: 0.75rem; color: var(--app-text-muted); margin-top: 1rem;">Use the (+) icon on any token in the left sidebar to add it to the spatial comparison sandbox.</p>
+            </section>
+        </div>
+
+    </main>
+</div>
+
+<div id="exportModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="exportModalLabel">
+    <div class="modal-content">
+        <h3 id="exportModalLabel">Production CSS Variables</h3>
+        <p>100% native CSS custom properties. No pre-processors required. Paste directly into your root layer.</p>
+        <pre class="code-block" id="exportOutput"></pre>
+        <div class="modal-actions">
+            <button id="closeExport" class="btn">Cancel</button>
+            <button id="copyExport" class="btn btn-primary">Copy Code</button>
+        </div>
+    </div>
+</div>
+
+<div id="aiModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="aiModalLabel">
+    <div class="modal-content">
+        <h3 id="aiModalLabel">DeepSeek Intelligence</h3>
+        <p>Generate unified palettes via natural language. The engine will preserve any tokens you have currently <strong>Locked</strong>.</p>
+        
+        <div class="input-group">
+            <label for="apiKeyInput">DeepSeek API Key</label>
+            <input type="password" id="apiKeyInput" placeholder="sk-..." autocomplete="off">
+        </div>
+        <div class="input-group">
+            <label for="aiPrompt">Brand Description</label>
+            <textarea id="aiPrompt" rows="3" placeholder="e.g. A fintech dashboard using trust-evoking deep sea blues with a highly vibrant neon green action accent..."></textarea>
+        </div>
+        
+        <div class="modal-actions">
+            <button id="closeModal" class="btn">Cancel</button>
+            <button id="generateAI" class="btn btn-primary">Execute Generation</button>
+        </div>
+        <div id="aiStatus" style="margin-top:1rem; font-size:0.75rem; font-weight: 600; color:var(--primary);" aria-live="polite"></div>
+    </div>
+</div>
+
+<div id="toast" class="toast" aria-live="assertive"></div>
+
+<script>
+(function() {
+    /* ── Core Mathematical Engine (Untouched from Original) ── */
+    function hexToRgb(hex) {
+        const c = hex.replace('#','');
+        return [ parseInt(c.substring(0,2),16), parseInt(c.substring(2,4),16), parseInt(c.substring(4,6),16) ];
+    }
+    function rgbToHex(r,g,b) {
+        return '#' + [r,g,b].map(v => v.toString(16).padStart(2,'0')).join('');
+    }
+    function srgbToLinear(c) {
+        c /= 255; return c <= 0.04045 ? c/12.92 : Math.pow((c+0.055)/1.055, 2.4);
+    }
+    function linearToSrgb(c) {
+        return c <= 0.0031308 ? 12.92*c : 1.055*Math.pow(c,1/2.4)-0.055;
+    }
+    function rgbToOklab(r,g,b) {
+        let lr = srgbToLinear(r), lg = srgbToLinear(g), lb = srgbToLinear(b);
+        let l = 0.4122214708*lr + 0.5363325363*lg + 0.0514459929*lb;
+        let m = 0.2119034982*lr + 0.6806995451*lg + 0.1073969566*lb;
+        let s = 0.0883024619*lr + 0.2817188376*lg + 0.6299787005*lb;
+        l = Math.cbrt(l); m = Math.cbrt(m); s = Math.cbrt(s);
+        return [
+            0.2104542553*l + 0.7936177850*m - 0.0040720468*s,
+            1.9779984951*l - 2.4285922050*m + 0.4505937099*s,
+            0.0259040371*l + 0.7827717662*m - 0.8086757660*s
+        ];
+    }
+    function oklabToRgb(L,a,b) {
+        let l = L + 0.3963377774*a + 0.2158037573*b;
+        let m = L - 0.1055613458*a - 0.0638541728*b;
+        let s = L - 0.0894841775*a - 1.2914855480*b;
+        l = l*l*l; m = m*m*m; s = s*s*s;
+        let lr =  4.0767416621*l - 3.3077115913*m + 0.2309699292*s;
+        let lg = -1.2684380046*l + 2.6097574011*m - 0.3413193965*s;
+        let lb = -0.0041960863*l - 0.7034186147*m + 1.7076147010*s;
+        return [
+            Math.round(Math.max(0, Math.min(1, linearToSrgb(lr))) * 255),
+            Math.round(Math.max(0, Math.min(1, linearToSrgb(lg))) * 255),
+            Math.round(Math.max(0, Math.min(1, linearToSrgb(lb))) * 255)
+        ];
+    }
+    function oklabToOklch(L,a,b) {
+        let C = Math.sqrt(a*a + b*b); let h = Math.atan2(b,a) * 180 / Math.PI;
+        if (h < 0) h += 360; return [L, C, h];
+    }
+    function oklchToOklab(L,C,h) {
+        let rad = h * Math.PI / 180; return [L, C * Math.cos(rad), C * Math.sin(rad)];
+    }
+    function hexToOklch(hex) {
+        let [r,g,b] = hexToRgb(hex); let [L,a,bLab] = rgbToOklab(r,g,b); return oklabToOklch(L,a,bLab);
+    }
+    function oklchToHex(L,C,h) {
+        let [l,a,b] = oklchToOklab(L,C,h); let [r,g,bCol] = oklabToRgb(l,a,b); return rgbToHex(r,g,bCol);
+    }
+    function luminance(hex) {
+        let [r,g,b] = hexToRgb(hex);
+        let rs = srgbToLinear(r), gs = srgbToLinear(g), bs = srgbToLinear(b);
+        return 0.2126*rs + 0.7152*gs + 0.0722*bs;
+    }
+    function contrast(hex1, hex2) {
+        let l1 = luminance(hex1), l2 = luminance(hex2);
+        let light = Math.max(l1,l2), dark = Math.min(l1,l2);
+        return (light+0.05)/(dark+0.05);
+    }
+
+    /* ── State & Config ── */
+    const defaultPro = { bgLight:'#F8FAFC', textPrimary:'#1E293B', primary:'#4F46E5', accent1:'#E11D48', bgDark:'#0F172A' };
+    const tokensConfig = [
+        { id: 'bgLight', label: 'Background Light', hint: 'Core surfaces' },
+        { id: 'textPrimary', label: 'Text Primary', hint: 'Headers & body' },
+        { id: 'primary', label: 'Brand Primary', hint: 'Buttons, links' },
+        { id: 'accent1', label: 'Warning Accent', hint: 'Destructive, alerts' },
+        { id: 'bgDark', label: 'Background Dark', hint: 'Inverted areas' }
+    ];
+
+    let currentPalette = { ...defaultPro };
+    let historyStack = [];
+    let compareSwatches = [];
+    let wcagMode = false;
+    let lockedTokens = new Set();
+
+    const $ = (id) => document.getElementById(id);
+
+    /* ── UI Utilities ── */
+    function showToast(msg) {
+        const t = $('toast'); t.textContent = msg; t.classList.add('show');
+        clearTimeout(t._timeout); t._timeout = setTimeout(() => t.classList.remove('show'), 2500);
+    }
+
+    function formatOklch(hex) {
+        const [l, c, h] = hexToOklch(hex);
+        return `oklch(${(l*100).toFixed(1)}% ${c.toFixed(3)} ${h.toFixed(1)})`;
+    }
+
+    function copyToClipboard(text, context) {
+        try {
+            const ta = document.createElement('textarea');
+            ta.value = text;
+            ta.setAttribute('readonly', '');
+            ta.style.position = 'absolute';
+            ta.style.left = '-9999px';
+            document.body.appendChild(ta);
+            ta.select();
+            document.execCommand('copy');
+            document.body.removeChild(ta);
+            showToast(`Copied ${context}`);
+        } catch (err) {
+            showToast(`Failed to copy ${context}. Check permissions.`);
+        }
+    }
+
+    /* ── Engine Logic ── */
+    function enforceWCAG(pal) {
+        const newPal = { ...pal };
+        const targetText = 7, targetUI = 4.5;
+        const { bgLight } = newPal;
+        const failing = [];
+        const lockedFailures = [];
+
+        function adjustToken(token, target) {
+            if (lockedTokens.has(token)) {
+                if (contrast(newPal[token], bgLight) < target) lockedFailures.push(token);
+                return; // Respect absolute locks unconditionally
+            }
+            if (contrast(newPal[token], bgLight) < target) {
+                let [L,C,H] = hexToOklch(newPal[token]);
+                const bgL = hexToOklch(bgLight)[0];
+                
+                let stepDir = L >= bgL ? 0.02 : -0.02;
+                if (L === bgL) stepDir = bgL > 0.5 ? -0.02 : 0.02;
+
+                let steps = 0;
+                while (contrast(oklchToHex(L,C,H), bgLight) < target && steps < 60) {
+                    let nextL = L + stepDir;
+                    if (nextL < 0.12 || nextL > 0.98) break; // Prevent crushing into absolute pure voids
+                    L = nextL;
+                    steps++;
+                }
+                newPal[token] = oklchToHex(L,C,H);
+                if (contrast(newPal[token], bgLight) < target) failing.push(token);
+            }
+        }
+        adjustToken('textPrimary', targetText);
+        adjustToken('primary', targetUI);
+        adjustToken('accent1', targetUI);
+
+        if (failing.length) showToast(`WCAG Engine: Manual adjustment needed for ${failing.join(', ')}`);
+        if (lockedFailures.length) showToast(`WCAG Engine: Ignored locked tokens with bad contrast (${lockedFailures.join(', ')})`);
+        return newPal;
+    }
+
+    function applyWithLocks(newPal) {
+        const merged = { ...newPal };
+        lockedTokens.forEach(token => { merged[token] = currentPalette[token]; });
+        applyNewPalette(merged);
+    }
+
+    function applyPalette(pal) {
+        currentPalette = { ...pal };
+        renderTokens(); updateAll();
+    }
+
+    function applyNewPalette(pal) {
+        let finalPal = wcagMode ? enforceWCAG(pal) : pal;
+        pushHistory(currentPalette); applyPalette(finalPal);
+    }
+
+    function syncCSSVariables() {
+        const root = document.documentElement;
+        Object.entries(currentPalette).forEach(([key, val]) => {
+            root.style.setProperty(`--${key.replace(/([A-Z])/g, "-$1").toLowerCase()}`, val);
+        });
+    }
+
+    function updateAll() {
+        syncCSSVariables();
+        updateContrast();
+        renderCompare();
+        updateHistoryStrip();
+        $('backBtn').disabled = historyStack.length === 0;
+    }
+
+    /* ── Render Operations ── */
+    function renderTokens() {
+        const list = $('tokenList');
+        list.innerHTML = tokensConfig.map(t => {
+            const isLocked = lockedTokens.has(t.id);
+            const val = currentPalette[t.id];
+            const oklchStr = formatOklch(val);
+            return `
+            <div class="token-row">
+                <div class="token-meta">
+                    <label>${t.label}</label>
+                    <span class="hint">${t.hint}</span>
+                </div>
+                <div class="token-input-group">
+                    <div class="color-picker-wrapper" style="background-color: ${val};">
+                        <input type="color" id="color-${t.id}" value="${val}" aria-label="${t.label} Color" ${isLocked ? 'disabled' : ''}>
+                    </div>
+                    <div class="token-data">
+                        <button type="button" class="data-btn hex" data-copy="${val}" title="Copy Hex">${val.toUpperCase()}</button>
+                        <button type="button" class="data-btn oklch" data-copy="${oklchStr}" title="Copy OKLCH">${oklchStr}</button>
+                    </div>
+                    <div class="token-tools">
+                        <button type="button" class="icon-btn lock-btn ${isLocked ? 'active' : ''}" data-id="${t.id}" title="${isLocked ? 'Unlock' : 'Lock'} Token">
+                            ${isLocked 
+                                ? `<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>`
+                                : `<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 9.9-1"></path></svg>`
+                            }
+                        </button>
+                        <button type="button" class="icon-btn compare-add" data-id="${t.id}" title="Add to Compare Sandbox">
+                            <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                        </button>
+                    </div>
+                </div>
+            </div>`;
+        }).join('');
+
+        tokensConfig.forEach(t => {
+            const input = $(`color-${t.id}`);
+            if(input) {
+                input.addEventListener('input', () => {
+                    if(!lockedTokens.has(t.id)) {
+                        currentPalette[t.id] = input.value;
+                        
+                        input.parentElement.style.backgroundColor = input.value;
+
+                        updateAll();
+                        const row = input.closest('.token-row');
+                        row.querySelector('.data-btn.hex').textContent = input.value.toUpperCase();
+                        row.querySelector('.data-btn.hex').dataset.copy = input.value;
+                        const oStr = formatOklch(input.value);
+                        row.querySelector('.data-btn.oklch').textContent = oStr;
+                        row.querySelector('.data-btn.oklch').dataset.copy = oStr;
+                    }
+                });
+                input.addEventListener('change', () => pushHistory(currentPalette));
+            }
+        });
+
+        list.querySelectorAll('.data-btn').forEach(btn => {
+            btn.addEventListener('click', () => copyToClipboard(btn.dataset.copy, btn.classList.contains('hex') ? 'Hex' : 'OKLCH'));
+        });
+
+        list.querySelectorAll('.lock-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const id = btn.dataset.id;
+                const isLocked = lockedTokens.has(id);
+                
+                if (isLocked) {
+                    lockedTokens.delete(id);
+                    btn.classList.remove('active');
+                    btn.title = 'Lock Token';
+                    btn.innerHTML = `<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 9.9-1"></path></svg>`;
+                    $(`color-${id}`).disabled = false;
+                } else {
+                    lockedTokens.add(id);
+                    btn.classList.add('active');
+                    btn.title = 'Unlock Token';
+                    btn.innerHTML = `<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>`;
+                    $(`color-${id}`).disabled = true;
+                }
+            });
+        });
+
+        list.querySelectorAll('.compare-add').forEach(btn => {
+            btn.addEventListener('click', () => addToCompare(currentPalette[btn.dataset.id], btn.dataset.id));
+        });
+    }
+
+    function updateContrast() {
+        const { bgLight, textPrimary, primary, accent1, bgDark } = currentPalette;
+        const pairs = [
+            { label:'Text / Light Bg', fg:textPrimary, bg:bgLight, target: 7 },
+            { label:'Primary / Light Bg', fg:primary, bg:bgLight, target: 4.5 },
+            { label:'Accent / Light Bg', fg:accent1, bg:bgLight, target: 4.5 },
+            { label:'Light Bg / Void', fg:bgLight, bg:bgDark, target: 4.5 }
+        ];
+        $('contrastList').innerHTML = pairs.map(p => {
+            const ratio = contrast(p.fg, p.bg);
+            const pass = ratio >= p.target;
+            const level = ratio >= 7 ? 'AAA' : (ratio >= 4.5 ? 'AA' : 'FAIL');
+            return `
+                <div class="contrast-row">
+                    <div class="c-pair-info">
+                        <div class="c-swatches">
+                            <div class="c-sw" style="background:${p.fg}"></div>
+                            <div class="c-sw" style="background:${p.bg}"></div>
+                        </div>
+                        <div>
+                            <span class="c-label">${p.label}</span>
+                            <span class="c-sub">Target: ${p.target}:1</span>
+                        </div>
+                    </div>
+                    <div class="c-score">
+                        <span class="c-ratio">${ratio.toFixed(2)}</span>
+                        <span class="badge ${pass ? 'pass' : 'fail'}">${level}</span>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    function addToCompare(hex, role) {
+        if (compareSwatches.length >= 8) { showToast('Sandbox full (max 8)'); return; }
+        compareSwatches.push({ hex, role, id: Date.now() }); renderCompare();
+    }
+
+    function renderCompare() {
+        const slots = $('compareSlots');
+        slots.innerHTML = compareSwatches.map((s) => `
+            <div class="compare-item" style="background:${s.hex};" data-id="${s.id}" draggable="true">
+                <button class="rm-btn" data-id="${s.id}">×</button>
+            </div>
+        `).join('');
+        initCompareDrag();
+    }
+
+    function initCompareDrag() {
+        const slots = $('compareSlots'); let dragEl = null;
+        slots.querySelectorAll('.compare-item').forEach(el => {
+            el.addEventListener('dragstart', e => { dragEl = el; e.dataTransfer.effectAllowed = 'move'; el.classList.add('dragging'); });
+            el.addEventListener('dragend', () => el.classList.remove('dragging'));
+            el.addEventListener('dragover', e => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; return false; });
+            el.addEventListener('drop', e => {
+                e.stopPropagation(); if (dragEl !== el) {
+                    const fromIdx = compareSwatches.findIndex(s => s.id == dragEl.dataset.id);
+                    const toIdx = compareSwatches.findIndex(s => s.id == el.dataset.id);
+                    const [moved] = compareSwatches.splice(fromIdx, 1);
+                    compareSwatches.splice(toIdx, 0, moved); renderCompare();
+                }
+                return false;
+            });
+        });
+        slots.querySelectorAll('.rm-btn').forEach(b => b.addEventListener('click', e => {
+            compareSwatches = compareSwatches.filter(s => s.id != b.dataset.id); renderCompare();
+        }));
+    }
+
+    function pushHistory(pal) {
+        historyStack.unshift({ ...pal }); if (historyStack.length > 8) historyStack.pop();
+    }
+
+    function updateHistoryStrip() {
+        const strip = $('historyStrip');
+        strip.innerHTML = historyStack.map((pal, i) => {
+            const colors = [pal.primary, pal.accent1, pal.bgDark];
+            const html = colors.map(c => `<div class="h-slice" style="background:${c};"></div>`).join('');
+            return `<div class="history-dot" data-index="${i}" title="Restore point ${i+1}">${html}</div>`;
+        }).join('');
+        strip.querySelectorAll('.history-dot').forEach(btn => btn.addEventListener('click', () => {
+            const idx = parseInt(btn.dataset.index); historyStack = historyStack.slice(0, idx+1);
+            applyPalette({ ...historyStack[idx] });
+        }));
+    }
+
+    /* ── Event Handlers ── */
+    $('randomBtn').addEventListener('click', () => {
+        let baseH = Math.random() * 360;
+
+        if (lockedTokens.has('primary')) {
+            const [, , h] = hexToOklch(currentPalette.primary); baseH = h;
+        } else if (lockedTokens.has('bgLight')) {
+            const [, , h] = hexToOklch(currentPalette.bgLight); baseH = h - 20; 
+        } else if (lockedTokens.has('bgDark')) {
+            const [, , h] = hexToOklch(currentPalette.bgDark); baseH = h;
+        }
+
+        let p = {
+            bgLight: lockedTokens.has('bgLight') ? currentPalette.bgLight : oklchToHex(Math.random() * 0.03 + 0.95, Math.random() * 0.015, baseH),
+            textPrimary: lockedTokens.has('textPrimary') ? currentPalette.textPrimary : oklchToHex(Math.random() * 0.10 + 0.25, Math.random() * 0.05 + 0.02, baseH),
+            primary: lockedTokens.has('primary') ? currentPalette.primary : oklchToHex(Math.random() * 0.15 + 0.55, Math.random() * 0.10 + 0.15, baseH),
+            accent1: lockedTokens.has('accent1') ? currentPalette.accent1 : oklchToHex(Math.random() * 0.15 + 0.55, Math.random() * 0.10 + 0.15, (baseH + 150) % 360),
+            bgDark: lockedTokens.has('bgDark') ? currentPalette.bgDark : oklchToHex(Math.random() * 0.10 + 0.20, Math.random() * 0.05 + 0.02, baseH)
+        };
+        
+        applyWithLocks(p);
+    });
+
+    $('harmonyBtn').addEventListener('click', () => {
+        const shift = 45; const p = { ...currentPalette };
+        ['bgLight','textPrimary','primary','accent1','bgDark'].forEach(t => {
+            if (!lockedTokens.has(t)) {
+                const [L,C,H] = hexToOklch(p[t]); p[t] = oklchToHex(L, C, (H+shift)%360);
+            }
+        });
+        applyNewPalette(p);
+    });
+
+    $('backBtn').addEventListener('click', () => {
+        if (historyStack.length > 1) { historyStack.shift(); applyPalette(historyStack[0]); updateHistoryStrip(); }
+    });
+
+    $('resetPro').addEventListener('click', () => applyWithLocks(defaultPro));
+
+    $('wcagBtn').addEventListener('click', () => {
+        wcagMode = !wcagMode;
+        const btn = $('wcagBtn'); btn.setAttribute('aria-pressed', wcagMode);
+        btn.innerHTML = wcagMode ? 'WCAG Engine: ON' : 'WCAG Engine: OFF';
+        btn.classList.toggle('wcag-active', wcagMode);
+        if (wcagMode) { applyWithLocks(enforceWCAG(currentPalette)); showToast('WCAG matrix actively enforced'); }
+    });
+
+    /* ── Modals ── */
+    let focusTrap = null;
+    function openModal(id, trigger) {
+        $(id).classList.add('open'); focusTrap = trigger;
+        const first = $(id).querySelector('input, textarea, button'); if(first) first.focus();
+    }
+    function closeModal(id) { $(id).classList.remove('open'); if(focusTrap) focusTrap.focus(); }
+
+    $('exportBtn').addEventListener('click', () => {
+        const p = currentPalette;
+        $('exportOutput').textContent = `:root {\n  --bg-light: ${p.bgLight};\n  --text-primary: ${p.textPrimary};\n  --primary: ${p.primary};\n  --accent1: ${p.accent1};\n  --bg-dark: ${p.bgDark};\n}`;
+        openModal('exportModal', $('exportBtn'));
+    });
+    $('closeExport').addEventListener('click', () => closeModal('exportModal'));
+    $('copyExport').addEventListener('click', () => copyToClipboard($('exportOutput').textContent, 'CSS Variable Payload'));
+
+    $('aiBtn').addEventListener('click', () => openModal('aiModal', $('aiBtn')));
+    $('closeModal').addEventListener('click', () => closeModal('aiModal'));
+    
+    $('generateAI').addEventListener('click', async () => {
+        const key = $('apiKeyInput').value.trim();
+        const prompt = $('aiPrompt').value.trim() || 'Modern SaaS dashboard';
+        const status = $('aiStatus');
+        if (!key) { status.textContent = 'Engine blocked: Missing DeepSeek Key.'; return; }
+        
+        status.textContent = 'Generating vector payload...';
+        try {
+            const res = await fetch('https://api.deepseek.com/v1/chat/completions', {
+                method: 'POST',
+                headers: { 'Content-Type':'application/json', 'Authorization':`Bearer ${key}` },
+                body: JSON.stringify({
+                    model: 'deepseek-chat',
+                    messages: [
+                        { role: 'system', content: 'Output ONLY valid JSON. Keys: "bgLight", "textPrimary", "primary", "accent1", "bgDark". Values: Hex strings. Ensure high structural luminance contrast.' },
+                        { role: 'user', content: `Current state: ${JSON.stringify(currentPalette)}. Goal: ${prompt}. Locked keys must not change: ${Array.from(lockedTokens).join(',')}. Return JSON.` }
+                    ], temperature: 0.7
+                })
+            });
+            if (!res.ok) throw new Error(`API Auth Failure (${res.status})`);
+            const data = await res.json();
+            let content = data.choices?.[0]?.message?.content;
+            const jsonMatch = content.match(/\{[\s\S]*\}/);
+            if (!jsonMatch) throw new Error('Invalid engine response');
+            
+            const json = JSON.parse(jsonMatch[0]);
+            applyWithLocks(json); 
+            closeModal('aiModal'); status.textContent = ''; showToast('AI Matrix injected successfully');
+        } catch (e) { status.textContent = e.message; }
+    });
+
+    /* ── Theme ── */
+    const themeBtn = $('themeToggle');
+    function setTheme(isDark) {
+        document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+        localStorage.setItem('bndr-os', isDark ? 'dark' : 'light');
+    }
+    setTheme((localStorage.getItem('bndr-os') || 'light') === 'dark');
+    themeBtn.addEventListener('click', () => setTheme(document.documentElement.getAttribute('data-theme') !== 'dark'));
+    window.addEventListener('keydown', e => { if (e.key === 'Escape') document.querySelectorAll('.modal.open').forEach(m => closeModal(m.id)); });
+
+    /* ── Init ── */
+    renderTokens(); updateAll(); pushHistory(currentPalette);
+})();
+</script>
+</body>
+</html>
