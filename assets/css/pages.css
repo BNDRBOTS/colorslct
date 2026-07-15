@@ -44,7 +44,7 @@ html[data-theme='light'] .tier-hot { border-color: #5a7000; box-shadow: 0 0 0 1p
 .tier li::before { content: '→'; position: absolute; left: 0; color: var(--volt); }
 html[data-theme='light'] .tier li::before { color: #4d6600; }
 .buy-buttons { display: grid; gap: 0.5rem; margin-top: auto; }
-.buy-buttons .btn[aria-disabled='true'] { opacity: 0.5; }
+.buy-buttons .btn-unconfigured { opacity: 0.5; }
 
 .status-panel { margin-bottom: 1.6rem; border-left: 3px solid var(--volt); }
 .status-text { font-size: 0.9rem; color: var(--text-2); margin-bottom: 1rem; }
