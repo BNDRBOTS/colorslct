@@ -32,7 +32,11 @@
     delete memoryStore[k];
   }
 
-  function consentChoice() { return rawGet('cslct.consent'); } // 'all' | 'essential' | null
+  function consentChoice() { // 'all' | 'essential' | null
+    var raw = rawGet('cslct.consent');
+    if (raw === null || raw === undefined) return null;
+    try { return JSON.parse(raw); } catch (e) { return raw; }
+  }
   function storageAllowed() { return consentChoice() === 'all'; }
 
   var store = {
