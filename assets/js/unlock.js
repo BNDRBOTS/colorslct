@@ -21,8 +21,9 @@
       el.rel = 'noopener noreferrer';
     } else {
       el.removeAttribute('target');
-      el.setAttribute('aria-disabled', 'true');
+      el.classList.add('btn-unconfigured');
       el.href = '#';
+      el.setAttribute('title', label + ' checkout is being set up');
       el.addEventListener('click', function (e) {
         e.preventDefault();
         S.toast(label + ' checkout isn’t open yet. If you have a key, paste it below — that always works.', 'warn');
