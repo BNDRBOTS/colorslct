@@ -8,7 +8,7 @@ export default defineConfig({
   reporter: [['list']],
   use: {
     baseURL: 'http://127.0.0.1:8899',
-    launchOptions: { executablePath: '/opt/pw-browsers/chromium' },
+    launchOptions: { executablePath: '/opt/pw-browsers/chromium', args: ['--no-sandbox', '--disable-dev-shm-usage'] },
     viewport: { width: 1280, height: 850 }
   },
   webServer: {
