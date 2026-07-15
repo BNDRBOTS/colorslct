@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Owner console · ColorSLCT keygen</title>
+  <meta name="robots" content="noindex,nofollow">
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+  <link rel="stylesheet" href="../assets/css/base.css">
+  <style>
+    .kg-main { padding: calc(var(--nav-h) + 2rem) 0 4rem; }
+    .kg-panel { margin-bottom: 1.4rem; }
+    .kg-key {
+      font-family: var(--font-mono); font-size: 0.7rem; line-height: 1.6;
+      background: var(--bg-2); border: 1px solid var(--line); border-radius: var(--radius-s);
+      padding: 0.8rem; word-break: break-all; margin: 0.6rem 0;
+    }
+    .kg-grid { display: grid; gap: 0.9rem; }
+    @media (min-width: 720px) { .kg-grid { grid-template-columns: 1fr 1fr; } }
+    .kg-out { display: grid; gap: 0.8rem; margin-top: 1rem; }
+    .kg-out-item { border: 1px solid var(--line); border-radius: var(--radius-s); padding: 0.8rem; }
+    .kg-out-item .mono-label { display: block; margin-bottom: 0.4rem; }
+    .warn-box {
+      border: 1px solid var(--warn); border-radius: var(--radius-s);
+      padding: 0.9rem 1rem; font-size: 0.85rem; color: var(--text-2); margin-bottom: 1.4rem;
+    }
+    .warn-box strong { color: var(--warn); }
+    .status-line { min-height: 1.3em; font-size: 0.8125rem; color: var(--text-2); margin-top: 0.6rem; }
+  </style>
+</head>
+<body>
+<header class="site-nav is-scrolled">
+  <div class="container">
+    <a class="brand" href="../index.html"><span class="brand-dot" aria-hidden="true"></span>COLORSLCT <small>OWNER CONSOLE</small></a>
+  </div>
+</header>
+
+<main class="kg-main">
+  <div class="container">
+    <span class="index-num">TOOLS / KEYGEN — NOT LINKED FROM THE PUBLIC SITE</span>
+    <h1 class="display-l" style="margin:0.5rem 0 1.4rem">Mint license &amp; gift keys.</h1>
+
+    <div class="warn-box">
+      <strong>Owner eyes only.</strong> This page creates the signing keys that control who gets Pro.
+      The <em>private</em> key stays in this browser (and in the backup file you download) — never
+      publish it, never commit it. Ship only the <em>public</em> key, inside <code>config.js</code>.
+      Anyone who obtains the private key can mint unlimited licenses.
+    </div>
+
+    <!-- Step 1 -->
+    <section class="panel kg-panel">
+      <div class="panel-head"><h2 class="mono-label">Step 1 — Signing keys</h2><span class="badge" id="kpState">NONE YET</span></div>
+      <div class="panel-body">
+        <p style="font-size:0.875rem;color:var(--text-2);margin-bottom:0.9rem">
+          Create a key pair once. Then copy the public key into <code>config.js → LICENSE_PUBLIC_KEY</code> and download the backup.
+        </p>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-volt" id="genKeys">Create signing keys</button>
+          <button type="button" class="btn btn-ghost" id="downloadKeys" disabled>Download backup (JSON)</button>
+          <button type="button" class="btn btn-ghost" id="importKeys">Restore from backup</button>
+          <input type="file" id="importFile" accept="application/json" class="visually-hidden">
+        </div>
+        <div id="pubWrap" hidden>
+          <p class="mono-label" style="margin-top:1rem">Public key → paste into config.js</p>
+          <div class="kg-key" id="pubKey"></div>
+          <button type="button" class="chip" id="copyPub">Copy public key</button>
+        </div>
+        <p class="status-line" id="kpStatus"></p>
+      </div>
+    </section>
+
+    <!-- Step 2 -->
+    <section class="panel kg-panel">
+      <div class="panel-head"><h2 class="mono-label">Step 2 — Mint keys</h2></div>
+      <div class="panel-body">
+        <div class="kg-grid">
+          <div class="field">
+            <label for="mintPlan">Plan</label>
+            <select class="input" id="mintPlan">
+              <option value="pro">Pro</option>
+              <option value="studio">Studio (5 seats)</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="mintName">Licensed to (optional — shows on their unlock page)</label>
+            <input type="text" class="input" id="mintName" placeholder="jane@example.com or Jane D.">
+          </div>
+          <div class="field">
+            <label for="mintCount">How many keys</label>
+            <input type="number" class="input" id="mintCount" value="1" min="1" max="100">
+          </div>
+          <div class="field">
+            <label for="mintExpiry">Expires after (days — leave empty for never)</label>
+            <input type="number" class="input" id="mintExpiry" placeholder="never" min="1" max="3650">
+          </div>
+        </div>
+        <label class="check" style="margin-top:0.9rem"><input type="checkbox" id="mintGift"> This is a <strong>gift</strong> key (free giveaway — shows a warmer welcome)</label>
+        <div class="field" style="margin-top:0.9rem">
+          <label for="siteUrl">Your deployed site URL (for one-tap gift links — optional)</label>
+          <input type="url" class="input input-mono" id="siteUrl" placeholder="https://colorslct.example.com">
+        </div>
+        <div class="modal-actions" style="margin-top:1rem">
+          <button type="button" class="btn btn-volt" id="mintBtn" disabled>Mint <span class="arrow">→</span></button>
+          <button type="button" class="btn btn-ghost" id="copyAll" disabled>Copy all keys</button>
+        </div>
+        <p class="status-line" id="mintStatus"></p>
+        <div class="kg-out" id="mintOut"></div>
+      </div>
+    </section>
+
+    <!-- Step 3 -->
+    <section class="panel kg-panel">
+      <div class="panel-head"><h2 class="mono-label">Step 3 — Sanity check</h2></div>
+      <div class="panel-body">
+        <p style="font-size:0.875rem;color:var(--text-2);margin-bottom:0.9rem">Paste any key to verify it against the current public key — exactly what the unlock page will do.</p>
+        <div class="field">
+          <label for="checkKey">Key to test</label>
+          <textarea class="input input-mono" id="checkKey" rows="3"></textarea>
+        </div>
+        <div class="modal-actions" style="margin-top:0.8rem">
+          <button type="button" class="btn btn-ghost" id="checkBtn" disabled>Verify</button>
+        </div>
+        <p class="status-line" id="checkStatus"></p>
+      </div>
+    </section>
+  </div>
+</main>
+
+<script src="../config.js"></script>
+<script src="../assets/js/license.js"></script>
+<script>
+(function () {
+  'use strict';
+  var Lic = window.License;
+  var $ = function (id) { return document.getElementById(id); };
+  var PRIV_KEY = 'cslct.keygen.private';
+  var PUB_KEY = 'cslct.keygen.public';
+  var lastMinted = [];
+
+  function getPair() {
+    try {
+      var priv = localStorage.getItem(PRIV_KEY);
+      var pub = localStorage.getItem(PUB_KEY);
+      return priv && pub ? { privateKey: priv, publicKey: pub } : null;
+    } catch (e) { return null; }
+  }
+  function setPair(pair) {
+    try {
+      localStorage.setItem(PRIV_KEY, pair.privateKey);
+      localStorage.setItem(PUB_KEY, pair.publicKey);
+      return true;
+    } catch (e) { return false; }
+  }
+
+  function refresh() {
+    var pair = getPair();
+    $('kpState').textContent = pair ? 'READY' : 'NONE YET';
+    $('kpState').className = 'badge ' + (pair ? 'badge-volt' : '');
+    $('downloadKeys').disabled = !pair;
+    $('mintBtn').disabled = !pair;
+    $('checkBtn').disabled = !pair;
+    $('pubWrap').hidden = !pair;
+    if (pair) $('pubKey').textContent = pair.publicKey;
+  }
+
+  function setStatus(id, msg, bad) {
+    var el = $(id);
+    el.textContent = msg;
+    el.style.color = bad ? 'var(--bad)' : '';
+  }
+
+  if (!window.crypto || !window.crypto.subtle) {
+    setStatus('kpStatus', 'This browser can’t do the cryptography here (needs https:// or file://, not plain http://).', true);
+  }
+
+  $('genKeys').addEventListener('click', function () {
+    var existing = getPair();
+    if (existing && !window.confirm('You already have signing keys. Creating new ones means keys minted with the OLD pair stop working unless you keep the old public key deployed. Continue?')) return;
+    Lic.generateKeyPair().then(function (pair) {
+      if (!setPair(pair)) { setStatus('kpStatus', 'Could not store keys in this browser — download the backup and keep it safe.', true); }
+      refresh();
+      setStatus('kpStatus', 'Keys created. 1) Copy the public key into config.js. 2) Download the backup and keep it somewhere safe.');
+    }).catch(function (e) {
+      setStatus('kpStatus', 'Key creation failed: ' + e.message, true);
+    });
+  });
+
+  $('downloadKeys').addEventListener('click', function () {
+    var pair = getPair();
+    if (!pair) return;
+    var blob = new Blob([JSON.stringify({ product: 'ColorSLCT', created: new Date().toISOString(), publicKey: pair.publicKey, privateKey: pair.privateKey }, null, 2)], { type: 'application/json' });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'colorslct-signing-keys.json';
+    document.body.appendChild(a); a.click(); a.remove();
+    setStatus('kpStatus', 'Backup downloaded. Store it like a password.');
+  });
+
+  $('importKeys').addEventListener('click', function () { $('importFile').click(); });
+  $('importFile').addEventListener('change', function () {
+    var file = this.files && this.files[0];
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function () {
+      try {
+        var json = JSON.parse(reader.result);
+        if (!json.privateKey || !json.publicKey) throw new Error('missing keys');
+        setPair({ privateKey: json.privateKey, publicKey: json.publicKey });
+        refresh();
+        setStatus('kpStatus', 'Backup restored.');
+      } catch (e) {
+        setStatus('kpStatus', 'That file isn’t a ColorSLCT key backup.', true);
+      }
+    };
+    reader.readAsText(file);
+  });
+
+  $('copyPub').addEventListener('click', function () {
+    var pair = getPair();
+    if (!pair) return;
+    (navigator.clipboard && navigator.clipboard.writeText
+      ? navigator.clipboard.writeText(pair.publicKey)
+      : Promise.reject()
+    ).then(function () { setStatus('kpStatus', 'Public key copied — paste it into config.js → LICENSE_PUBLIC_KEY.'); })
+     .catch(function () { setStatus('kpStatus', 'Copy blocked — select the key text and copy manually.', true); });
+  });
+
+  $('mintBtn').addEventListener('click', function () {
+    var pair = getPair();
+    if (!pair) return;
+    var count = Math.max(1, Math.min(100, parseInt($('mintCount').value, 10) || 1));
+    var days = parseInt($('mintExpiry').value, 10);
+    var payloadBase = {
+      p: $('mintPlan').value,
+      n: $('mintName').value.trim(),
+      gift: $('mintGift').checked
+    };
+    if (days > 0) payloadBase.exp = Date.now() + days * 86400000;
+    var site = $('siteUrl').value.trim().replace(/\/$/, '');
+    setStatus('mintStatus', 'Signing…');
+    var jobs = [];
+    for (var i = 0; i < count; i++) jobs.push(Lic.signKey(payloadBase, pair.privateKey));
+    Promise.all(jobs).then(function (keys) {
+      lastMinted = keys;
+      $('copyAll').disabled = false;
+      $('mintOut').innerHTML = keys.map(function (k, idx) {
+        var link = site ? site + '/unlock.html#key=' + encodeURIComponent(k) : '';
+        return '<div class="kg-out-item">' +
+          '<span class="mono-label">Key ' + (idx + 1) + ' — ' + payloadBase.p.toUpperCase() + (payloadBase.gift ? ' · GIFT' : '') + '</span>' +
+          '<div class="kg-key">' + k + '</div>' +
+          '<div class="modal-actions">' +
+          '<button type="button" class="chip" data-copy-idx="' + idx + '">Copy key</button>' +
+          (link ? '<button type="button" class="chip" data-copy-link="' + idx + '">Copy one-tap gift link</button>' : '') +
+          '</div>' +
+          (link ? '<div class="kg-key" style="opacity:0.7">' + link + '</div>' : '') +
+          '</div>';
+      }).join('');
+      setStatus('mintStatus', keys.length + (keys.length === 1 ? ' key' : ' keys') + ' minted. Send the key (or the one-tap link) to your customer or giftee.');
+      $('mintOut').querySelectorAll('[data-copy-idx]').forEach(function (b) {
+        b.addEventListener('click', function () {
+          navigator.clipboard.writeText(lastMinted[+b.dataset.copyIdx]).then(function () { setStatus('mintStatus', 'Key copied.'); });
+        });
+      });
+      $('mintOut').querySelectorAll('[data-copy-link]').forEach(function (b) {
+        b.addEventListener('click', function () {
+          var k = lastMinted[+b.dataset.copyLink];
+          navigator.clipboard.writeText(site + '/unlock.html#key=' + encodeURIComponent(k)).then(function () { setStatus('mintStatus', 'Gift link copied — one tap activates it.'); });
+        });
+      });
+    }).catch(function (e) {
+      setStatus('mintStatus', 'Signing failed: ' + e.message, true);
+    });
+  });
+
+  $('copyAll').addEventListener('click', function () {
+    if (!lastMinted.length) return;
+    navigator.clipboard.writeText(lastMinted.join('\n')).then(function () {
+      setStatus('mintStatus', 'All ' + lastMinted.length + ' keys copied, one per line.');
+    });
+  });
+
+  $('checkBtn').addEventListener('click', function () {
+    var pair = getPair();
+    var key = $('checkKey').value.trim();
+    if (!pair || !key) { setStatus('checkStatus', 'Paste a key first.', true); return; }
+    Lic.verifySignedKey(key, pair.publicKey).then(function (res) {
+      if (res.valid) {
+        setStatus('checkStatus', '✓ Valid ' + res.payload.p.toUpperCase() + (res.payload.gift ? ' gift' : '') + ' key' + (res.payload.n ? ' for ' + res.payload.n : '') + (res.payload.exp ? ', expires ' + new Date(res.payload.exp).toLocaleDateString() : ', never expires') + '.');
+      } else {
+        setStatus('checkStatus', '✗ Invalid (' + res.reason + '). If you rotated keys, old keys need the old public key.', true);
+      }
+    });
+  });
+
+  refresh();
+})();
+</script>
+</body>
+</html>

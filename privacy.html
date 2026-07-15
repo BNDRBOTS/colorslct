@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Privacy · ColorSLCT</title>
+  <meta name="description" content="How ColorSLCT handles your data: locally, on your device, with no accounts and no tracking.">
+  <meta name="theme-color" content="#070708">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="stylesheet" href="assets/css/base.css">
+  <link rel="stylesheet" href="assets/css/pages.css">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-nav is-scrolled">
+  <div class="container">
+    <a class="brand" href="index.html" aria-label="ColorSLCT home">
+      <span class="brand-dot" aria-hidden="true"></span>
+      COLORSLCT <small>PRIVACY</small>
+    </a>
+    <nav class="nav-links" aria-label="Main">
+      <a href="index.html">Home</a>
+      <a href="app.html">Studio</a>
+      <a href="terms.html">Terms</a>
+    </nav>
+    <div class="nav-cta">
+      <button type="button" class="theme-toggle" aria-label="Switch between dark and light theme" aria-pressed="false">
+        <svg class="ico-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+        <svg class="ico-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+      </button>
+      <a class="btn btn-ghost btn-s" href="app.html">Studio</a>
+    </div>
+  </div>
+</header>
+
+<main id="main" class="page-main">
+  <div class="container legal-prose">
+    <h1 class="display-l">Privacy, in plain words.</h1>
+    <span class="legal-updated">Last updated: July 2026</span>
+
+    <div class="legal-toc">
+      <a class="chip" href="#local">Local-first</a>
+      <a class="chip" href="#stored">What’s stored</a>
+      <a class="chip" href="#outbound">Outbound calls</a>
+      <a class="chip" href="#payments">Payments</a>
+      <a class="chip" href="#rights">Your controls</a>
+    </div>
+
+    <h2 id="local">The short version</h2>
+    <p><strong>ColorSLCT runs entirely in your browser.</strong> There is no ColorSLCT server, no account, no sign-up, no analytics, no advertising pixels and no third-party cookies. We cannot see your palettes, your prompts, or you — the architecture makes it impossible, not just impolite.</p>
+
+    <h2 id="stored">What’s stored on your device</h2>
+    <p>When you first visit, a banner asks whether ColorSLCT may save your work in your browser’s local storage. Two answers:</p>
+    <ul>
+      <li><strong>Allow saving</strong> — your current palette, saved library, theme, preferences and tour progress are kept in this browser so they’re there next time.</li>
+      <li><strong>Only what’s essential</strong> — just two things persist: your storage choice itself (so we stop asking) and, if you activate one, your license. Everything else lasts only until the tab closes.</li>
+    </ul>
+    <p>If you tick “remember my key on this device” in the AI assistant, your DeepSeek API key is also stored locally — never anywhere else. You can change your storage choice any time via <em>Storage choices</em> in the footer, and erase everything via <em>Preferences → Erase everything saved here</em> in the studio.</p>
+
+    <h2 id="outbound">The only network calls, ever</h2>
+    <p>Three features talk to the outside world, each only when you use it:</p>
+    <ul>
+      <li><strong>AI assistant</strong> — your prompt, your current five colors and your own API key are sent directly from your browser to <a href="https://platform.deepseek.com" rel="noopener noreferrer" target="_blank">DeepSeek</a> (their <a href="https://cdn.deepseek.com/policies/en-US/deepseek-privacy-policy.html" rel="noopener noreferrer" target="_blank">privacy policy</a> applies). Skip the feature and nothing is sent.</li>
+      <li><strong>License verification</strong> — if you activate a Gumroad license key, that key is sent to Gumroad’s verification API to confirm the purchase. Signed ColorSLCT keys are verified on your device with cryptography; nothing is sent anywhere.</li>
+      <li><strong>Buying</strong> — the buy buttons open Stripe or Gumroad checkout pages. Payment happens on their sites, under their policies; we never see card numbers.</li>
+    </ul>
+
+    <h2 id="payments">Payments</h2>
+    <p>Checkout is handled by <a href="https://stripe.com/privacy" rel="noopener noreferrer" target="_blank">Stripe</a> and/or <a href="https://gumroad.com/privacy" rel="noopener noreferrer" target="_blank">Gumroad</a>. They process your payment details and email under their own privacy policies. What we receive from them is what any seller receives: order details and the email needed to deliver your license.</p>
+
+    <h2 id="rights">Your controls</h2>
+    <ul>
+      <li><strong>See everything:</strong> your browser’s developer tools list every stored value under keys starting with <code>cslct.</code>.</li>
+      <li><strong>Delete everything:</strong> Studio → Preferences → “Erase everything saved here”, or clear this site’s data in your browser settings.</li>
+      <li><strong>Change your mind:</strong> footer → “Storage choices” re-opens the consent banner.</li>
+    </ul>
+    <p>Because nothing about you is collected or transmitted to us, there is nothing for us to sell, share, leak or be subpoenaed for. That’s the whole policy.</p>
+
+    <h2>Contact</h2>
+    <p>Questions about this policy: <a data-support-email data-label="email support" href="#" hidden></a><span id="contactFallback">see the contact details on your purchase receipt, or reach BNDR LLC via <a href="https://bndrllc.com" rel="noopener">bndrllc.com</a>.</span></p>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-legal">
+      <span>© <span data-year>2026</span> BNDR LLC</span>
+      <a href="privacy.html">Privacy</a>
+      <a href="terms.html">Terms</a>
+      <a href="index.html">Home</a>
+    </div>
+  </div>
+</footer>
+
+<script src="config.js"></script>
+<script src="assets/js/ui.js"></script>
+<script>
+  // if a support email is configured, prefer it over the fallback sentence
+  (function () {
+    var cfg = window.CSLCT_CONFIG || {};
+    if (cfg.SUPPORT_EMAIL) {
+      var link = document.querySelector('[data-support-email]');
+      if (link) link.hidden = false;
+      var fb = document.getElementById('contactFallback');
+      if (fb) fb.remove();
+    }
+  })();
+</script>
+</body>
+</html>

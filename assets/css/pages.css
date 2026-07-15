@@ -1,0 +1,93 @@
+/* ============================================================
+   ColorSLCT · pages.css — unlock, legal, 404
+   ============================================================ */
+
+.page-main { padding: calc(var(--nav-h) + 2.6rem) 0 4rem; }
+.page-head { margin-bottom: 2.4rem; }
+.page-head .index-num { display: block; margin-bottom: 0.9rem; }
+
+.steps-row {
+  list-style: none;
+  display: flex; flex-wrap: wrap; gap: 0.6rem 2rem;
+  margin-top: 1.4rem;
+}
+.steps-row li {
+  display: flex; align-items: center; gap: 0.6rem;
+  font-size: 0.875rem; color: var(--text-2);
+}
+.steps-row strong {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 34px; height: 34px; flex: none;
+  border: 1px solid var(--line-strong); border-radius: 50%;
+  font-family: var(--font-mono); font-size: 0.75rem; color: var(--text);
+}
+
+/* tiers on unlock page (reuses landing tier styles) */
+.buy-grid { display: grid; gap: 1rem; margin-bottom: 1.6rem; transition: opacity var(--dur-2); }
+@media (min-width: 860px) { .buy-grid { grid-template-columns: 1fr 1fr; align-items: start; } }
+.tier {
+  position: relative;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-s);
+  padding: clamp(1.3rem, 3vw, 1.8rem);
+  background: var(--surface);
+  display: flex; flex-direction: column; gap: 1.1rem;
+}
+.tier-hot { border-color: var(--volt); box-shadow: 0 0 0 1px var(--volt); }
+html[data-theme='light'] .tier-hot { border-color: #5a7000; box-shadow: 0 0 0 1px #5a7000; }
+.tier-flag { position: absolute; top: -12px; left: 1.3rem; }
+.tier-price { display: flex; align-items: baseline; gap: 0.55rem; }
+.tier-price strong { font-size: clamp(2.2rem, 5vw, 3rem); font-weight: 700; letter-spacing: -0.04em; line-height: 1; }
+.tier-price span { font-family: var(--font-mono); font-size: 0.6875rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-3); }
+.tier ul { list-style: none; display: grid; gap: 0.5rem; }
+.tier li { font-size: 0.875rem; color: var(--text-2); padding-left: 1.25rem; position: relative; }
+.tier li::before { content: '→'; position: absolute; left: 0; color: var(--volt); }
+html[data-theme='light'] .tier li::before { color: #4d6600; }
+.buy-buttons { display: grid; gap: 0.5rem; margin-top: auto; }
+.buy-buttons .btn[aria-disabled='true'] { opacity: 0.5; }
+
+.status-panel { margin-bottom: 1.6rem; border-left: 3px solid var(--volt); }
+.status-text { font-size: 0.9rem; color: var(--text-2); margin-bottom: 1rem; }
+.activate-panel { margin-bottom: 2.4rem; }
+.ai-status { min-height: 1.2em; font-size: 0.8125rem; color: var(--text-2); margin: 0.7rem 0 0.4rem; }
+.ai-status.is-error { color: var(--bad); }
+html[data-theme='light'] .ai-status.is-error { color: #c22040; }
+.modal-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+
+.unlock-faq details { border-bottom: 1px solid var(--line); }
+.unlock-faq details:first-child { border-top: 1px solid var(--line); }
+.unlock-faq summary {
+  display: flex; justify-content: space-between; align-items: center; gap: 1rem;
+  padding: 1rem 0.2rem; font-weight: 700; font-size: 0.95rem;
+  cursor: pointer; list-style: none;
+}
+.unlock-faq summary::-webkit-details-marker { display: none; }
+.unlock-faq summary span { font-family: var(--font-mono); color: var(--text-3); transition: transform var(--dur-2) var(--ease-out); }
+.unlock-faq details[open] summary span { transform: rotate(45deg); }
+.unlock-faq details p { padding: 0 0.2rem 1.1rem; color: var(--text-2); font-size: 0.875rem; max-width: 64ch; }
+
+/* ── Legal prose ────────────────────────────────────────── */
+.legal-prose { max-width: 72ch; }
+.legal-prose h1 { margin-bottom: 0.4rem; }
+.legal-updated { font-family: var(--font-mono); font-size: 0.6875rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-3); margin-bottom: 2rem; display: block; }
+.legal-prose h2 { font-size: 1.2rem; font-weight: 700; letter-spacing: -0.015em; margin: 2.2rem 0 0.7rem; }
+.legal-prose p, .legal-prose li { font-size: 0.925rem; color: var(--text-2); margin-bottom: 0.8rem; line-height: 1.7; }
+.legal-prose ul { padding-left: 1.2rem; }
+.legal-prose li { margin-bottom: 0.45rem; }
+.legal-prose strong { color: var(--text); }
+.legal-prose a { color: var(--text); }
+.legal-toc {
+  display: flex; flex-wrap: wrap; gap: 0.4rem;
+  margin-bottom: 2rem;
+}
+
+/* ── 404 ────────────────────────────────────────────────── */
+.err-wrap { min-height: 70dvh; display: flex; align-items: center; }
+.err-code {
+  font-weight: 700; letter-spacing: -0.05em; line-height: 0.9;
+  font-size: clamp(6rem, 24vw, 16rem);
+  background: linear-gradient(100deg, var(--volt), var(--pink));
+  -webkit-background-clip: text; background-clip: text;
+  color: transparent;
+}
+.err-sub { margin: 1.2rem 0 2rem; color: var(--text-2); max-width: 44ch; }

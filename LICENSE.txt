@@ -1,0 +1,17 @@
+ColorSLCT — Copyright (c) 2026 BNDR LLC. All rights reserved.
+
+This software and its source are proprietary. You may use the product
+under the terms presented at terms.html. You may not republish, resell
+or redistribute the software itself without written permission from
+BNDR LLC.
+
+Bundled fonts are licensed separately under the SIL Open Font License 1.1
+and remain the property of their authors:
+
+  - Space Grotesk — Copyright 2020 The Space Grotesk Project Authors
+    (https://github.com/floriankarsten/space-grotesk)
+    License: assets/fonts/OFL-SpaceGrotesk.txt
+
+  - JetBrains Mono — Copyright 2020 The JetBrains Mono Project Authors
+    (https://github.com/JetBrains/JetBrainsMono)
+    License: assets/fonts/OFL-JetBrainsMono.txt

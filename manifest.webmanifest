@@ -1,0 +1,17 @@
+{
+  "name": "ColorSLCT — palette studio",
+  "short_name": "ColorSLCT",
+  "description": "Build, test and export WCAG-safe brand palettes — entirely in your browser.",
+  "start_url": "app.html",
+  "display": "standalone",
+  "background_color": "#070708",
+  "theme_color": "#070708",
+  "icons": [
+    {
+      "src": "favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

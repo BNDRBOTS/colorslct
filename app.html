@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Studio · ColorSLCT — build WCAG-safe palettes</title>
+  <meta name="description" content="The ColorSLCT studio: build, test and export accessible five-token color palettes. Runs entirely in your browser.">
+  <meta name="theme-color" content="#070708">
+  <meta property="og:title" content="ColorSLCT Studio">
+  <meta property="og:description" content="Build, test and export WCAG-safe color palettes — all in your browser.">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="stylesheet" href="assets/css/base.css">
+  <link rel="stylesheet" href="assets/css/app.css">
+</head>
+<body class="app-body">
+<a class="skip-link" href="#workspace">Skip to workspace</a>
+<noscript><div class="nojs-note">ColorSLCT needs JavaScript — everything runs privately in your browser, nothing on a server.</div></noscript>
+
+<!-- CVD simulation filters (values set from color-core at boot) -->
+<svg aria-hidden="true" focusable="false" style="position:absolute;width:0;height:0;overflow:hidden">
+  <defs>
+    <filter id="cvd-protanopia" color-interpolation-filters="sRGB"><feColorMatrix id="cvdM-protanopia" type="matrix" values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 1 0"/></filter>
+    <filter id="cvd-deuteranopia" color-interpolation-filters="sRGB"><feColorMatrix id="cvdM-deuteranopia" type="matrix" values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 1 0"/></filter>
+    <filter id="cvd-tritanopia" color-interpolation-filters="sRGB"><feColorMatrix id="cvdM-tritanopia" type="matrix" values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 1 0"/></filter>
+    <filter id="cvd-achromatopsia" color-interpolation-filters="sRGB"><feColorMatrix id="cvdM-achromatopsia" type="matrix" values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 1 0"/></filter>
+  </defs>
+</svg>
+
+<header class="site-nav is-scrolled app-nav">
+  <div class="container">
+    <a class="brand" href="index.html" aria-label="ColorSLCT home">
+      <span class="brand-dot" aria-hidden="true"></span>
+      COLORSLCT <small>STUDIO</small>
+    </a>
+    <span class="badge plan-badge" id="planBadge">FREE</span>
+    <div class="nav-cta">
+      <a class="chip chip-upgrade" id="upgradeLink" href="unlock.html">Unlock&nbsp;Pro</a>
+      <button type="button" class="theme-toggle" id="helpBtn" aria-label="Help and shortcuts" title="Help &amp; shortcuts">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 9a3 3 0 1 1 4.6 2.5c-.9.6-1.6 1.2-1.6 2.5"/><circle cx="12" cy="17.8" r="0.4" fill="currentColor"/></svg>
+      </button>
+      <button type="button" class="theme-toggle" aria-label="Switch between dark and light theme" aria-pressed="false">
+        <svg class="ico-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+        <svg class="ico-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main class="app-main" id="workspace">
+
+  <!-- ── Palette rail ─────────────────────────────────────── -->
+  <section class="rail" aria-label="Your five palette colors">
+    <div class="rail-bars" id="railBars"><!-- token bars injected --></div>
+  </section>
+
+  <div class="app-content">
+
+    <!-- ── Action deck ────────────────────────────────────── -->
+    <section class="deck-wrap" aria-label="Palette actions">
+      <div class="deck" id="deck">
+        <button type="button" class="chip chip-hero" id="actRandom" title="Make five new colors (R)">
+          <svg class="chip-ico" viewBox="0 0 24 24"><path d="M17 3h4v4h-2V5h-2V3zM3 17l5.2-5.2 1.4 1.4L4.4 18.4 3 17zm0-14h4v2H5v2H3V3zm12.4 10.2 1.4-1.4L21 16v5h-5l4.2-4.2-2.8-2.6zM9.6 8.2 8.2 9.6 3 4.4 4.4 3l5.2 5.2z"/></svg>
+          Shuffle
+        </button>
+        <button type="button" class="chip" id="actUndo" disabled title="Undo (Ctrl+Z)">
+          <svg class="chip-ico" viewBox="0 0 24 24"><path d="M12 5V1L5 8l7 7v-4c3.9 0 7 3.1 7 7h2c0-5-4-9-9-9z"/></svg>
+          Undo
+        </button>
+        <button type="button" class="chip" id="actRedo" disabled title="Redo (Ctrl+Shift+Z)">
+          <svg class="chip-ico" viewBox="0 0 24 24" style="transform:scaleX(-1)"><path d="M12 5V1L5 8l7 7v-4c3.9 0 7 3.1 7 7h2c0-5-4-9-9-9z"/></svg>
+          Redo
+        </button>
+        <button type="button" class="chip" id="actHarmony" title="Rotate all hues (H)">
+          <svg class="chip-ico" viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 10 10h-2a8 8 0 1 1-8-8V2z"/><circle cx="12" cy="12" r="3"/></svg>
+          Harmony
+        </button>
+        <button type="button" class="chip" id="actWcag" aria-pressed="false" title="Automatically keep text readable">
+          <svg class="chip-ico" viewBox="0 0 24 24"><path d="M12 2 4 6v6c0 5 3.4 8.4 8 10 4.6-1.6 8-5 8-10V6l-8-4zm-1 13-3-3 1.4-1.4L11 12.2l4.6-4.6L17 9l-6 6z"/></svg>
+          WCAG Auto: <span id="wcagState">OFF</span>
+        </button>
+        <button type="button" class="chip" id="actPresets">
+          <svg class="chip-ico" viewBox="0 0 24 24"><path d="M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z"/></svg>
+          Presets
+        </button>
+        <button type="button" class="chip" id="actAI">
+          <svg class="chip-ico" viewBox="0 0 24 24"><path d="M12 2l2.1 5.7L20 10l-5.9 2.3L12 18l-2.1-5.7L4 10l5.9-2.3L12 2zM19 15l1 2.7 2.7 1-2.7 1L19 22l-1-2.7-2.7-1 2.7-1 1-2.3z"/></svg>
+          AI Suggest
+        </button>
+        <button type="button" class="chip" id="actImage" data-pro-feature="image">
+          <svg class="chip-ico" viewBox="0 0 24 24"><path d="M21 19V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2zM8.5 12l2.5 3 3.5-4.5L19 17H5l3.5-5z"/></svg>
+          From image
+          <svg class="chip-lock" viewBox="0 0 24 24" aria-hidden="true"><path d="M17 8h-1V6a4 4 0 0 0-8 0v2H7a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-9a2 2 0 0 0-2-2zm-7-2a2 2 0 0 1 4 0v2h-4V6z"/></svg>
+        </button>
+        <button type="button" class="chip" id="actImport">
+          <svg class="chip-ico" viewBox="0 0 24 24"><path d="M12 16 6 10l1.4-1.4L11 12.2V2h2v10.2l3.6-3.6L18 10l-6 6zM4 18h16v2H4z"/></svg>
+          Import
+        </button>
+        <button type="button" class="chip" id="actShare">
+          <svg class="chip-ico" viewBox="0 0 24 24"><path d="M18 8a3 3 0 1 0-2.8-4H15a3 3 0 0 0 .1 1.2L8.9 8.4a3 3 0 1 0 0 7.2l6.2 3.2A3 3 0 1 0 18 16c-.7 0-1.4.3-1.9.7l-6.2-3.1a3 3 0 0 0 0-1.2l6.2-3.1c.5.4 1.2.7 1.9.7z"/></svg>
+          Share
+        </button>
+        <button type="button" class="chip" id="actExport">
+          <svg class="chip-ico" viewBox="0 0 24 24"><path d="M12 2l6 6-1.4 1.4L13 5.8V16h-2V5.8L7.4 9.4 6 8l6-6zM4 18h16v2H4z"/></svg>
+          Export
+        </button>
+        <button type="button" class="chip" id="actSave">
+          <svg class="chip-ico" viewBox="0 0 24 24"><path d="M17 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V7l-4-4zm-5 16a3 3 0 1 1 0-6 3 3 0 0 1 0 6zM15 9H5V5h10v4z"/></svg>
+          Save
+        </button>
+        <button type="button" class="chip" id="actPrefs" title="Preferences">
+          <svg class="chip-ico" viewBox="0 0 24 24"><path d="M19.4 13a7.9 7.9 0 0 0 0-2l2-1.6-2-3.4-2.4 1a8 8 0 0 0-1.7-1L15 3.5h-4l-.3 2.5a8 8 0 0 0-1.7 1l-2.4-1-2 3.4L6.6 11a7.9 7.9 0 0 0 0 2l-2 1.6 2 3.4 2.4-1a8 8 0 0 0 1.7 1l.3 2.5h4l.3-2.5a8 8 0 0 0 1.7-1l2.4 1 2-3.4-2-1.6zM13 15.5a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7z" transform="translate(-1 -1)"/></svg>
+          <span class="visually-hidden">Preferences</span>
+        </button>
+      </div>
+      <div class="history-strip" id="historyStrip" aria-label="Recent palettes — tap one to bring it back"></div>
+    </section>
+
+    <!-- ── Panels ─────────────────────────────────────────── -->
+    <div class="panels">
+
+      <section class="panel panel-preview" aria-labelledby="previewHead">
+        <div class="panel-head">
+          <h2 id="previewHead" class="mono-label">Live preview</h2>
+          <div class="preview-tools">
+            <label class="mono-label" for="cvdSelect">Vision</label>
+            <select class="input input-mini" id="cvdSelect" data-pro-feature="cvd" aria-label="Simulate how people with color-blindness see this palette">
+              <option value="none">Typical</option>
+              <option value="protanopia">Protanopia (no red)</option>
+              <option value="deuteranopia">Deuteranopia (no green)</option>
+              <option value="tritanopia">Tritanopia (no blue)</option>
+              <option value="achromatopsia">Grayscale</option>
+            </select>
+          </div>
+        </div>
+        <div class="panel-body preview-grid" id="previewGrid" aria-live="polite"></div>
+      </section>
+
+      <section class="panel" aria-labelledby="contrastHead">
+        <div class="panel-head">
+          <h2 id="contrastHead" class="mono-label">Contrast — WCAG 2.2</h2>
+          <button type="button" class="chip chip-mini" id="actFixContrast" title="Nudge colors until they pass">Auto-fix</button>
+        </div>
+        <div class="panel-body">
+          <p class="panel-note">Aim for <strong>4.5:1</strong> on buttons &amp; UI, <strong>7:1</strong> on body text.</p>
+          <div class="contrast-list" id="contrastList"></div>
+        </div>
+      </section>
+
+      <section class="panel panel-ramps" aria-labelledby="rampsHead">
+        <div class="panel-head">
+          <h2 id="rampsHead" class="mono-label">Shade scales 50–950</h2>
+          <span class="badge badge-pink pro-tag" data-pro-tag hidden>PRO</span>
+        </div>
+        <div class="panel-body ramps-body">
+          <div class="ramps" id="rampsGrid"></div>
+          <div class="pro-veil" id="rampsVeil" hidden>
+            <p><strong>Every color, in 11 ready shades.</strong><br>Tap any shade to copy it. Included in all Pro exports.</p>
+            <a class="btn btn-volt btn-s" href="unlock.html">Unlock Pro</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" aria-labelledby="compareHead">
+        <div class="panel-head">
+          <h2 id="compareHead" class="mono-label">Compare</h2>
+          <span class="mono-label" id="compareCount">0 / 4</span>
+        </div>
+        <div class="panel-body">
+          <div class="compare-slots" id="compareSlots" aria-label="Colors you are comparing — drag to reorder"></div>
+          <p class="panel-note" id="compareHint">Open any color and tap “Compare” to line swatches up here. Drag to reorder.</p>
+        </div>
+      </section>
+
+      <section class="panel" aria-labelledby="libraryHead">
+        <div class="panel-head">
+          <h2 id="libraryHead" class="mono-label">Library</h2>
+          <span class="mono-label" id="libraryCount"></span>
+        </div>
+        <div class="panel-body">
+          <div class="library" id="libraryGrid"></div>
+          <p class="panel-note" id="libraryHint">Saved palettes live here — on this device only.</p>
+        </div>
+      </section>
+
+    </div>
+  </div>
+</main>
+
+<!-- ── Token editor sheet ──────────────────────────────────── -->
+<div class="modal" id="editorModal" role="dialog" aria-modal="true" aria-labelledby="editorTitle">
+  <div class="modal-card editor-card">
+    <div class="modal-title-row">
+      <h2 class="modal-title" id="editorTitle">Edit color</h2>
+      <button type="button" class="modal-x" data-close-modal aria-label="Close">✕</button>
+    </div>
+    <p class="modal-sub" id="editorHint"></p>
+    <div class="editor-swatch" id="editorSwatch">
+      <span id="editorSwatchHex">#000000</span>
+    </div>
+    <div class="editor-row">
+      <label class="editor-pick" for="editorColor">
+        <input type="color" id="editorColor" value="#000000" aria-label="Pick a color visually">
+        <span class="mono-label">Picker</span>
+      </label>
+      <div class="field editor-hex-field">
+        <label for="editorHex">Hex code</label>
+        <input type="text" class="input input-mono" id="editorHex" maxlength="7" autocomplete="off" autocapitalize="off" spellcheck="false" inputmode="text" placeholder="#22AACC">
+      </div>
+      <button type="button" class="chip" id="editorEyedrop" hidden title="Pick a color from anywhere on your screen">
+        <svg class="chip-ico" viewBox="0 0 24 24"><path d="m19.4 7.3-2.7-2.7c-.8-.8-2-.8-2.8 0l-1.6 1.6-1.1-1.1L9.8 6.5l1.1 1.1-7.4 7.4c-.2.2-.3.4-.3.7v3.3c0 .6.4 1 1 1h3.3c.3 0 .5-.1.7-.3l7.4-7.4 1.1 1.1 1.4-1.4-1.1-1.1 1.6-1.6c.8-.8.8-2 0-2.8zM7.1 18H6v-1.1l7.3-7.3l1.1 1.1L7.1 18z"/></svg>
+        Eyedropper
+      </button>
+    </div>
+    <div class="editor-meta">
+      <button type="button" class="chip" id="editorLock" aria-pressed="false">
+        <svg class="chip-ico" viewBox="0 0 24 24"><path d="M17 8h-1V6a4 4 0 0 0-8 0v2H7a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-9a2 2 0 0 0-2-2zm-7-2a2 2 0 0 1 4 0v2h-4V6z"/></svg>
+        <span id="editorLockLabel">Lock</span>
+      </button>
+      <button type="button" class="chip" id="editorCompare">
+        <svg class="chip-ico" viewBox="0 0 24 24"><path d="M11 2h2v20h-2zM3 5h6v14H3zM15 5h6v14h-6z" opacity="0.7"/></svg>
+        Compare
+      </button>
+      <span class="badge" id="editorContrast"></span>
+    </div>
+    <div class="copy-chips" id="editorCopyChips" aria-label="Copy this color in different code styles"></div>
+  </div>
+</div>
+
+<!-- ── Export ──────────────────────────────────────────────── -->
+<div class="modal" id="exportModal" role="dialog" aria-modal="true" aria-labelledby="exportTitle">
+  <div class="modal-card">
+    <div class="modal-title-row">
+      <h2 class="modal-title" id="exportTitle">Export palette</h2>
+      <button type="button" class="modal-x" data-close-modal aria-label="Close">✕</button>
+    </div>
+    <p class="modal-sub">Pick a format, copy or download. CSS is free forever; the full pack is Pro.</p>
+    <div class="format-list" id="formatList" role="radiogroup" aria-label="Export format"></div>
+    <label class="check" id="rampsCheckWrap"><input type="checkbox" id="exportRamps"> Include 11-step shade scales <span class="badge badge-pink" data-pro-tag hidden>PRO</span></label>
+    <pre class="export-pre" id="exportOutput" tabindex="0" aria-label="Export preview"></pre>
+    <div class="modal-actions">
+      <button type="button" class="btn btn-volt" id="exportCopy">Copy</button>
+      <button type="button" class="btn btn-ghost" id="exportDownload">Download file</button>
+      <button type="button" class="btn btn-ghost" id="exportPng" data-pro-feature="png">PNG card</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── AI ──────────────────────────────────────────────────── -->
+<div class="modal" id="aiModal" role="dialog" aria-modal="true" aria-labelledby="aiTitle">
+  <div class="modal-card">
+    <div class="modal-title-row">
+      <h2 class="modal-title" id="aiTitle">AI palette assistant</h2>
+      <button type="button" class="modal-x" data-close-modal aria-label="Close">✕</button>
+    </div>
+    <p class="modal-sub">Describe a mood and the assistant re-mixes your palette. Bring your own <a href="https://platform.deepseek.com" target="_blank" rel="noopener noreferrer">DeepSeek</a> API key — it is sent only to DeepSeek, never to us.</p>
+    <div class="field">
+      <label for="aiKey">Your DeepSeek API key</label>
+      <input type="password" class="input input-mono" id="aiKey" placeholder="sk-…" autocomplete="off">
+    </div>
+    <label class="check" id="aiRememberWrap" hidden><input type="checkbox" id="aiRemember"> Remember my key on this device</label>
+    <div class="field">
+      <label for="aiPrompt">Describe the vibe</label>
+      <textarea class="input" id="aiPrompt" rows="2" placeholder="calm spa website, sage green, warm sand…"></textarea>
+    </div>
+    <div class="modal-actions">
+      <button type="button" class="btn btn-volt" id="aiGenerate">Generate <span class="arrow">→</span></button>
+      <button type="button" class="btn btn-ghost" data-close-modal>Cancel</button>
+    </div>
+    <p class="ai-status" id="aiStatus" role="status" aria-live="polite"></p>
+  </div>
+</div>
+
+<!-- ── Import ──────────────────────────────────────────────── -->
+<div class="modal" id="importModal" role="dialog" aria-modal="true" aria-labelledby="importTitle">
+  <div class="modal-card">
+    <div class="modal-title-row">
+      <h2 class="modal-title" id="importTitle">Import colors</h2>
+      <button type="button" class="modal-x" data-close-modal aria-label="Close">✕</button>
+    </div>
+    <p class="modal-sub">Paste hex codes, CSS variables from an earlier export, or exported JSON. We’ll sort out the rest.</p>
+    <div class="field">
+      <label for="importText">Paste here</label>
+      <textarea class="input input-mono" id="importText" rows="5" placeholder="#0A0A0B #CCFF00 #FF0055 …"></textarea>
+    </div>
+    <p class="ai-status" id="importStatus" role="status" aria-live="polite"></p>
+    <div class="modal-actions">
+      <button type="button" class="btn btn-volt" id="importApply">Import</button>
+      <button type="button" class="btn btn-ghost" data-close-modal>Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Image extract ───────────────────────────────────────── -->
+<div class="modal" id="imageModal" role="dialog" aria-modal="true" aria-labelledby="imageTitle">
+  <div class="modal-card">
+    <div class="modal-title-row">
+      <h2 class="modal-title" id="imageTitle">Palette from an image</h2>
+      <button type="button" class="modal-x" data-close-modal aria-label="Close">✕</button>
+    </div>
+    <p class="modal-sub">Choose a photo or logo. It stays on your device — we read its colors right here in the browser.</p>
+    <label class="drop-zone" id="dropZone" for="imageFile">
+      <input type="file" id="imageFile" accept="image/*" class="visually-hidden">
+      <span id="dropZoneLabel">Tap to choose an image<br><small>or drag one in</small></span>
+    </label>
+    <div class="extract-strip" id="extractStrip" aria-label="Colors found in your image"></div>
+    <div class="modal-actions">
+      <button type="button" class="btn btn-volt" id="imageApply" disabled>Use as palette</button>
+      <button type="button" class="btn btn-ghost" data-close-modal>Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Share ───────────────────────────────────────────────── -->
+<div class="modal" id="shareModal" role="dialog" aria-modal="true" aria-labelledby="shareTitle">
+  <div class="modal-card">
+    <div class="modal-title-row">
+      <h2 class="modal-title" id="shareTitle">Share this palette</h2>
+      <button type="button" class="modal-x" data-close-modal aria-label="Close">✕</button>
+    </div>
+    <p class="modal-sub">Anyone with this link sees exactly these five colors — no account needed.</p>
+    <div class="field">
+      <label for="shareUrl">Link</label>
+      <input type="text" class="input input-mono" id="shareUrl" readonly>
+    </div>
+    <div class="modal-actions">
+      <button type="button" class="btn btn-volt" id="shareCopy">Copy link</button>
+      <button type="button" class="btn btn-ghost" id="shareNative" hidden>Share…</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Save ────────────────────────────────────────────────── -->
+<div class="modal" id="saveModal" role="dialog" aria-modal="true" aria-labelledby="saveTitle">
+  <div class="modal-card">
+    <div class="modal-title-row">
+      <h2 class="modal-title" id="saveTitle">Save to library</h2>
+      <button type="button" class="modal-x" data-close-modal aria-label="Close">✕</button>
+    </div>
+    <div class="field">
+      <label for="saveName">Name it</label>
+      <input type="text" class="input" id="saveName" maxlength="60" placeholder="Client rebrand, spring 2026…" data-autofocus>
+    </div>
+    <p class="ai-status" id="saveStatus" role="status" aria-live="polite"></p>
+    <div class="modal-actions">
+      <button type="button" class="btn btn-volt" id="saveConfirm">Save</button>
+      <button type="button" class="btn btn-ghost" data-close-modal>Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Presets ─────────────────────────────────────────────── -->
+<div class="modal" id="presetsModal" role="dialog" aria-modal="true" aria-labelledby="presetsTitle">
+  <div class="modal-card">
+    <div class="modal-title-row">
+      <h2 class="modal-title" id="presetsTitle">Starting points</h2>
+      <button type="button" class="modal-x" data-close-modal aria-label="Close">✕</button>
+    </div>
+    <p class="modal-sub">Six hand-tuned palettes. All pass WCAG out of the box.</p>
+    <div class="preset-grid" id="presetGrid"></div>
+  </div>
+</div>
+
+<!-- ── Preferences ─────────────────────────────────────────── -->
+<div class="modal" id="prefsModal" role="dialog" aria-modal="true" aria-labelledby="prefsTitle">
+  <div class="modal-card">
+    <div class="modal-title-row">
+      <h2 class="modal-title" id="prefsTitle">Preferences</h2>
+      <button type="button" class="modal-x" data-close-modal aria-label="Close">✕</button>
+    </div>
+    <div class="pref-block">
+      <span class="mono-label">Look</span>
+      <div class="pref-theme-row">
+        <button type="button" class="pref-theme" id="prefDark">Dark</button>
+        <button type="button" class="pref-theme" id="prefLight">Light</button>
+      </div>
+    </div>
+    <div class="pref-block">
+      <label class="check"><input type="checkbox" id="prefMotion"> Calm mode — turn animations off</label>
+    </div>
+    <div class="pref-block">
+      <span class="mono-label">Saving on this device</span>
+      <p class="pref-note" id="prefStorageNote"></p>
+      <button type="button" class="chip" data-open-consent>Change saving choice</button>
+    </div>
+    <div class="pref-block">
+      <button type="button" class="chip" id="prefTour">Replay the welcome tour</button>
+    </div>
+    <div class="pref-block">
+      <span class="mono-label text-pink">Danger zone</span>
+      <button type="button" class="chip chip-danger" id="prefWipe">Erase everything saved here</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Help / shortcuts ────────────────────────────────────── -->
+<div class="modal" id="helpModal" role="dialog" aria-modal="true" aria-labelledby="helpTitle">
+  <div class="modal-card">
+    <div class="modal-title-row">
+      <h2 class="modal-title" id="helpTitle">Help &amp; shortcuts</h2>
+      <button type="button" class="modal-x" data-close-modal aria-label="Close">✕</button>
+    </div>
+    <table class="shortcut-table">
+      <tbody>
+        <tr><td><kbd>R</kbd></td><td>Shuffle — five fresh colors</td></tr>
+        <tr><td><kbd>H</kbd></td><td>Harmony — spin every hue</td></tr>
+        <tr><td><kbd>Ctrl</kbd>+<kbd>Z</kbd></td><td>Undo</td></tr>
+        <tr><td><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>Z</kbd></td><td>Redo</td></tr>
+        <tr><td><kbd>E</kbd></td><td>Export</td></tr>
+        <tr><td><kbd>S</kbd></td><td>Save to library</td></tr>
+        <tr><td><kbd>?</kbd></td><td>This panel</td></tr>
+        <tr><td><kbd>Esc</kbd></td><td>Close any window</td></tr>
+      </tbody>
+    </table>
+    <div class="modal-actions">
+      <button type="button" class="btn btn-ghost" id="helpTour">Replay welcome tour</button>
+      <a class="btn btn-ghost" href="index.html">About ColorSLCT</a>
+    </div>
+  </div>
+</div>
+
+<!-- ── Pro gate ────────────────────────────────────────────── -->
+<div class="modal" id="gateModal" role="dialog" aria-modal="true" aria-labelledby="gateTitle">
+  <div class="modal-card gate-card">
+    <div class="modal-title-row">
+      <h2 class="modal-title" id="gateTitle">That one’s a Pro tool</h2>
+      <button type="button" class="modal-x" data-close-modal aria-label="Close">✕</button>
+    </div>
+    <p class="modal-sub" id="gateBody"></p>
+    <ul class="gate-list">
+      <li>Full export pack — Tailwind, SCSS, JSON tokens, SVG &amp; PNG</li>
+      <li>11-step shade scales for every color</li>
+      <li>Color-blindness preview &amp; image extraction</li>
+      <li>Unlimited saved palettes</li>
+      <li>One payment. Yours for good.</li>
+    </ul>
+    <div class="modal-actions">
+      <a class="btn btn-volt" href="unlock.html">See Pro <span class="arrow">→</span></a>
+      <button type="button" class="btn btn-ghost" data-close-modal>Not now</button>
+    </div>
+  </div>
+</div>
+
+<script src="config.js"></script>
+<script src="assets/js/color-core.js"></script>
+<script src="assets/js/exporters.js"></script>
+<script src="assets/js/license.js"></script>
+<script src="assets/js/ui.js"></script>
+<script src="assets/js/tour.js"></script>
+<script src="assets/js/app.js"></script>
+</body>
+</html>

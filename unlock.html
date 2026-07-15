@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Unlock Pro · ColorSLCT</title>
+  <meta name="description" content="Unlock ColorSLCT Pro — one payment, yours for good. Buy by card or Gumroad, then activate with your license key.">
+  <meta name="theme-color" content="#070708">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="stylesheet" href="assets/css/base.css">
+  <link rel="stylesheet" href="assets/css/pages.css">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+<noscript><div class="nojs-note">Activation needs JavaScript — it verifies your key right in your browser.</div></noscript>
+
+<header class="site-nav is-scrolled">
+  <div class="container">
+    <a class="brand" href="index.html" aria-label="ColorSLCT home">
+      <span class="brand-dot" aria-hidden="true"></span>
+      COLORSLCT <small>UNLOCK</small>
+    </a>
+    <nav class="nav-links" aria-label="Main">
+      <a href="index.html">Home</a>
+      <a href="app.html">Studio</a>
+      <a href="index.html#faq">FAQ</a>
+    </nav>
+    <div class="nav-cta">
+      <button type="button" class="theme-toggle" aria-label="Switch between dark and light theme" aria-pressed="false">
+        <svg class="ico-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+        <svg class="ico-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+      </button>
+      <a class="btn btn-ghost btn-s" href="app.html">Studio</a>
+    </div>
+  </div>
+</header>
+
+<main id="main" class="page-main">
+  <div class="container">
+
+    <div class="page-head">
+      <span class="index-num">CHECKOUT + ACTIVATION</span>
+      <h1 class="display-l">Own it in three moves.</h1>
+      <ol class="steps-row" aria-label="How activation works">
+        <li><strong>1</strong> Pick a plan</li>
+        <li><strong>2</strong> Pay once</li>
+        <li><strong>3</strong> Paste your key</li>
+      </ol>
+    </div>
+
+    <!-- current license status -->
+    <section class="panel status-panel" id="statusPanel" hidden aria-labelledby="statusHead">
+      <div class="panel-head">
+        <h2 id="statusHead" class="mono-label">Your license</h2>
+        <span class="badge badge-volt" id="statusPlan">PRO</span>
+      </div>
+      <div class="panel-body">
+        <p id="statusText" class="status-text"></p>
+        <div class="modal-actions">
+          <a class="btn btn-volt" href="app.html">Open the studio <span class="arrow">→</span></a>
+          <button type="button" class="btn btn-ghost" id="deactivateBtn">Deactivate on this device</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- tiers -->
+    <div class="buy-grid" id="buyGrid">
+      <section class="tier tier-hot" id="tierPro" aria-labelledby="proHead">
+        <span class="badge badge-volt tier-flag">MOST PICKED</span>
+        <h2 class="mono-label" id="proHead">Pro</h2>
+        <p class="tier-price"><strong data-price="pro">$29</strong><span data-suffix="pro">one-time</span></p>
+        <ul>
+          <li>All 10 export formats + shade scales</li>
+          <li>Color-blindness preview</li>
+          <li>Image → palette extraction</li>
+          <li>Unlimited saved palettes</li>
+          <li>Every future 1.x update</li>
+        </ul>
+        <div class="buy-buttons">
+          <a class="btn btn-volt" id="buyProStripe" href="#" rel="noopener">Buy by card <span class="arrow">→</span></a>
+          <a class="btn btn-ghost" id="buyProGumroad" href="#" rel="noopener">Buy on Gumroad</a>
+        </div>
+      </section>
+
+      <section class="tier" id="tierStudio" aria-labelledby="studioHead">
+        <h2 class="mono-label" id="studioHead">Studio</h2>
+        <p class="tier-price"><strong data-price="studio">$79</strong><span data-suffix="studio">one-time · 5 seats</span></p>
+        <ul>
+          <li>Everything in Pro</li>
+          <li>License for 5 people / devices</li>
+          <li>Commercial client work covered</li>
+          <li>Priority email support</li>
+        </ul>
+        <div class="buy-buttons">
+          <a class="btn btn-volt" id="buyStudioStripe" href="#" rel="noopener">Buy by card <span class="arrow">→</span></a>
+          <a class="btn btn-ghost" id="buyStudioGumroad" href="#" rel="noopener">Buy on Gumroad</a>
+        </div>
+      </section>
+    </div>
+
+    <!-- activation -->
+    <section class="panel activate-panel" aria-labelledby="activateHead">
+      <div class="panel-head">
+        <h2 class="mono-label" id="activateHead">Already have a key? Activate it</h2>
+      </div>
+      <div class="panel-body">
+        <p class="status-text">Your key is on your Gumroad receipt, in your purchase email — or in a gift link someone sent you. Paste the whole thing.</p>
+        <div class="field">
+          <label for="keyInput">License or gift key</label>
+          <textarea class="input input-mono" id="keyInput" rows="3" placeholder="CSLCT2.…  or  XXXXXXXX-XXXXXXXX-XXXXXXXX-XXXXXXXX" autocapitalize="off" autocomplete="off" spellcheck="false"></textarea>
+        </div>
+        <p class="ai-status" id="redeemStatus" role="status" aria-live="polite"></p>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-volt" id="redeemBtn">Activate <span class="arrow">→</span></button>
+        </div>
+      </div>
+    </section>
+
+    <section class="unlock-faq">
+      <details>
+        <summary>What happens right after I pay?<span aria-hidden="true">+</span></summary>
+        <p>Gumroad shows your license key on the receipt screen immediately — paste it above and you’re done. Card purchases get their key by email. Either way, activation is one paste, no account.</p>
+      </details>
+      <details>
+        <summary>Lost your key?<span aria-hidden="true">+</span></summary>
+        <p>Gumroad keys live in your Gumroad library forever. For card purchases, reply to your receipt email and a fresh key will be sent to you.</p>
+      </details>
+      <details>
+        <summary>Refunds?<span aria-hidden="true">+</span></summary>
+        <p>If ColorSLCT isn’t for you, ask within 14 days of purchase and you’ll get your money back. Refunded keys stop working.</p>
+      </details>
+      <details>
+        <summary>Which devices does one license cover?<span aria-hidden="true">+</span></summary>
+        <p>Pro covers you, on the devices you personally use. Studio covers up to five people. It’s an honor-system license backed by signed keys — we’d rather trust you than surveil you.</p>
+      </details>
+    </section>
+
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-legal">
+      <span>© <span data-year>2026</span> BNDR LLC</span>
+      <a href="privacy.html">Privacy</a>
+      <a href="terms.html">Terms</a>
+      <button type="button" class="linklike" data-open-consent style="background:none;border:none;cursor:pointer;color:inherit;font:inherit;letter-spacing:inherit;text-transform:inherit;padding:0">Storage choices</button>
+      <a data-support-email data-label="Contact support" href="#" hidden></a>
+    </div>
+  </div>
+</footer>
+
+<script src="config.js"></script>
+<script src="assets/js/color-core.js"></script>
+<script src="assets/js/license.js"></script>
+<script src="assets/js/ui.js"></script>
+<script src="assets/js/unlock.js"></script>
+</body>
+</html>
