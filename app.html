@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="description" content="ColorSLCT Studio — build, compare, and export WCAG-safe brand palettes right in your browser.">
+<title>ColorSLCT Studio · WCAG-safe brand palettes</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='10' fill='%230066cc'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="assets/css/base.css">
+</head>
+<body>
+<div class="container">
+  <header class="app-header">
+    <div class="logo">
+      <a class="logo-title" href="index.html" aria-label="ColorSLCT home">
+        <span class="logo-mark" aria-hidden="true"></span>
+        ColorSLCT <span class="pro-pill" id="proBadge" style="display:none;">Pro</span>
+      </a>
+      <p class="subtitle">Build, compare, and export WCAG‑safe brand palettes — live in the browser. AI assisted.</p>
+    </div>
+    <div class="header-actions">
+      <button id="helpBtn" class="btn" type="button" aria-label="Open the guided tour">
+        <svg class="btn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        Show me around
+      </button>
+      <button id="upgradeBtn" class="btn btn-primary" type="button">
+        <svg class="btn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        Go Pro
+      </button>
+      <button class="theme-btn btn" type="button" data-theme-toggle aria-label="Switch color theme" aria-pressed="false">
+        <svg class="btn-ico" data-icon-moon viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        <svg class="btn-ico" data-icon-sun viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" style="display:none;"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+        <span data-theme-label>Dark mode</span>
+      </button>
+    </div>
+  </header>
+
+  <section class="card" aria-labelledby="controls-heading">
+    <h2 id="controls-heading" class="visually-hidden">Palette Controls</h2>
+    <div class="token-grid" id="tokenGrid"></div>
+    <p class="workflow-hint">1. Choose/generate → 2. Tweak colours → 3. Check contrast → 4. Export</p>
+    <div class="actions" id="actionBar">
+      <button id="loadBNDR" class="btn" type="button">Load BNDR</button>
+      <button id="resetPro" class="btn" type="button">Professional</button>
+      <button id="randomBtn" class="btn btn-primary" type="button">Random</button>
+      <button id="backBtn" class="btn" type="button" disabled>Back</button>
+      <button id="harmonyBtn" class="btn" type="button">Harmony</button>
+      <button id="wcagBtn" class="btn" type="button" aria-pressed="false">WCAG Auto: OFF</button>
+      <button id="saveBtn" class="btn" type="button">Save</button>
+      <button id="libraryBtn" class="btn" type="button">Library</button>
+      <button id="shareBtn" class="btn" type="button">Share</button>
+      <button id="exportBtn" class="btn" type="button">Export</button>
+      <button id="aiBtn" class="btn" type="button">AI Suggest</button>
+    </div>
+    <div class="history-strip" id="historyStrip" aria-label="Palette history"></div>
+  </section>
+
+  <div class="previews-grid" id="previewContainer" aria-live="polite"></div>
+
+  <div class="combined-panel">
+    <section class="card" id="contrastPanel" aria-labelledby="contrast-heading">
+      <h3 id="contrast-heading" class="panel-title">Contrast Ratios <span class="panel-sub">Aim ≥4.5:1 for UI, ≥7:1 for text</span></h3>
+      <div class="contrast-list" id="contrastList"></div>
+    </section>
+    <section class="card" aria-labelledby="compare-heading">
+      <div class="compare-panel-inner">
+        <h3 id="compare-heading" class="panel-title">Compare Swatches</h3>
+        <div class="compare-slots" id="compareSlots" aria-label="Drag to reorder swatches"></div>
+        <small class="compare-note">Add tokens to compare side by side. Drag to reorder. Tap a swatch to copy its hex.</small>
+      </div>
+    </section>
+  </div>
+
+  <!-- Export modal -->
+  <div id="exportModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="exportModalLabel" aria-hidden="true">
+    <div class="modal-card">
+      <h3 id="exportModalLabel">Export — CSS</h3>
+      <p class="modal-desc">Pick a format, then copy it or download it as a file. Locked formats are part of Pro.</p>
+      <div class="format-tabs" id="formatTabs" role="tablist" aria-label="Export formats"></div>
+      <pre id="exportOutput"></pre>
+      <div class="modal-row">
+        <button id="copyExport" class="btn btn-primary" type="button">Copy to Clipboard</button>
+        <button id="downloadExport" class="btn" type="button">Download file</button>
+        <button class="btn btn-ghost" type="button" data-close-modal>Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- AI modal -->
+  <div id="aiModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="aiModalLabel" aria-hidden="true">
+    <div class="modal-card">
+      <h3 id="aiModalLabel">DeepSeek Palette AI</h3>
+      <p class="modal-desc">Optional: describe your brand to get a palette. Requires your own DeepSeek API key.</p>
+      <label for="apiKeyInput" class="visually-hidden">API Key</label>
+      <input type="password" id="apiKeyInput" placeholder="Your DeepSeek API Key" autocomplete="off" data-autofocus>
+      <label for="aiPrompt" class="visually-hidden">Description</label>
+      <textarea id="aiPrompt" rows="2" placeholder="Describe your brand vibe..."></textarea>
+      <div class="modal-row">
+        <button id="generateAI" class="btn btn-primary" type="button">Generate Palette</button>
+        <button class="btn btn-ghost" type="button" data-close-modal>Cancel</button>
+      </div>
+      <small class="modal-desc">Your key stays only in this session — it is never saved to disk and is sent only to DeepSeek.</small>
+      <div id="aiStatus" class="modal-status" aria-live="polite"></div>
+    </div>
+  </div>
+
+  <!-- Save modal -->
+  <div id="saveModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="saveModalLabel" aria-hidden="true">
+    <div class="modal-card">
+      <h3 id="saveModalLabel">Save this palette</h3>
+      <div class="library-swatches" id="savePreview" aria-hidden="true"></div>
+      <label for="paletteNameInput" class="visually-hidden">Palette name</label>
+      <input type="text" id="paletteNameInput" placeholder="Give it a name, e.g. “Spring launch”" maxlength="60" data-autofocus>
+      <div class="modal-row">
+        <button id="confirmSave" class="btn btn-primary" type="button">Save palette</button>
+        <button class="btn btn-ghost" type="button" data-close-modal>Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Library modal -->
+  <div id="libraryModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="libraryModalLabel" aria-hidden="true">
+    <div class="modal-card">
+      <h3 id="libraryModalLabel">Your palette library</h3>
+      <span class="library-count" id="libraryCount"></span>
+      <div class="library-list" id="libraryList"></div>
+      <div class="modal-row">
+        <button class="btn btn-ghost" type="button" data-close-modal>Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Upgrade / license modal -->
+  <div id="upgradeModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="upgradeModalLabel" aria-hidden="true">
+    <div class="modal-card">
+      <h3 id="upgradeModalLabel">ColorSLCT Pro <span class="pro-pill">Pro</span></h3>
+      <p class="modal-desc" id="upgradeReason"></p>
+      <div id="licenseForms">
+        <p class="modal-desc"><strong>One payment, yours forever.</strong> All export formats (SCSS, Tailwind, JSON, SVG), unlimited palette library, and every future update. No subscription.</p>
+        <div class="modal-row">
+          <button id="buyGumroad" class="btn btn-primary" type="button">Buy on Gumroad</button>
+          <button id="buyStripe" class="btn" type="button">Pay with Stripe</button>
+        </div>
+        <hr class="divider">
+        <p class="modal-desc"><strong>Already bought it?</strong> Paste your Gumroad license key:</p>
+        <label for="licenseKeyInput" class="visually-hidden">License key</label>
+        <input type="text" id="licenseKeyInput" placeholder="XXXXXXXX-XXXXXXXX-XXXXXXXX-XXXXXXXX" autocomplete="off" spellcheck="false">
+        <div class="modal-row"><button id="verifyLicense" class="btn" type="button">Verify license</button></div>
+        <hr class="divider">
+        <p class="modal-desc"><strong>Have a gift code?</strong> Lucky you — pop it in here:</p>
+        <label for="giftCodeInput" class="visually-hidden">Gift code</label>
+        <input type="text" id="giftCodeInput" placeholder="e.g. BNDR-GIFT-XXXX" autocomplete="off" spellcheck="false">
+        <div class="modal-row"><button id="redeemGift" class="btn" type="button">Redeem code</button></div>
+      </div>
+      <div id="licenseActive" style="display:none;">
+        <p class="modal-desc"><strong>Pro is active on this browser.</strong> <span id="licenseActiveDetail"></span></p>
+        <div class="modal-row"><button id="deactivateLicense" class="btn" type="button">Deactivate on this browser</button></div>
+      </div>
+      <div id="licenseStatus" class="modal-status" aria-live="polite"></div>
+      <div class="modal-row">
+        <button class="btn btn-ghost" type="button" data-close-modal>Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Guided tour -->
+  <div id="tourOverlay" class="tour-overlay" aria-hidden="true">
+    <div id="tourSpotlight" class="tour-spotlight" style="display:none;"></div>
+    <div id="tourCard" class="tour-card" role="dialog" aria-modal="true" aria-label="Guided tour"></div>
+  </div>
+
+  <footer class="footer">
+    <nav aria-label="Legal">
+      <a href="index.html">Home</a>
+      <a href="index.html#pricing">Pricing</a>
+      <a href="terms.html">Terms</a>
+      <a href="privacy.html">Privacy</a>
+    </nav>
+    <span>© <span data-year>2026</span> BNDR LLC · All rights reserved · <a href="https://bndrllc.com">bndrllc.com</a></span>
+  </footer>
+
+  <div id="toast" class="toast" role="status" aria-live="polite" aria-atomic="true"></div>
+</div>
+
+<script src="assets/js/config.js"></script>
+<script src="assets/js/color-engine.js"></script>
+<script src="assets/js/license.js"></script>
+<script src="assets/js/shared.js"></script>
+<script src="assets/js/app.js"></script>
+</body>
+</html>

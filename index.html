@@ -1,1195 +1,478 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en" data-theme="dark">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>BNDR ColorSLCT · Enterprise Design Tokens</title>
-    <style>
-        :root {
-            --bg-light: #F4F4F6;
-            --text-primary: #1D1D1F;
-            --primary: #0066CC;
-            --accent-1: #E0004D;
-            --bg-dark: #000000;
-            --page-bg: #f8f9fa;
-            --surface: #ffffff;
-            --text: #1D1D1F;
-            --text-secondary: #6e6e73;
-            --border: #e0e0e5;
-            --radius: 12px;
-            --shadow: 0 4px 12px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.02);
-            --font: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-            --transition-duration: 0.2s;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="description" content="ColorSLCT — build, compare, and export WCAG-safe brand palettes in your browser. OKLCH color engine, live previews, one-time Pro license. No subscription.">
+<title>ColorSLCT · WCAG-safe brand palettes, built in your browser</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='10' fill='%23ccff00'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="assets/css/base.css">
+<style>
+/* Landing is a fixed dark theme by design — the studio has its own light/dark toggle. */
+:root, html[data-theme='dark'] {
+  --lp-bg: #0a0a0c;
+  --lp-surface: #121216;
+  --lp-raised: #1a1a20;
+  --lp-border: rgba(255, 255, 255, 0.12);
+  --lp-text: #f5f5f2;
+  --lp-text-2: rgba(245, 245, 242, 0.66);
+  --lp-lime: #ccff00;
+  --lp-pink: #ff0055;
+  --lp-blue: #5e9fe8;
+}
+body { background: var(--lp-bg); color: var(--lp-text); }
+.lp-wrap { width: 100%; max-width: 1120px; margin: 0 auto; padding: 0 1.1rem; }
+@media (min-width: 700px) { .lp-wrap { padding: 0 2rem; } }
 
-        html[data-theme="dark"] {
-            --page-bg: #000;
-            --surface: #121214;
-            --text: #f5f5f7;
-            --text-secondary: #98989e;
-            --border: #2c2c30;
-            --shadow: 0 4px 12px rgba(0,0,0,0.3);
-        }
+/* nav */
+.lp-nav {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(10, 10, 12, 0.72);
+  -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--lp-border);
+}
+.lp-nav-inner { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 0.7rem 0; }
+.lp-logo { display: flex; align-items: center; gap: 0.5rem; font-weight: 750; letter-spacing: -0.02em; color: var(--lp-text); text-decoration: none; font-size: 1.05rem; }
+.lp-logo .logo-mark { background: conic-gradient(from 210deg, var(--lp-lime), var(--lp-pink), var(--lp-lime)); box-shadow: none; border-color: var(--lp-border); }
+.lp-links { display: none; gap: 1.4rem; align-items: center; }
+.lp-links a { color: var(--lp-text-2); text-decoration: none; font-size: 0.85rem; font-weight: 550; transition: color var(--dur); }
+.lp-links a:hover { color: var(--lp-text); }
+@media (min-width: 760px) { .lp-links { display: flex; } }
+.lp-cta {
+  background: var(--lp-lime); color: #0c1200; border: none; border-radius: 10px;
+  font-weight: 700; font-size: 0.85rem; padding: 0.55rem 1rem; min-height: 44px;
+  display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem;
+  text-decoration: none; cursor: pointer;
+  transition: transform var(--dur) var(--ease), box-shadow var(--dur);
+}
+.lp-cta:hover { transform: translateY(-1px); box-shadow: 0 6px 24px rgba(204, 255, 0, 0.25); }
+.lp-cta-ghost {
+  background: transparent; color: var(--lp-text); border: 1px solid var(--lp-border);
+  border-radius: 10px; font-weight: 650; font-size: 0.85rem; padding: 0.55rem 1rem; min-height: 44px;
+  display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem; text-decoration: none; cursor: pointer;
+  transition: border-color var(--dur), background var(--dur);
+}
+.lp-cta-ghost:hover { border-color: rgba(255, 255, 255, 0.35); background: rgba(255, 255, 255, 0.05); }
 
-        @media (prefers-reduced-motion: reduce) {
-            *, *::before, *::after {
-                animation-duration: 0.01ms !important;
-                animation-iteration-count: 1 !important;
-                transition-duration: 0.01ms !important;
-                scroll-behavior: auto !important;
-            }
-        }
+/* hero */
+.hero { position: relative; overflow: hidden; padding: 4rem 0 3.4rem; }
+@media (min-width: 760px) { .hero { padding: 6.5rem 0 5rem; } }
+.hero-aura {
+  position: absolute; inset: -40% -20% auto; height: 130%;
+  background:
+    radial-gradient(38% 45% at 22% 30%, rgba(204, 255, 0, 0.14), transparent 70%),
+    radial-gradient(34% 42% at 78% 22%, rgba(255, 0, 85, 0.13), transparent 70%),
+    radial-gradient(40% 50% at 55% 75%, rgba(94, 159, 232, 0.10), transparent 70%);
+  filter: blur(40px);
+  pointer-events: none;
+  animation: aura 16s ease-in-out infinite alternate;
+}
+@keyframes aura { from { transform: translate3d(-2%, 0, 0) scale(1); } to { transform: translate3d(2%, 3%, 0) scale(1.06); } }
+.hero-eyebrow {
+  display: inline-flex; align-items: center; gap: 0.45rem;
+  border: 1px solid var(--lp-border); border-radius: 999px;
+  padding: 0.3rem 0.8rem; font-size: 0.72rem; font-weight: 650; letter-spacing: 0.06em;
+  color: var(--lp-text-2); text-transform: uppercase; margin-bottom: 1.3rem;
+  background: rgba(255, 255, 255, 0.03);
+}
+.hero-eyebrow .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--lp-lime); box-shadow: 0 0 12px var(--lp-lime); }
+.hero h1 {
+  font-size: clamp(2.1rem, 7.5vw, 4rem);
+  line-height: 1.04; letter-spacing: -0.035em; font-weight: 800; max-width: 15ch;
+}
+.hero h1 .grad {
+  background: linear-gradient(92deg, var(--lp-lime) 10%, #8fe6a0 45%, var(--lp-blue) 90%);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.hero-sub { margin-top: 1.2rem; font-size: clamp(1rem, 2.5vw, 1.15rem); color: var(--lp-text-2); max-width: 54ch; line-height: 1.6; }
+.hero-actions { margin-top: 2rem; display: flex; gap: 0.7rem; flex-wrap: wrap; }
+.hero-note { margin-top: 0.9rem; font-size: 0.75rem; color: var(--lp-text-2); }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+/* live palette demo strip */
+.hero-demo {
+  margin-top: 3rem;
+  border: 1px solid var(--lp-border); border-radius: 18px;
+  background: var(--lp-surface);
+  padding: 1rem; display: flex; flex-direction: column; gap: 0.9rem;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
+}
+.demo-row { display: flex; gap: 6px; height: 74px; border-radius: 12px; overflow: hidden; }
+.demo-row div { flex: 1; transition: background 0.9s var(--ease); position: relative; }
+.demo-row code {
+  position: absolute; left: 8px; bottom: 6px; font-size: 0.6rem; font-family: var(--mono);
+  background: rgba(0, 0, 0, 0.5); color: #fff; padding: 1px 5px; border-radius: 4px;
+}
+.demo-meta { display: flex; align-items: center; justify-content: space-between; gap: 0.8rem; flex-wrap: wrap; }
+.demo-meta p { font-size: 0.75rem; color: var(--lp-text-2); }
+.demo-meta .lp-cta-ghost { min-height: 40px; padding: 0.4rem 0.85rem; font-size: 0.78rem; }
 
-        body {
-            font-family: var(--font);
-            background: var(--page-bg);
-            color: var(--text);
-            line-height: 1.5;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            transition: background var(--transition-duration), color var(--transition-duration);
-        }
+/* sections */
+section.lp-section { padding: 3.6rem 0; }
+@media (min-width: 760px) { section.lp-section { padding: 5.2rem 0; } }
+.sec-eyebrow { font-size: 0.7rem; font-weight: 750; letter-spacing: 0.12em; text-transform: uppercase; color: var(--lp-lime); margin-bottom: 0.7rem; }
+.sec-title { font-size: clamp(1.5rem, 4.5vw, 2.3rem); letter-spacing: -0.03em; font-weight: 750; max-width: 22ch; line-height: 1.15; }
+.sec-sub { margin-top: 0.8rem; color: var(--lp-text-2); max-width: 58ch; font-size: 0.95rem; line-height: 1.6; }
 
-        .container {
-            max-width: 1300px;
-            width: 100%;
-            margin: 0 auto;
-            padding: 1rem 0.8rem;
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 1.2rem;
-        }
-        @media (min-width: 600px) {
-            .container {
-                padding: 1.2rem 1rem;
-                gap: 1.5rem;
-            }
-        }
+/* features */
+.feature-grid { margin-top: 2.4rem; display: grid; grid-template-columns: 1fr; gap: 0.9rem; }
+@media (min-width: 640px) { .feature-grid { grid-template-columns: 1fr 1fr; } }
+@media (min-width: 960px) { .feature-grid { grid-template-columns: repeat(3, 1fr); } }
+.feature {
+  border: 1px solid var(--lp-border); border-radius: 16px; background: var(--lp-surface);
+  padding: 1.4rem; display: flex; flex-direction: column; gap: 0.6rem;
+  transition: transform 0.35s var(--ease), border-color 0.35s;
+}
+.feature:hover { transform: translateY(-4px); border-color: rgba(204, 255, 0, 0.35); }
+.feature .f-ico {
+  width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center;
+  background: rgba(204, 255, 0, 0.1); color: var(--lp-lime);
+}
+.feature .f-ico svg { width: 19px; height: 19px; }
+.feature h3 { font-size: 1rem; font-weight: 700; letter-spacing: -0.01em; }
+.feature p { font-size: 0.83rem; color: var(--lp-text-2); line-height: 1.55; }
 
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 1rem;
-        }
-        .logo { display: flex; flex-direction: column; gap: 0.25rem; }
-        .logo h1 {
-            font-size: clamp(1.4rem, 6vw, 1.8rem);
-            font-weight: 600;
-            letter-spacing: -0.02em;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            color: var(--text);
-        }
-        .logo h1 svg {
-            width: 22px;
-            height: 22px;
-            fill: var(--primary);
-            flex-shrink: 0;
-        }
-        @media (min-width: 600px) {
-            .logo h1 svg { width: 24px; height: 24px; }
-        }
-        .subtitle {
-            color: var(--text-secondary);
-            max-width: 500px;
-            font-size: 0.8rem;
-        }
+/* steps */
+.steps { margin-top: 2.4rem; display: grid; grid-template-columns: 1fr; gap: 0.9rem; counter-reset: step; }
+@media (min-width: 760px) { .steps { grid-template-columns: repeat(3, 1fr); } }
+.step { border: 1px solid var(--lp-border); border-radius: 16px; padding: 1.4rem; background: linear-gradient(180deg, var(--lp-surface), transparent); }
+.step .n { font-family: var(--mono); font-size: 0.72rem; color: var(--lp-lime); margin-bottom: 0.6rem; display: block; }
+.step h3 { font-size: 0.98rem; margin-bottom: 0.4rem; }
+.step p { font-size: 0.83rem; color: var(--lp-text-2); line-height: 1.55; }
 
-        .theme-btn {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 0.4rem 0.8rem;
-            font-size: 0.8rem;
-            font-weight: 500;
-            cursor: pointer;
-            color: var(--text);
-            display: flex;
-            align-items: center;
-            gap: 0.3rem;
-            transition: background var(--transition-duration), color var(--transition-duration);
-            white-space: nowrap;
-            min-height: 44px;
-        }
-        .theme-btn:hover { background: var(--border); }
-        .theme-btn:focus-visible {
-            outline: 2px solid var(--primary);
-            outline-offset: 2px;
-        }
+/* pricing */
+.price-grid { margin-top: 2.4rem; display: grid; grid-template-columns: 1fr; gap: 1rem; max-width: 820px; }
+@media (min-width: 760px) { .price-grid { grid-template-columns: 1fr 1fr; } }
+.plan { border: 1px solid var(--lp-border); border-radius: 20px; background: var(--lp-surface); padding: 1.7rem 1.5rem; display: flex; flex-direction: column; gap: 1rem; position: relative; }
+.plan.pro { border-color: rgba(204, 255, 0, 0.45); background: linear-gradient(180deg, rgba(204, 255, 0, 0.06), var(--lp-surface) 42%); }
+.plan .badge { position: absolute; top: -12px; left: 1.4rem; background: var(--lp-lime); color: #0c1200; font-size: 0.62rem; font-weight: 800; letter-spacing: 0.09em; text-transform: uppercase; padding: 0.25rem 0.7rem; border-radius: 999px; }
+.plan h3 { font-size: 1.05rem; }
+.plan .price { font-size: 2.3rem; font-weight: 800; letter-spacing: -0.03em; }
+.plan .price small { font-size: 0.8rem; font-weight: 500; color: var(--lp-text-2); letter-spacing: 0; }
+.plan ul { list-style: none; display: flex; flex-direction: column; gap: 0.5rem; }
+.plan li { font-size: 0.85rem; color: var(--lp-text-2); display: flex; gap: 0.5rem; align-items: flex-start; }
+.plan li::before { content: '✓'; color: var(--lp-lime); font-weight: 800; flex-shrink: 0; }
+.plan li.na::before { content: '–'; color: var(--lp-text-2); }
+.plan-actions { display: flex; flex-direction: column; gap: 0.5rem; margin-top: auto; }
+.price-note { margin-top: 1.1rem; font-size: 0.78rem; color: var(--lp-text-2); max-width: 62ch; line-height: 1.6; }
 
-        .card {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 1rem;
-            box-shadow: var(--shadow);
-        }
-        @media (min-width: 600px) {
-            .card { padding: 1.2rem; }
-        }
+/* FAQ */
+.faq { margin-top: 2rem; max-width: 760px; display: flex; flex-direction: column; gap: 0.6rem; }
+.faq details { border: 1px solid var(--lp-border); border-radius: 14px; background: var(--lp-surface); overflow: hidden; }
+.faq summary {
+  cursor: pointer; padding: 1rem 1.2rem; font-weight: 650; font-size: 0.92rem;
+  list-style: none; display: flex; justify-content: space-between; align-items: center; gap: 1rem; min-height: 44px;
+}
+.faq summary::-webkit-details-marker { display: none; }
+.faq summary::after { content: '+'; font-size: 1.2rem; color: var(--lp-text-2); transition: transform 0.25s var(--ease); flex-shrink: 0; }
+.faq details[open] summary::after { transform: rotate(45deg); }
+.faq .faq-body { padding: 0 1.2rem 1.1rem; font-size: 0.85rem; color: var(--lp-text-2); line-height: 1.6; }
 
-        .token-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-            gap: 0.8rem;
-            margin-bottom: 1rem;
-        }
-        @media (min-width: 600px) {
-            .token-grid {
-                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-                gap: 1rem;
-                margin-bottom: 1.2rem;
-            }
-        }
+/* final CTA */
+.final-cta {
+  border: 1px solid var(--lp-border); border-radius: 24px;
+  background:
+    radial-gradient(60% 120% at 50% 0%, rgba(204, 255, 0, 0.1), transparent 70%),
+    var(--lp-surface);
+  padding: 3rem 1.4rem; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 1.1rem;
+}
+.final-cta h2 { font-size: clamp(1.5rem, 4.5vw, 2.2rem); letter-spacing: -0.03em; max-width: 20ch; }
+.final-cta p { color: var(--lp-text-2); font-size: 0.92rem; max-width: 46ch; }
 
-        .token-item { display: flex; flex-direction: column; gap: 0.4rem; }
-        .token-header {
-            display: flex;
-            align-items: center;
-            gap: 0.3rem;
-            font-weight: 600;
-            color: var(--text-secondary);
-            font-size: 0.8rem;
-        }
-        .token-header svg { width: 16px; height: 16px; fill: currentColor; }
-        .color-wrap {
-            display: flex;
-            align-items: center;
-            gap: 0.3rem;
-            background: rgba(128,128,128,0.06);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 0.3rem 0.5rem;
-        }
-        .color-wrap input[type="color"] {
-            width: 28px; height: 28px;
-            border: none; background: transparent; cursor: pointer; flex-shrink: 0;
-        }
-        @media (min-width: 600px) {
-            .color-wrap input[type="color"] { width: 32px; height: 32px; }
-        }
-        .hex {
-            font-family: 'SF Mono', monospace;
-            font-size: 0.7rem;
-            color: var(--text);
-            flex: 1;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
+/* footer */
+.lp-footer { border-top: 1px solid var(--lp-border); padding: 2rem 0 2.6rem; margin-top: 3rem; }
+.lp-footer-inner { display: flex; flex-direction: column; gap: 1rem; align-items: flex-start; }
+@media (min-width: 700px) { .lp-footer-inner { flex-direction: row; justify-content: space-between; align-items: center; } }
+.lp-footer nav { display: flex; gap: 1.2rem; flex-wrap: wrap; }
+.lp-footer a { color: var(--lp-text-2); font-size: 0.8rem; text-decoration: none; }
+.lp-footer a:hover { color: var(--lp-text); }
+.lp-footer .fine { font-size: 0.72rem; color: var(--lp-text-2); }
 
-        .compare-add-btn {
-            background: none;
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            padding: 0.25rem 0.5rem;
-            font-size: 0.65rem;
-            font-weight: 600;
-            color: var(--text-secondary);
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.2rem;
-            transition: background var(--transition-duration), color var(--transition-duration);
-            min-height: 36px;
-            justify-content: center;
-        }
-        .compare-add-btn:disabled {
-            opacity: 0.4; cursor: not-allowed; pointer-events: none;
-        }
-        .compare-add-btn:not(:disabled):hover {
-            background: rgba(128,128,128,0.08);
-            color: var(--text);
-        }
-        .compare-add-btn:focus-visible {
-            outline: 2px solid var(--primary);
-            outline-offset: 2px;
-        }
-        .compare-add-btn svg { width: 12px; height: 12px; fill: currentColor; }
+/* reveal animation */
+[data-reveal] { opacity: 0; transform: translateY(22px); transition: opacity 0.7s var(--ease), transform 0.7s var(--ease); }
+[data-reveal].revealed { opacity: 1; transform: none; }
+@media (prefers-reduced-motion: reduce) { [data-reveal] { opacity: 1; transform: none; } }
 
-        .actions {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.4rem;
-            align-items: center;
-        }
-        .btn {
-            padding: 0.45rem 0.8rem;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 0.75rem;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.25rem;
-            border: 1px solid var(--border);
-            transition: background var(--transition-duration), color var(--transition-duration), box-shadow var(--transition-duration);
-            white-space: nowrap;
-            background: transparent;
-            color: var(--text);
-            min-height: 44px;
-            justify-content: center;
-            text-decoration: none;
-        }
-        .btn:focus-visible {
-            outline: 2px solid var(--primary);
-            outline-offset: 2px;
-        }
-        .btn-primary {
-            background: var(--primary);
-            color: #000;
-            border-color: rgba(0,0,0,0.05);
-        }
-        .btn-primary:hover { filter: brightness(0.95); }
-        .btn-secondary:hover { background: rgba(128,128,128,0.05); }
-        .btn-danger { background: var(--accent-1); color: #fff; border-color: transparent; }
-        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
-
-        .btn.wcag-active {
-            background: var(--accent-1);
-            color: #fff;
-            border-color: transparent;
-            box-shadow: 0 0 0 2px rgba(224,0,77,0.3);
-        }
-
-        .history-strip {
-            display: flex;
-            gap: 0.4rem;
-            margin-top: 0.6rem;
-            flex-wrap: wrap;
-            align-items: center;
-        }
-        .history-dot {
-            border: 2px solid var(--border);
-            border-radius: 8px;
-            background-color: transparent;
-            cursor: pointer;
-            transition: transform var(--transition-duration), border-color var(--transition-duration);
-            padding: 2px;
-            display: flex;
-            align-items: center;
-            gap: 1px;
-            min-width: 36px;
-            justify-content: center;
-        }
-        .history-dot:hover { transform: scale(1.15); border-color: var(--text); }
-        .history-dot:focus-visible {
-            outline: 2px solid var(--primary);
-            outline-offset: 2px;
-        }
-        .history-swatch {
-            width: 10px;
-            height: 16px;
-            border-radius: 2px;
-            display: inline-block;
-        }
-
-        .previews-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 1rem;
-        }
-        @media (min-width: 700px) {
-            .previews-grid { grid-template-columns: 1fr 1fr; }
-        }
-
-        .preview-card {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 1rem;
-            box-shadow: var(--shadow);
-        }
-        .mock-ui { display: flex; flex-direction: column; gap: 0.6rem; }
-        .mock-dock {
-            display: flex;
-            gap: 6px;
-            background: rgba(128,128,128,0.05);
-            border-radius: 8px;
-            padding: 6px;
-            flex-wrap: wrap;
-        }
-        .mock-btn {
-            height: 28px;
-            padding: 0 8px;
-            border-radius: 6px;
-            font-size: 0.7rem;
-            font-weight: 600;
-            border: none;
-            background: transparent;
-            color: inherit;
-            cursor: default;
-        }
-        .mock-node {
-            background: rgba(255,255,255,0.85);
-            border: 1px solid rgba(0,0,0,0.05);
-            border-radius: 10px;
-            padding: 0.5rem 0.8rem;
-            font-size: 0.75rem;
-            width: fit-content;
-        }
-
-        .combined-panel {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 1rem;
-        }
-        @media (min-width: 700px) {
-            .combined-panel { grid-template-columns: 1fr 1fr; }
-        }
-
-        .contrast-list { display: flex; flex-direction: column; gap: 0.5rem; }
-        .contrast-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 0.75rem;
-            gap: 0.4rem;
-        }
-        .contrast-pair { display: flex; align-items: center; gap: 0.3rem; min-width: 0; }
-        .contrast-swatch {
-            width: 14px; height: 14px;
-            border-radius: 4px;
-            border: 1px solid var(--border);
-            flex-shrink: 0;
-        }
-        .contrast-badge {
-            border: 1px solid var(--border);
-            border-radius: 20px;
-            padding: 0.1em 0.5em;
-            font-weight: 600;
-            font-size: 0.65rem;
-            text-transform: uppercase;
-            display: flex;
-            align-items: center;
-            gap: 0.2rem;
-            white-space: nowrap;
-        }
-        .badge-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
-        .badge-dot.aaa { background: #2e7d32; }
-        .badge-dot.aa  { background: #f9a825; }
-        .badge-dot.fail { background: #c62828; }
-
-        .compare-panel-inner { display: flex; flex-direction: column; gap: 0.6rem; }
-        .compare-slots {
-            display: flex;
-            gap: 0.4rem;
-            flex-wrap: wrap;
-            min-height: 50px;
-            align-items: flex-start;
-        }
-        .compare-swatch {
-            width: 50px; height: 50px;
-            border-radius: 12px;
-            border: 2px solid var(--border);
-            box-shadow: var(--shadow);
-            position: relative;
-            transition: box-shadow var(--transition-duration);
-            touch-action: none;
-            user-select: none;
-            cursor: grab;
-        }
-        .compare-swatch:active { cursor: grabbing; }
-        .compare-swatch .remove-sw {
-            position: absolute;
-            top: -8px; right: -8px;
-            background: var(--surface);
-            color: var(--text);
-            border-radius: 50%;
-            width: 22px; height: 22px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.8rem;
-            border: 1px solid var(--border);
-            cursor: pointer;
-            line-height: 1;
-            box-shadow: 0 0 4px rgba(0,0,0,0.1);
-        }
-        .compare-swatch .remove-sw:focus-visible {
-            outline: 2px solid var(--primary);
-            outline-offset: 2px;
-        }
-        .dragging {
-            opacity: 0.5;
-            outline: 2px dashed var(--primary);
-        }
-
-        .footer {
-            text-align: center;
-            padding: 1rem;
-            font-size: 0.7rem;
-            color: var(--text-secondary);
-            border-top: 1px solid var(--border);
-            margin-top: 1rem;
-        }
-        .footer a { color: var(--text); text-decoration: none; font-weight: 600; }
-
-        .modal {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.5);
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            padding: 1rem;
-        }
-        .modal.open { display: flex; }
-        .modal-card {
-            background: var(--surface);
-            padding: 1.5rem 1rem;
-            border-radius: var(--radius);
-            max-width: 400px;
-            width: 100%;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
-        }
-        .modal-card h3 { margin-bottom: 1rem; font-size: 1.1rem; }
-        .modal-card input,
-        .modal-card textarea,
-        .modal-card button {
-            width: 100%;
-            margin: 0.35rem 0;
-            padding: 0.6rem;
-            border-radius: 6px;
-            border: 1px solid var(--border);
-            font-family: inherit;
-            font-size: 0.85rem;
-            background: var(--surface);
-            color: var(--text);
-            resize: vertical;
-        }
-        .modal-card textarea { min-height: 60px; }
-        .modal-card button { cursor: pointer; font-weight: 600; min-height: 44px; }
-        .modal-card button:focus-visible {
-            outline: 2px solid var(--primary);
-            outline-offset: 2px;
-        }
-        .modal-card small { display: block; margin-top: 0.5rem; font-size: 0.7rem; color: var(--text-secondary); }
-
-        .visually-hidden {
-            position: absolute;
-            width: 1px; height: 1px;
-            padding: 0; margin: -1px;
-            overflow: hidden;
-            clip: rect(0,0,0,0);
-            white-space: nowrap;
-            border: 0;
-        }
-
-        .toast {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: var(--text);
-            color: var(--page-bg);
-            padding: 0.5rem 1.2rem;
-            border-radius: 30px;
-            font-size: 0.8rem;
-            z-index: 2000;
-            pointer-events: none;
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-        .toast.show { opacity: 1; }
-    </style>
+/* landing overrides for shared components */
+.consent-inner { background: var(--lp-raised); border-color: var(--lp-border); }
+.consent-text { color: var(--lp-text); }
+.consent-banner .btn { background: transparent; color: var(--lp-text); border-color: var(--lp-border); }
+.consent-banner .btn-primary { background: var(--lp-lime); color: #0c1200; border-color: transparent; }
+.consent-link { color: var(--lp-text-2); }
+.toast { background: var(--lp-text); color: var(--lp-bg); }
+</style>
 </head>
 <body>
-<div class="container">
-    <header>
-        <div class="logo">
-            <h1>
-                <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/></svg>
-                BNDR ColorSLCT
-            </h1>
-            <p class="subtitle">Build, compare, and export WCAG‑safe brand palettes — live in the browser. AI assisted.</p>
+<header class="lp-nav">
+  <div class="lp-wrap lp-nav-inner">
+    <a class="lp-logo" href="index.html" aria-label="ColorSLCT home">
+      <span class="logo-mark" aria-hidden="true"></span> ColorSLCT
+    </a>
+    <nav class="lp-links" aria-label="Main">
+      <a href="#features">Features</a>
+      <a href="#how">How it works</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#faq">FAQ</a>
+    </nav>
+    <a class="lp-cta" href="app.html" id="navOpenApp">Open the studio</a>
+  </div>
+</header>
+
+<main>
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-aura" aria-hidden="true"></div>
+    <div class="lp-wrap">
+      <span class="hero-eyebrow"><span class="dot" aria-hidden="true"></span> Local-first · No account needed</span>
+      <h1>Brand palettes that <span class="grad">everyone can read.</span></h1>
+      <p class="hero-sub">ColorSLCT is a five-token color studio with a true OKLCH engine, live light &amp; dark previews, and automatic WCAG contrast enforcement. Build it, check it, export it — all in your browser, nothing uploaded anywhere.</p>
+      <div class="hero-actions">
+        <a class="lp-cta" href="app.html">Start building — free</a>
+        <a class="lp-cta-ghost" href="#pricing">See pricing</a>
+      </div>
+      <p class="hero-note">Free forever plan · Pro is one payment, not a subscription</p>
+
+      <div class="hero-demo" data-reveal>
+        <div class="demo-row" id="demoRow" aria-label="Live example palette"></div>
+        <div class="demo-meta">
+          <p>A fresh WCAG-checked palette every few seconds — generated by the same engine you get in the studio.</p>
+          <button class="lp-cta-ghost" type="button" id="demoShuffle">Shuffle now</button>
         </div>
-        <button id="themeToggle" class="theme-btn" type="button" aria-label="Switch color theme" aria-pressed="false">
-            <svg viewBox="0 0 24 24" aria-hidden="true" width="16" height="16" fill="currentColor">
-                <path d="M12 3a9 9 0 1 0 9 9c0-4.97-4.03-9-9-9zm0 2c3.87 0 7 3.13 7 7s-3.13 7-7 7V5z"/>
-            </svg>
-            Dark Mode
-        </button>
-    </header>
-
-    <section class="card" aria-labelledby="controls-heading">
-        <h2 id="controls-heading" class="visually-hidden">Palette Controls</h2>
-        <div class="token-grid" id="tokenGrid"></div>
-        <p style="font-size:0.7rem;color:var(--text-secondary);margin-bottom:0.3rem;">1. Choose/generate → 2. Tweak colours → 3. Check contrast → 4. Export CSS</p>
-        <div class="actions" id="actionBar">
-            <button id="loadBNDR" class="btn" type="button">Load BNDR</button>
-            <button id="resetPro" class="btn" type="button">Professional</button>
-            <button id="randomBtn" class="btn btn-primary" type="button">Random</button>
-            <button id="backBtn" class="btn" type="button" disabled>Back</button>
-            <button id="harmonyBtn" class="btn" type="button">Harmony</button>
-            <button id="wcagBtn" class="btn" type="button" aria-pressed="false">WCAG Auto: OFF</button>
-            <button id="exportBtn" class="btn" type="button">Export CSS</button>
-            <button id="aiBtn" class="btn" type="button">AI Suggest</button>
-        </div>
-        <div class="history-strip" id="historyStrip" aria-label="Palette history"></div>
-    </section>
-
-    <div class="previews-grid" id="previewContainer" aria-live="polite"></div>
-
-    <div class="combined-panel">
-        <section class="card" aria-labelledby="contrast-heading">
-            <h3 id="contrast-heading" style="margin-bottom:0.6rem; font-size:0.85rem; color:var(--text-secondary);">Contrast Ratios <span style="font-weight:400;font-size:0.7rem;display:block;color:var(--text-secondary);">Aim ≥4.5:1 for UI, ≥7:1 for text</span></h3>
-            <div class="contrast-list" id="contrastList"></div>
-        </section>
-        <section class="card" aria-labelledby="compare-heading">
-            <div class="compare-panel-inner">
-                <h3 id="compare-heading" style="font-size:0.85rem; color:var(--text-secondary);">Compare Swatches</h3>
-                <div class="compare-slots" id="compareSlots" aria-label="Drag to reorder swatches"></div>
-                <small style="color:var(--text-secondary);">Add tokens to compare side by side. Drag to reorder.</small>
-            </div>
-        </section>
+      </div>
     </div>
+  </section>
 
-    <div id="exportModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="exportModalLabel">
-        <div class="modal-card">
-            <h3 id="exportModalLabel">Export CSS Variables</h3>
-            <p style="font-size:0.7rem;color:var(--text-secondary);margin-bottom:0.4rem;">Drop these custom properties into your <code>:root</code> — no conversion needed.</p>
-            <pre id="exportOutput" style="white-space:pre-wrap; font-family:monospace; font-size:0.7rem; background:var(--page-bg); padding:0.8rem; border-radius:8px; margin:0.4rem 0; max-height:250px; overflow:auto;"></pre>
-            <button id="copyExport" class="btn btn-primary" type="button">Copy to Clipboard</button>
-            <button id="closeExport" class="btn" type="button">Close</button>
+  <!-- FEATURES -->
+  <section class="lp-section" id="features">
+    <div class="lp-wrap">
+      <p class="sec-eyebrow" data-reveal>Features</p>
+      <h2 class="sec-title" data-reveal>A serious color engine wearing a friendly face</h2>
+      <p class="sec-sub" data-reveal>Everything runs on real perceptual color math — the kind design systems teams use — wrapped in controls anyone can operate.</p>
+      <div class="feature-grid">
+        <div class="feature" data-reveal>
+          <span class="f-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 1 9 9"/></svg></span>
+          <h3>True OKLCH engine</h3>
+          <p>Palettes are generated and shifted in OKLCH — perceptually uniform color space — so hues rotate without going muddy or neon by accident.</p>
         </div>
-    </div>
-
-    <div id="aiModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="aiModalLabel">
-        <div class="modal-card">
-            <h3 id="aiModalLabel">DeepSeek Palette AI</h3>
-            <p style="font-size:0.75rem;color:var(--text-secondary);margin-top:-0.5rem;margin-bottom:0.5rem;">Optional: describe your brand to get a palette. Requires your own DeepSeek API key.</p>
-            <label for="apiKeyInput" class="visually-hidden">API Key</label>
-            <input type="password" id="apiKeyInput" placeholder="Your DeepSeek API Key" autocomplete="off">
-            <label for="aiPrompt" class="visually-hidden">Description</label>
-            <textarea id="aiPrompt" rows="2" placeholder="Describe your brand vibe..."></textarea>
-            <button id="generateAI" class="btn btn-primary" type="button">Generate Palette</button>
-            <button id="closeModal" class="btn" type="button">Cancel</button>
-            <small>Your key stays only in this session.</small>
-            <div id="aiStatus" style="margin-top:0.5rem; font-size:0.75rem; color:var(--text-secondary);" aria-live="polite"></div>
+        <div class="feature" data-reveal>
+          <span class="f-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg></span>
+          <h3>WCAG auto-enforcement</h3>
+          <p>Flip one switch and every palette is nudged until text hits 7:1 and UI colors hit 4.5:1 contrast. Accessibility, handled while you play.</p>
         </div>
+        <div class="feature" data-reveal>
+          <span class="f-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg></span>
+          <h3>Live light + dark previews</h3>
+          <p>See your colors on realistic light and dark interfaces — buttons, text, secondary labels — before they ever touch your product.</p>
+        </div>
+        <div class="feature" data-reveal>
+          <span class="f-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 3v18M3 12h18"/></svg></span>
+          <h3>Compare &amp; history</h3>
+          <p>Pin up to four swatches side by side, drag to reorder, and step back through your last five palettes any time. Nothing is ever lost by accident.</p>
+        </div>
+        <div class="feature" data-reveal>
+          <span class="f-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2v6m0 0 3-3m-3 3L9 5"/><rect x="4" y="12" width="16" height="8" rx="2"/></svg></span>
+          <h3>Exports for real codebases</h3>
+          <p>CSS variables free, forever. Pro adds SCSS, Tailwind config, W3C design-token JSON, and an SVG palette card — copy or download as files.</p>
+        </div>
+        <div class="feature" data-reveal>
+          <span class="f-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2a7 7 0 0 1 7 7c0 3-2 4-2 7H7c0-3-2-4-2-7a7 7 0 0 1 7-7zM9 20h6"/></svg></span>
+          <h3>AI suggestions, your key</h3>
+          <p>Describe a vibe (“calm fintech”, “neon skate shop”) and get a palette back via DeepSeek. Bring your own API key — it never leaves your session.</p>
+        </div>
+      </div>
     </div>
+  </section>
 
-    <footer class="footer">
-        BNDR LLC All Rights Reserved &middot; <a href="https://bndrllc.com">bndrllc.com</a>
-    </footer>
+  <!-- HOW IT WORKS -->
+  <section class="lp-section" id="how">
+    <div class="lp-wrap">
+      <p class="sec-eyebrow" data-reveal>How it works</p>
+      <h2 class="sec-title" data-reveal>Three steps. About two minutes.</h2>
+      <div class="steps">
+        <div class="step" data-reveal>
+          <span class="n">01</span>
+          <h3>Generate or pick</h3>
+          <p>Hit Random for a WCAG-checked starting point, load a preset, or type your existing brand hex codes straight in.</p>
+        </div>
+        <div class="step" data-reveal>
+          <span class="n">02</span>
+          <h3>Tune &amp; verify</h3>
+          <p>Tweak tokens, spin harmonies, and watch the live contrast report. Turn on WCAG Auto and readability fixes itself.</p>
+        </div>
+        <div class="step" data-reveal>
+          <span class="n">03</span>
+          <h3>Export &amp; ship</h3>
+          <p>Copy CSS variables, download Tailwind or SCSS files, save to your library, or share a link that opens your exact palette.</p>
+        </div>
+      </div>
+    </div>
+  </section>
 
-    <div id="toast" class="toast" aria-live="assertive" aria-atomic="true"></div>
-</div>
+  <!-- PRICING -->
+  <section class="lp-section" id="pricing">
+    <div class="lp-wrap">
+      <p class="sec-eyebrow" data-reveal>Pricing</p>
+      <h2 class="sec-title" data-reveal>One payment. No subscription. Ever.</h2>
+      <p class="sec-sub" data-reveal>Comparable palette tools charge $36+ every year, forever. ColorSLCT Pro is a single purchase that you own — and the free plan is genuinely useful, not a demo.</p>
+      <div class="price-grid">
+        <div class="plan" data-reveal>
+          <h3>Free</h3>
+          <div class="price">$0 <small>forever</small></div>
+          <ul>
+            <li>Full studio: OKLCH generator, harmony, WCAG auto-fix</li>
+            <li>Live light &amp; dark previews + contrast report</li>
+            <li>CSS variables export &amp; share links</li>
+            <li>AI suggestions (bring your own key)</li>
+            <li>Save up to 3 palettes</li>
+            <li class="na">SCSS / Tailwind / JSON / SVG exports</li>
+          </ul>
+          <div class="plan-actions">
+            <a class="lp-cta-ghost" href="app.html">Open the studio</a>
+          </div>
+        </div>
+        <div class="plan pro" data-reveal>
+          <span class="badge">Lifetime license</span>
+          <h3>Pro</h3>
+          <div class="price">$29 <small>one-time · yours forever</small></div>
+          <ul>
+            <li>Everything in Free</li>
+            <li>SCSS, Tailwind config, W3C JSON tokens &amp; SVG card exports</li>
+            <li>Unlimited palette library</li>
+            <li>All future updates included</li>
+            <li>Email support</li>
+            <li>Works offline after purchase — no account, no tracking</li>
+          </ul>
+          <div class="plan-actions">
+            <button class="lp-cta" type="button" id="pricingGumroad">Buy on Gumroad — $29</button>
+            <button class="lp-cta-ghost" type="button" id="pricingStripe">Pay with Stripe</button>
+            <a class="lp-cta-ghost" href="app.html#redeem">Have a code? Redeem it in the studio</a>
+          </div>
+        </div>
+      </div>
+      <p class="price-note" data-reveal>Prices in USD. After purchase you’ll receive a license key — paste it into the studio once and Pro stays unlocked on that browser. Refund and license terms are in the <a href="terms.html" style="color:var(--lp-text);">Terms</a>.</p>
+    </div>
+  </section>
 
+  <!-- FAQ -->
+  <section class="lp-section" id="faq">
+    <div class="lp-wrap">
+      <p class="sec-eyebrow" data-reveal>FAQ</p>
+      <h2 class="sec-title" data-reveal>Questions, answered plainly</h2>
+      <div class="faq" data-reveal>
+        <details>
+          <summary>Do I need an account?</summary>
+          <div class="faq-body">No. There’s no sign-up, no login, no email capture. Open the studio and start. Your palettes are stored in your own browser (with your permission), and Pro is unlocked with a license key or gift code.</div>
+        </details>
+        <details>
+          <summary>Where is my data stored?</summary>
+          <div class="faq-body">On your device, in your browser’s local storage — and only if you say yes to the storage prompt. Nothing is uploaded to us. There are no analytics, no cookies, and no trackers on this site.</div>
+        </details>
+        <details>
+          <summary>What exactly does Pro unlock?</summary>
+          <div class="faq-body">SCSS, Tailwind config, W3C design-token JSON, and SVG palette card exports (plus file downloads for each), and an unlimited palette library. The free plan keeps the full editor, WCAG tools, CSS export, share links, and 3 saved palettes.</div>
+        </details>
+        <details>
+          <summary>Is it really one payment?</summary>
+          <div class="faq-body">Yes. $29 once, yours forever, including future updates. There’s nothing to cancel because there’s no subscription.</div>
+        </details>
+        <details>
+          <summary>How does the AI feature work?</summary>
+          <div class="faq-body">You paste your own DeepSeek API key, describe a mood, and the AI returns a five-token palette that the studio validates and applies. Your key is kept only for the current session and is sent only to DeepSeek — never to us. The AI is optional; everything else works without it.</div>
+        </details>
+        <details>
+          <summary>Does it work on my phone?</summary>
+          <div class="faq-body">Yes — the studio is built mobile-first and works in any modern browser on iOS, Android, tablets, and desktops. Some extras (like the screen color picker) appear only on browsers that support them.</div>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- FINAL CTA -->
+  <section class="lp-section">
+    <div class="lp-wrap">
+      <div class="final-cta" data-reveal>
+        <h2>Your next palette is 60 seconds away.</h2>
+        <p>No install, no account, no risk. Open the studio, press Random, and see what the engine can do.</p>
+        <div class="hero-actions" style="justify-content:center; margin-top:0.4rem;">
+          <a class="lp-cta" href="app.html">Open ColorSLCT — free</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="lp-footer">
+  <div class="lp-wrap lp-footer-inner">
+    <a class="lp-logo" href="index.html"><span class="logo-mark" aria-hidden="true"></span> ColorSLCT</a>
+    <nav aria-label="Footer">
+      <a href="app.html">Studio</a>
+      <a href="#pricing">Pricing</a>
+      <a href="terms.html">Terms</a>
+      <a href="privacy.html">Privacy</a>
+      <a href="mailto:support@bndrllc.com" id="footerSupport">Support</a>
+    </nav>
+    <span class="fine">© <span data-year>2026</span> BNDR LLC · <a href="https://bndrllc.com">bndrllc.com</a></span>
+  </div>
+</footer>
+
+<div id="toast" class="toast" role="status" aria-live="polite" aria-atomic="true"></div>
+
+<script src="assets/js/config.js"></script>
+<script src="assets/js/color-engine.js"></script>
+<script src="assets/js/shared.js"></script>
 <script>
-(function() {
+(function () {
+  "use strict";
+  var E = window.ColorEngine;
+  var UI = window.CslctUI;
+  var CONFIG = window.CSLCT_CONFIG || {};
 
-    /* ── Color Conversion & Math (Oklch, WCAG) ── */
-    function hexToRgb(hex) {
-        const c = hex.replace('#','');
-        return [
-            parseInt(c.substring(0,2),16),
-            parseInt(c.substring(2,4),16),
-            parseInt(c.substring(4,6),16)
-        ];
+  /* support email from config */
+  var support = (CONFIG.company || {}).supportEmail;
+  if (support) {
+    var f = document.getElementById("footerSupport");
+    f.href = "mailto:" + support;
+  }
+
+  /* live hero demo — same engine as the studio */
+  var demoRow = document.getElementById("demoRow");
+  function randomDemoPalette() {
+    var baseH = Math.random() * 360;
+    return {
+      bgLight: E.oklchToHex(0.95, 0.03, (baseH + 20) % 360),
+      textPrimary: E.oklchToHex(0.18, 0.04, (baseH + 180) % 360),
+      primary: E.oklchToHex(0.62, 0.18, baseH),
+      accent1: E.oklchToHex(0.62, 0.18, (baseH + 150) % 360),
+      bgDark: E.oklchToHex(0.13, 0.02, baseH),
+    };
+  }
+  function renderDemo(pal) {
+    demoRow.innerHTML = E.TOKENS.map(function (t) {
+      return '<div style="background:' + pal[t] + ';"><code>' + pal[t] + "</code></div>";
+    }).join("");
+  }
+  renderDemo(E.PRESETS.bndrColors);
+  var reduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (!reduced) {
+    setInterval(function () {
+      if (!document.hidden) renderDemo(randomDemoPalette());
+    }, 4500);
+  }
+  document.getElementById("demoShuffle").addEventListener("click", function () {
+    renderDemo(randomDemoPalette());
+  });
+
+  /* pricing buttons — graceful when checkout keys aren’t configured yet */
+  function openCheckout(kind) {
+    var link = kind === "stripe" ? (CONFIG.stripe || {}).paymentLink : (CONFIG.gumroad || {}).buyUrl;
+    if (link) { window.open(link, "_blank", "noopener"); }
+    else {
+      UI.showToast(kind === "stripe"
+        ? "Stripe checkout isn\u2019t connected yet — the seller still needs to add a payment link."
+        : "Gumroad checkout isn\u2019t connected yet — the seller still needs to add a product link.");
     }
-    function rgbToHex(r,g,b) {
-        return '#' + [r,g,b].map(v => v.toString(16).padStart(2,'0')).join('');
-    }
-
-    function srgbToLinear(c) {
-        c /= 255;
-        return c <= 0.04045 ? c/12.92 : Math.pow((c+0.055)/1.055, 2.4);
-    }
-    function linearToSrgb(c) {
-        return c <= 0.0031308 ? 12.92*c : 1.055*Math.pow(c,1/2.4)-0.055;
-    }
-
-    function rgbToOklab(r,g,b) {
-        let lr = srgbToLinear(r), lg = srgbToLinear(g), lb = srgbToLinear(b);
-        let l = 0.4122214708*lr + 0.5363325363*lg + 0.0514459929*lb;
-        let m = 0.2119034982*lr + 0.6806995451*lg + 0.1073969566*lb;
-        let s = 0.0883024619*lr + 0.2817188376*lg + 0.6299787005*lb;
-        l = Math.cbrt(l); m = Math.cbrt(m); s = Math.cbrt(s);
-        return [
-            0.2104542553*l + 0.7936177850*m - 0.0040720468*s,
-            1.9779984951*l - 2.4285922050*m + 0.4505937099*s,
-            0.0259040371*l + 0.7827717662*m - 0.8086757660*s
-        ];
-    }
-
-    function oklabToRgb(L,a,b) {
-        let l = L + 0.3963377774*a + 0.2158037573*b;
-        let m = L - 0.1055613458*a - 0.0638541728*b;
-        let s = L - 0.0894841775*a - 1.2914855480*b;
-        l = l*l*l; m = m*m*m; s = s*s*s;
-        let lr =  4.0767416621*l - 3.3077115913*m + 0.2309699292*s;
-        let lg = -1.2684380046*l + 2.6097574011*m - 0.3413193965*s;
-        let lb = -0.0041960863*l - 0.7034186147*m + 1.7076147010*s;
-        return [
-            Math.round(Math.max(0, Math.min(1, linearToSrgb(lr))) * 255),
-            Math.round(Math.max(0, Math.min(1, linearToSrgb(lg))) * 255),
-            Math.round(Math.max(0, Math.min(1, linearToSrgb(lb))) * 255)
-        ];
-    }
-
-    function oklabToOklch(L,a,b) {
-        let C = Math.sqrt(a*a + b*b);
-        let h = Math.atan2(b,a) * 180 / Math.PI;
-        if (h < 0) h += 360;
-        return [L, C, h];
-    }
-
-    function oklchToOklab(L,C,h) {
-        let rad = h * Math.PI / 180;
-        return [L, C * Math.cos(rad), C * Math.sin(rad)];
-    }
-
-    function hexToOklch(hex) {
-        let [r,g,b] = hexToRgb(hex);
-        let [L,a,bLab] = rgbToOklab(r,g,b);
-        return oklabToOklch(L,a,bLab);
-    }
-
-    function oklchToHex(L,C,h) {
-        let [l,a,b] = oklchToOklab(L,C,h);
-        let [r,g,bCol] = oklabToRgb(l,a,b);
-        return rgbToHex(r,g,bCol);
-    }
-
-    function luminance(hex) {
-        let [r,g,b] = hexToRgb(hex);
-        let rs = srgbToLinear(r), gs = srgbToLinear(g), bs = srgbToLinear(b);
-        return 0.2126*rs + 0.7152*gs + 0.0722*bs;
-    }
-
-    function contrast(hex1, hex2) {
-        let l1 = luminance(hex1), l2 = luminance(hex2);
-        let light = Math.max(l1,l2), dark = Math.min(l1,l2);
-        return (light+0.05)/(dark+0.05);
-    }
-
-    /* ── State ── */
-    const defaultPro = { bgLight:'#F4F4F6', textPrimary:'#1D1D1F', primary:'#0066CC', accent1:'#E0004D', bgDark:'#000000' };
-    const bndrColors = { bgLight:'#E8E4DF', textPrimary:'#0A0A0B', primary:'#CCFF00', accent1:'#ff0055', bgDark:'#020202' };
-
-    let currentPalette = { ...defaultPro };
-    let historyStack = [];
-    let compareSwatches = [];
-    let lastFocusedEl = null;
-    let wcagMode = false;   // persistent WCAG enforcement toggle
-
-    const $ = (id) => document.getElementById(id);
-
-    /* ── Toast helper ── */
-    function showToast(msg) {
-        const t = $('toast');
-        t.textContent = msg;
-        t.classList.add('show');
-        clearTimeout(t._timeout);
-        t._timeout = setTimeout(() => t.classList.remove('show'), 2500);
-    }
-
-    /* ── WCAG enforcement (returns palette with best‑effort contrast) ── */
-    function enforceWCAG(pal) {
-        const newPal = { ...pal };
-        const targetText = 7, targetUI = 4.5;
-        const { bgLight } = newPal;
-        const failing = [];
-
-        function adjustToken(token, target) {
-            if (contrast(newPal[token], bgLight) < target) {
-                let [L,C,H] = hexToOklch(newPal[token]);
-                let steps = 0;
-                while (contrast(oklchToHex(L,C,H), bgLight) < target && L > 0.05 && steps < 60) {
-                    L = Math.max(0.05, L - 0.02);
-                    steps++;
-                }
-                newPal[token] = oklchToHex(L,C,H);
-                if (contrast(newPal[token], bgLight) < target) {
-                    failing.push(token);
-                }
-            }
-        }
-
-        adjustToken('textPrimary', targetText);
-        adjustToken('primary', targetUI);
-        adjustToken('accent1', targetUI);
-
-        if (failing.length) {
-            showToast(`WCAG enforcement: could not fully meet contrast for ${failing.join(', ')}. Adjust manually.`);
-        }
-        return newPal;
-    }
-
-    /* ── Palette application pipeline ── */
-    function applyPalette(pal) {
-        currentPalette = { ...pal };
-        renderTokens();
-        updateAll();
-    }
-
-    /* ── Apply new palette, pushing history and optionally enforcing WCAG ── */
-    function applyNewPalette(pal) {
-        let finalPal = wcagMode ? enforceWCAG(pal) : pal;
-        pushHistory(currentPalette);
-        applyPalette(finalPal);
-    }
-
-    /* ── Sync CSS Custom Properties ── */
-    function syncCSSVariables() {
-        const root = document.documentElement;
-        root.style.setProperty('--bg-light', currentPalette.bgLight);
-        root.style.setProperty('--text-primary', currentPalette.textPrimary);
-        root.style.setProperty('--primary', currentPalette.primary);
-        root.style.setProperty('--accent-1', currentPalette.accent1);
-        root.style.setProperty('--bg-dark', currentPalette.bgDark);
-    }
-
-    function updateAll() {
-        syncCSSVariables();
-        updatePreview();
-        updateContrast();
-        renderCompare();
-        updateHistoryStrip();
-        updateCompareButtonStates();
-        $('backBtn').disabled = historyStack.length === 0;
-    }
-
-    /* ── Token Grid ── */
-    function renderTokens() {
-        const tokens = ['bgLight','textPrimary','primary','accent1','bgDark'];
-        const tokenInfo = {
-            bgLight: { label: 'Background Light', hint: 'Page & card backgrounds' },
-            textPrimary: { label: 'Text / Foreground', hint: 'Primary text, headings' },
-            primary: { label: 'Primary Accent', hint: 'Buttons, links, active UI' },
-            accent1: { label: 'Secondary Accent', hint: 'CTAs, warnings, highlights' },
-            bgDark: { label: 'Background Dark / Void', hint: 'Dark sections, deepest shadows' }
-        };
-        const tokenGrid = $('tokenGrid');
-        tokenGrid.innerHTML = tokens.map(t => `
-            <div class="token-item">
-                <div class="token-header">
-                    <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6" fill="${currentPalette[t]}"/></svg>
-                    ${tokenInfo[t].label}
-                    <span style="font-size:0.6rem;color:var(--text-secondary);margin-left:auto;">${tokenInfo[t].hint}</span>
-                </div>
-                <div class="color-wrap">
-                    <input type="color" id="color-${t}" value="${currentPalette[t]}" aria-label="Select ${tokenInfo[t].label} color">
-                    <span class="hex" id="hex-${t}">${currentPalette[t]}</span>
-                </div>
-                <button class="compare-add-btn" data-token="${t}" type="button" aria-label="Add ${tokenInfo[t].label} to compare">
-                    <svg viewBox="0 0 12 12" aria-hidden="true"><rect x="5" y="0" width="2" height="12"/><rect x="0" y="5" width="12" height="2"/></svg>
-                    Compare
-                </button>
-            </div>
-        `).join('');
-
-        tokens.forEach(t => {
-            const input = $(`color-${t}`);
-            const hexSpan = $(`hex-${t}`);
-            input.addEventListener('input', () => {
-                const val = input.value;
-                currentPalette[t] = val;
-                hexSpan.textContent = val;
-                updateAll();
-            });
-        });
-
-        tokenGrid.querySelectorAll('.compare-add-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                const token = btn.dataset.token;
-                addToCompare(currentPalette[token], token);
-            });
-        });
-
-        updateCompareButtonStates();
-    }
-
-    function updateCompareButtonStates() {
-        const full = compareSwatches.length >= 4;
-        document.querySelectorAll('.compare-add-btn').forEach(btn => {
-            btn.disabled = full;
-        });
-    }
-
-    /* ── Previews ── */
-    function updatePreview() {
-        const { bgLight, textPrimary, primary, accent1, bgDark } = currentPalette;
-        const cRgb = hexToRgb(textPrimary).join(',');
-        const bRgb = hexToRgb(bgLight).join(',');
-        $('previewContainer').innerHTML = `
-            <div class="preview-card" style="background:${bgLight};">
-                <div class="mock-ui">
-                    <div style="color:${textPrimary}; font-weight:600;">Primary text on light bg</div>
-                    <div style="color:rgba(${cRgb},0.6);">Secondary</div>
-                    <div class="mock-dock">
-                        <button class="mock-btn" type="button" style="color:rgba(${cRgb},0.6);">Default</button>
-                        <button class="mock-btn" type="button" style="background:${primary}; color:#000;">Primary</button>
-                        <button class="mock-btn" type="button" style="background:${accent1}; color:#fff;">Accent</button>
-                    </div>
-                    <div class="mock-node" style="color:${textPrimary};">BNDR node</div>
-                </div>
-            </div>
-            <div class="preview-card" style="background:${bgDark};">
-                <div class="mock-ui">
-                    <div style="color:${bgLight}; font-weight:600;">Light text on dark bg</div>
-                    <div style="color:rgba(${bRgb},0.6);">Secondary</div>
-                    <div class="mock-dock" style="background:rgba(${cRgb},0.4);">
-                        <button class="mock-btn" type="button" style="color:rgba(${bRgb},0.7);">Default</button>
-                        <button class="mock-btn" type="button" style="background:${primary}; color:#000;">Primary</button>
-                        <button class="mock-btn" type="button" style="background:${accent1}; color:#fff;">Accent</button>
-                    </div>
-                    <div class="mock-node" style="background:rgba(${cRgb},0.8); color:${bgLight};">BNDR node</div>
-                </div>
-            </div>
-        `;
-    }
-
-    /* ── WCAG Contrast Table ── */
-    function updateContrast() {
-        const { bgLight, textPrimary, primary, accent1 } = currentPalette;
-        const pairs = [
-            { label:'Text on light bg', fg:textPrimary, bg:bgLight },
-            { label:'Primary on light bg', fg:primary, bg:bgLight },
-            { label:'Accent on light bg', fg:accent1, bg:bgLight },
-            { label:'Light bg on dark', fg:bgLight, bg:textPrimary }
-        ];
-        $('contrastList').innerHTML = pairs.map(p => {
-            const ratio = contrast(p.fg, p.bg);
-            const level = ratio >= 7 ? 'AAA' : (ratio >= 4.5 ? 'AA' : 'FAIL');
-            const cls = level === 'AAA' ? 'aaa' : (level === 'AA' ? 'aa' : 'fail');
-            return `
-                <div class="contrast-row">
-                    <div class="contrast-pair">
-                        <span class="contrast-swatch" style="background:${p.fg};" aria-hidden="true"></span>
-                        <span class="contrast-swatch" style="background:${p.bg};" aria-hidden="true"></span>
-                        <span>${p.label}</span>
-                    </div>
-                    <span class="contrast-badge">
-                        <span class="badge-dot ${cls}" aria-hidden="true"></span>
-                        ${ratio.toFixed(1)}:1 ${level}
-                    </span>
-                </div>
-            `;
-        }).join('');
-    }
-
-    /* ── Compare Bucket ── */
-    function addToCompare(hex, role) {
-        if (compareSwatches.length >= 4) {
-            showToast('Compare bucket full (max 4)');
-            return;
-        }
-        compareSwatches.push({ hex, role, id: Date.now() });
-        renderCompare();
-    }
-
-    function renderCompare() {
-        const slots = $('compareSlots');
-        slots.innerHTML = compareSwatches.map((s,i) => `
-            <div class="compare-swatch" style="background:${s.hex};" data-id="${s.id}" role="button" aria-label="Swatch ${s.role}">
-                <span class="remove-sw" data-id="${s.id}" aria-label="Remove swatch" role="button" tabindex="0">&times;</span>
-            </div>
-        `).join('');
-        initCompareDrag();
-        updateCompareButtonStates();
-    }
-
-    function initCompareDrag() {
-        const slots = $('compareSlots');
-        const swatches = slots.querySelectorAll('.compare-swatch');
-        let dragEl = null;
-
-        function onPointerDown(e) {
-            if (e.target.classList.contains('remove-sw')) return;
-            dragEl = e.currentTarget;
-            dragEl.setPointerCapture(e.pointerId);
-            dragEl.classList.add('dragging');
-            e.preventDefault();
-        }
-
-        function onPointerMove(e) {
-            if (!dragEl) return;
-            const target = document.elementFromPoint(e.clientX, e.clientY);
-            if (target && target.classList.contains('compare-swatch') && target !== dragEl) {
-                const dragId = dragEl.dataset.id;
-                const targetId = target.dataset.id;
-                const fromIdx = compareSwatches.findIndex(s => s.id == dragId);
-                const toIdx = compareSwatches.findIndex(s => s.id == targetId);
-                if (fromIdx !== -1 && toIdx !== -1 && fromIdx !== toIdx) {
-                    const [moved] = compareSwatches.splice(fromIdx, 1);
-                    compareSwatches.splice(toIdx, 0, moved);
-                    renderCompare();
-                    dragEl = slots.querySelector(`[data-id="${dragId}"]`);
-                    if (dragEl) dragEl.classList.add('dragging');
-                }
-            }
-        }
-
-        function onPointerUp(e) {
-            if (!dragEl) return;
-            dragEl.classList.remove('dragging');
-            dragEl.releasePointerCapture(e.pointerId);
-            dragEl = null;
-        }
-
-        swatches.forEach(sw => {
-            sw.addEventListener('pointerdown', onPointerDown);
-            sw.addEventListener('pointermove', onPointerMove);
-            sw.addEventListener('pointerup', onPointerUp);
-            sw.addEventListener('pointercancel', onPointerUp);
-        });
-
-        slots.querySelectorAll('.remove-sw').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                const id = btn.dataset.id;
-                compareSwatches = compareSwatches.filter(s => s.id != id);
-                renderCompare();
-            });
-            btn.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    btn.click();
-                }
-            });
-        });
-    }
-
-    /* ── History Management ── */
-    function pushHistory(pal) {
-        historyStack.unshift({ ...pal });
-        if (historyStack.length > 5) historyStack.pop();
-    }
-
-    function updateHistoryStrip() {
-        const strip = $('historyStrip');
-        strip.innerHTML = historyStack.map((pal, i) => {
-            const colors = [pal.bgLight, pal.textPrimary, pal.primary, pal.accent1, pal.bgDark];
-            const swatchesHTML = colors.map(c => `<span class="history-swatch" style="background:${c};"></span>`).join('');
-            return `<button class="history-dot" data-index="${i}" type="button" aria-label="Restore palette ${i+1}">${swatchesHTML}</button>`;
-        }).join('');
-
-        strip.querySelectorAll('.history-dot').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const idx = parseInt(btn.dataset.index);
-                historyStack = historyStack.slice(0, idx+1);
-                const restored = historyStack[idx];
-                applyPalette({ ...restored });
-            });
-        });
-    }
-
-    /* ── Random Palette (guaranteed WCAG compliant) ── */
-    function randomOklchPalette() {
-        const baseH = Math.random() * 360;
-        const bgLightH = (baseH + 20) % 360;
-        const textPrimaryH = (baseH + 180) % 360;
-        let palette = {
-            bgLight: oklchToHex(0.95, 0.03, bgLightH),
-            textPrimary: oklchToHex(0.18, 0.04, textPrimaryH),
-            primary: oklchToHex(0.62, 0.18, baseH),
-            accent1: oklchToHex(0.62, 0.18, (baseH + 150) % 360),
-            bgDark: '#020202'
-        };
-        // Ensure textPrimary contrast >=7
-        if (contrast(palette.textPrimary, palette.bgLight) < 7) {
-            palette.textPrimary = oklchToHex(0.15, 0.02, textPrimaryH);
-        }
-        // Always enforce UI contrast (4.5) for primary and accent1, without toast
-        palette = enforceWCAG(palette);
-        return palette;
-    }
-
-    /* ── Event Listeners ── */
-    $('randomBtn').addEventListener('click', () => {
-        applyNewPalette(randomOklchPalette());
-    });
-
-    $('backBtn').addEventListener('click', () => {
-        if (historyStack.length) {
-            const prev = historyStack.shift();
-            applyPalette(prev);
-            updateHistoryStrip();
-        }
-    });
-
-    $('harmonyBtn').addEventListener('click', () => {
-        const shift = 30;
-        const pal = { ...currentPalette };
-        ['bgLight','textPrimary','primary','accent1'].forEach(t => {
-            if (pal[t]) {
-                const [L,C,H] = hexToOklch(pal[t]);
-                pal[t] = oklchToHex(L, C, (H+shift)%360);
-            }
-        });
-        applyNewPalette(pal);
-    });
-
-    $('wcagBtn').addEventListener('click', () => {
-        wcagMode = !wcagMode;
-        const btn = $('wcagBtn');
-        btn.setAttribute('aria-pressed', wcagMode);
-        btn.innerHTML = wcagMode ? 'WCAG Auto: ON' : 'WCAG Auto: OFF';
-        btn.classList.toggle('wcag-active', wcagMode);
-        if (wcagMode) {
-            // Immediately enforce current palette without pushing history
-            const enforced = enforceWCAG(currentPalette);
-            if (JSON.stringify(enforced) !== JSON.stringify(currentPalette)) {
-                applyPalette(enforced);
-            }
-            showToast('WCAG enforcement ON – any new palette will be adjusted');
-        } else {
-            showToast('WCAG enforcement OFF');
-        }
-    });
-
-    $('loadBNDR').addEventListener('click', () => applyNewPalette(bndrColors));
-    $('resetPro').addEventListener('click', () => applyNewPalette(defaultPro));
-
-    /* ── Export Modal ── */
-    $('exportBtn').addEventListener('click', () => {
-        const p = currentPalette;
-        const css = `:root {\n  --bg-light: ${p.bgLight};\n  --text-primary: ${p.textPrimary};\n  --primary: ${p.primary};\n  --accent-1: ${p.accent1};\n  --bg-dark: ${p.bgDark};\n}`;
-        $('exportOutput').textContent = css;
-        openModal('exportModal', $('exportBtn'));
-    });
-    $('closeExport').addEventListener('click', () => closeModal('exportModal'));
-    $('copyExport').addEventListener('click', () => {
-        const text = $('exportOutput').textContent;
-        const btn = $('copyExport');
-        const orig = btn.textContent;
-        const done = () => { btn.textContent = 'Copied!'; setTimeout(() => btn.textContent = orig, 1500); };
-        if (navigator.clipboard && navigator.clipboard.writeText) {
-            navigator.clipboard.writeText(text).then(done).catch(() => fallbackCopy(text, done));
-        } else {
-            fallbackCopy(text, done);
-        }
-    });
-
-    function fallbackCopy(text, callback) {
-        const textarea = document.createElement('textarea');
-        textarea.value = text;
-        textarea.style.position = 'fixed';
-        textarea.style.opacity = '0';
-        document.body.appendChild(textarea);
-        textarea.select();
-        try {
-            document.execCommand('copy');
-            showToast('Copied to clipboard');
-        } catch (e) {
-            showToast('Copy failed – please copy manually');
-        }
-        document.body.removeChild(textarea);
-        if (callback) callback();
-    }
-
-    /* ── AI Modal ── */
-    $('aiBtn').addEventListener('click', () => openModal('aiModal', $('aiBtn')));
-    $('closeModal').addEventListener('click', () => closeModal('aiModal'));
-    $('generateAI').addEventListener('click', async () => {
-        const key = $('apiKeyInput').value.trim();
-        const prompt = $('aiPrompt').value.trim() || 'professional SaaS brand';
-        const status = $('aiStatus');
-        if (!key) {
-            status.textContent = 'Please enter your API key.';
-            return;
-        }
-        status.textContent = 'Generating…';
-        try {
-            const res = await fetch('https://api.deepseek.com/v1/chat/completions', {
-                method: 'POST',
-                headers: { 'Content-Type':'application/json', 'Authorization':`Bearer ${key}` },
-                body: JSON.stringify({
-                    model: 'deepseek-chat',
-                    messages: [
-                        { role: 'system', content: 'You are a design token generator. You output only a JSON object with keys "bgLight", "textPrimary", "primary", "accent1", "bgDark". Each value is a hex color like "#AABBCC". No extra text, no markdown fences.\n\nToken roles:\n- "bgLight": lightest background (aim Oklch L≈0.95, C≈0.03)\n- "textPrimary": darkest text/foreground (aim Oklch L≈0.18, C≈0.04)\n- "primary": vibrant accent (medium lightness, Oklch C≥0.15)\n- "accent1": secondary accent (vibrant, medium lightness, Oklch C≥0.15, hue >90° from primary)\n- "bgDark": deepest dark background (near black, distinct from textPrimary; avoid pure #000000)\n\nEnsure strong chroma for accents, distinct hues (≥120° apart), and clear luminance hierarchy.\nExample: {"bgLight":"#F4F4F6","textPrimary":"#1D1D1F","primary":"#0066CC","accent1":"#E0004D","bgDark":"#0A0A1A"}' },
-                        { role: 'user', content: `Current palette: ${JSON.stringify(currentPalette)}\nModify this palette according to: ${prompt}\nReturn only the modified JSON.` }
-                    ],
-                    temperature: 0.8
-                })
-            });
-            if (!res.ok) throw new Error(`API error ${res.status}`);
-            const data = await res.json();
-            let content = data.choices?.[0]?.message?.content;
-            if (!content) throw new Error('Empty response');
-            const jsonMatch = content.match(/\{[\s\S]*\}/);
-            if (jsonMatch) content = jsonMatch[0];
-            const json = JSON.parse(content);
-            if (json.bgLight && json.textPrimary && json.primary && json.accent1 && json.bgDark) {
-                applyNewPalette(json);
-                closeModal('aiModal');
-                status.textContent = '';
-                showToast('AI palette applied');
-            } else {
-                throw new Error('Invalid palette structure');
-            }
-        } catch (e) {
-            status.textContent = 'AI error: ' + e.message;
-            showToast('AI failed – check API key or prompt');
-        }
-    });
-
-    /* ── Modal helpers ── */
-    function openModal(id, triggerEl) {
-        const modal = $(id);
-        modal.classList.add('open');
-        lastFocusedEl = triggerEl || document.activeElement;
-        const firstInput = modal.querySelector('input, textarea, button');
-        if (firstInput) firstInput.focus();
-    }
-
-    function closeModal(id) {
-        const modal = $(id);
-        modal.classList.remove('open');
-        if (lastFocusedEl) lastFocusedEl.focus();
-    }
-
-    /* ── Theme Toggle ── */
-    const themeBtn = $('themeToggle');
-    function setTheme(isDark) {
-        document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
-        themeBtn.setAttribute('aria-pressed', isDark.toString());
-        themeBtn.innerHTML = isDark
-            ? `<svg viewBox="0 0 24 24" aria-hidden="true" width="16" height="16" fill="currentColor"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg> Light Mode`
-            : `<svg viewBox="0 0 24 24" aria-hidden="true" width="16" height="16" fill="currentColor"><path d="M12 3a9 9 0 1 0 9 9c0-4.97-4.03-9-9-9zm0 2c3.87 0 7 3.13 7 7s-3.13 7-7 7V5z"/></svg> Dark Mode`;
-        localStorage.setItem('bndr-theme', isDark ? 'dark' : 'light');
-    }
-    const savedTheme = localStorage.getItem('bndr-theme') || 'light';
-    setTheme(savedTheme === 'dark');
-    themeBtn.addEventListener('click', () => {
-        const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-        setTheme(!isDark);
-    });
-
-    /* ── Global dismiss ── */
-    window.addEventListener('click', (e) => {
-        if (e.target.classList.contains('modal')) {
-            e.target.classList.remove('open');
-            if (lastFocusedEl) lastFocusedEl.focus();
-        }
-    });
-    window.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') {
-            document.querySelectorAll('.modal.open').forEach(m => {
-                m.classList.remove('open');
-                if (lastFocusedEl) lastFocusedEl.focus();
-            });
-        }
-    });
-
-    /* ── Initial render ── */
-    renderTokens();
-    updateAll();
+  }
+  document.getElementById("pricingGumroad").addEventListener("click", function () { openCheckout("gumroad"); });
+  document.getElementById("pricingStripe").addEventListener("click", function () { openCheckout("stripe"); });
 })();
 </script>
 </body>
