@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Gift Code Generator (owner tool) · ColorSLCT</title>
+<link rel="stylesheet" href="../assets/css/base.css">
+<style>
+  .tool-note { font-size: 0.82rem; color: var(--text-2); line-height: 1.6; }
+  textarea.codes { min-height: 110px; font-family: var(--mono); }
+  pre.out { background: var(--code-bg); color: var(--code-text); border-radius: 10px; padding: 1rem; font-size: 0.72rem; line-height: 1.6; overflow-x: auto; white-space: pre; }
+  .hash-table { width: 100%; border-collapse: collapse; font-size: 0.75rem; }
+  .hash-table th, .hash-table td { text-align: left; padding: 0.45rem 0.6rem; border-bottom: 1px solid var(--border); font-family: var(--mono); word-break: break-all; }
+  .hash-table th { font-family: var(--sans); color: var(--text-2); font-weight: 650; }
+  .ok { color: var(--success); font-weight: 700; }
+  .bad { color: var(--danger); font-weight: 700; }
+</style>
+</head>
+<body>
+<div class="container" style="max-width: 860px;">
+  <header class="app-header">
+    <div class="logo">
+      <a class="logo-title" href="../index.html"><span class="logo-mark" aria-hidden="true"></span> ColorSLCT <span class="pro-pill">Owner tool</span></a>
+      <p class="subtitle">Gift code generator — for you, the seller. Do not publish this page with your store.</p>
+    </div>
+  </header>
+
+  <section class="card">
+    <h3 class="panel-title">1. Create gift codes</h3>
+    <p class="tool-note">Type one code per line (anything memorable — e.g. <code>BNDR-GIFT-2049</code>, <code>FRIEND-MARIA</code>). Codes are case-insensitive and spaces are ignored. Only the <strong>SHA-256 hashes</strong> go into the app, so nobody can read your codes out of the source.</p>
+    <label for="codesInput" class="visually-hidden">Gift codes, one per line</label>
+    <textarea id="codesInput" class="codes" placeholder="BNDR-GIFT-2049&#10;FRIEND-MARIA&#10;LAUNCH-CREW-01" spellcheck="false"></textarea>
+    <div class="modal-row" style="margin-top: 0.8rem;">
+      <button id="hashBtn" class="btn btn-primary" type="button">Generate hashes</button>
+      <button id="copySnippet" class="btn" type="button" disabled>Copy config snippet</button>
+    </div>
+    <div id="hashResults" style="margin-top: 1rem;"></div>
+    <div id="snippetWrap" style="display:none; margin-top: 1rem;">
+      <p class="tool-note">Paste this into <code>assets/js/config.js</code>, replacing the existing <code>giftCodeHashes</code> array:</p>
+      <pre class="out" id="snippetOut"></pre>
+    </div>
+  </section>
+
+  <section class="card">
+    <h3 class="panel-title">2. Test a code against the live config</h3>
+    <p class="tool-note">Checks a code against the hashes currently in <code>assets/js/config.js</code> — exactly the same check the studio runs when someone redeems.</p>
+    <label for="testInput" class="visually-hidden">Code to test</label>
+    <input type="text" id="testInput" placeholder="e.g. BNDR-GIFT-2049" autocomplete="off" spellcheck="false">
+    <div class="modal-row" style="margin-top: 0.8rem;">
+      <button id="testBtn" class="btn" type="button">Test code</button>
+    </div>
+    <div id="testResult" class="modal-status" aria-live="polite"></div>
+  </section>
+
+  <footer class="footer">
+    <span>© <span data-year>2026</span> BNDR LLC · Owner tool — keep private</span>
+  </footer>
+  <div id="toast" class="toast" role="status" aria-live="polite" aria-atomic="true"></div>
+</div>
+
+<script src="../assets/js/config.js"></script>
+<script src="../assets/js/license.js"></script>
+<script src="../assets/js/shared.js"></script>
+<script>
+(function () {
+  "use strict";
+  var License = window.CslctLicense;
+  var UI = window.CslctUI;
+  var lastHashes = [];
+
+  document.getElementById("hashBtn").addEventListener("click", function () {
+    var lines = document.getElementById("codesInput").value
+      .split("\n").map(function (s) { return s.trim(); }).filter(Boolean);
+    var results = document.getElementById("hashResults");
+    if (!lines.length) {
+      results.innerHTML = '<p class="tool-note bad">Enter at least one code first.</p>';
+      return;
+    }
+    Promise.all(lines.map(function (code) {
+      return License.sha256(License.normalizeCode(code)).then(function (hash) {
+        return { code: code, hash: hash };
+      });
+    })).then(function (rows) {
+      lastHashes = rows.map(function (r) { return r.hash; });
+      results.innerHTML =
+        '<table class="hash-table"><thead><tr><th>Code</th><th>SHA-256 hash</th></tr></thead><tbody>' +
+        rows.map(function (r) {
+          return "<tr><td></td><td>" + r.hash + "</td></tr>";
+        }).join("") + "</tbody></table>";
+      /* set code text via textContent (no HTML injection) */
+      var cells = results.querySelectorAll("tbody tr td:first-child");
+      rows.forEach(function (r, i) { cells[i].textContent = r.code; });
+
+      var snippet = "giftCodeHashes: [\n" + lastHashes.map(function (h) { return '  "' + h + '",'; }).join("\n") + "\n],";
+      document.getElementById("snippetOut").textContent = snippet;
+      document.getElementById("snippetWrap").style.display = "";
+      document.getElementById("copySnippet").disabled = false;
+    });
+  });
+
+  document.getElementById("copySnippet").addEventListener("click", function () {
+    UI.copyText(document.getElementById("snippetOut").textContent, function () {
+      UI.showToast("Config snippet copied — paste it into assets/js/config.js");
+    });
+  });
+
+  document.getElementById("testBtn").addEventListener("click", function () {
+    var code = document.getElementById("testInput").value;
+    var out = document.getElementById("testResult");
+    if (!code.trim()) { out.className = "modal-status err"; out.textContent = "Type a code to test."; return; }
+    var hashes = ((window.CSLCT_CONFIG || {}).giftCodeHashes) || [];
+    License.sha256(License.normalizeCode(code)).then(function (hash) {
+      var hit = hashes.indexOf(hash) !== -1;
+      out.className = "modal-status " + (hit ? "ok" : "err");
+      out.textContent = hit
+        ? "\u2713 Valid — this code will unlock Pro in the studio."
+        : "\u2717 Not in config.js — this code will NOT work. Generate its hash above and add it.";
+    });
+  });
+})();
+</script>
+</body>
+</html>
