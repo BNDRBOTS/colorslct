@@ -1,6 +1,6 @@
 # ColorSLCT — WCAG-safe brand palette studio
 
-A local-first, dependency-free color palette SaaS by **BNDR LLC**. Five-token palettes (light bg, text, primary, accent, dark bg) built on a true OKLCH engine, with live light/dark previews, WCAG contrast auto-enforcement, compare & history, share links, a saved-palette library, multi-format exports, optional AI suggestions, and a one-time Pro license sold through Gumroad or Stripe.
+A local-first, dependency-free color palette SaaS by **BNDR LLC**. Five-token palettes (light bg, text, primary, accent, dark bg) built on a true OKLCH engine, with live light/dark previews, WCAG contrast auto-enforcement, compare & history, share links, a saved-palette library, multi-format exports, optional AI suggestions, and a one-time Pro license sold through Gumroad, Buy Me a Coffee, or Stripe.
 
 Everything is static HTML/CSS/JS. **No build step, no framework, no backend, no analytics.** It runs from any static host — or straight off a `file://` double-click.
 
@@ -33,7 +33,7 @@ colorslct/
 
 ---
 
-## Going live — the 3 things to configure
+## Going live — the 4 things to configure
 
 All owner configuration lives in **`assets/js/config.js`**. Nothing else needs editing.
 
@@ -50,16 +50,25 @@ All owner configuration lives in **`assets/js/config.js`**. Nothing else needs e
    ```
 4. Done. Buyers paste their license key into the studio’s **Go Pro** dialog; the app verifies it directly against Gumroad’s license API (`increment_uses_count` is off, so verifying never burns activations) and unlocks Pro on that browser. Refunded/chargebacked keys are rejected.
 
-### 2. Stripe (optional second checkout)
+### 2. Buy Me a Coffee (optional second checkout)
+
+1. On your BMAC page, add ColorSLCT Pro as an **Extras** item ($29 one-time), or point buyers at your page directly.
+2. In `config.js`, set:
+   ```js
+   buyMeACoffee: { buyUrl: "https://buymeacoffee.com/YOURNAME/e/XXXXX" },
+   ```
+3. BMAC doesn't issue license keys. Fulfil each order by emailing the buyer a **gift code** (section 4). Until a link is set, the button shows a "not connected yet" message instead of failing.
+
+### 3. Stripe (optional third checkout — no backend needed)
 
 1. Create a **Payment Link** in the Stripe dashboard (Products → Payment Links) for a $29 one-time price.
 2. In `config.js`, set:
    ```js
    stripe: { paymentLink: "https://buy.stripe.com/XXXXXXXX" },
    ```
-3. Note: Stripe Payment Links don’t issue license keys. Fulfil Stripe orders by sending the buyer a **gift code** (below) — or run both checkouts through Gumroad only. Until a link is set, the Stripe buttons show a friendly “not connected yet” message instead of failing.
+3. Note: Stripe Payment Links don’t issue license keys. Fulfil Stripe orders by sending the buyer a **gift code** (below) — Stripe emails you on every sale, or turn on the Payment Link's post-purchase confirmation page/redirect and put redemption instructions there. Until a link is set, the Stripe buttons show a friendly “not connected yet” message instead of failing.
 
-### 3. Gift codes — your payment-gate bypass
+### 4. Gift codes — your payment-gate bypass
 
 Give Pro away to anyone you choose, no purchase needed.
 
@@ -111,7 +120,7 @@ Any static host works: Cloudflare Pages, Netlify, Vercel, GitHub Pages, S3/R2, o
 
 **Pre-launch checklist**
 
-1. `config.js`: set Gumroad `buyUrl` + `productId` (and/or Stripe `paymentLink`).
+1. `config.js`: set Gumroad `buyUrl` + `productId` (and/or `buyMeACoffee.buyUrl`, Stripe `paymentLink`).
 2. `config.js`: replace the starter gift-code hash with your own codes.
 3. Optionally update `company` name/email and legal pages if your details differ.
 4. Run the tests (below). Deploy.

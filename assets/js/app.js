@@ -763,10 +763,13 @@
     $("upgradeReason").textContent = reason || "Unlock every export format and an unlimited palette library.";
     var stripeBtn = $("buyStripe");
     var gumroadBtn = $("buyGumroad");
+    var bmacBtn = $("buyBmac");
     var stripeLink = (CONFIG.stripe || {}).paymentLink;
     var gumroadLink = (CONFIG.gumroad || {}).buyUrl;
+    var bmacLink = (CONFIG.buyMeACoffee || {}).buyUrl;
     stripeBtn.dataset.configured = stripeLink ? "1" : "0";
     gumroadBtn.dataset.configured = gumroadLink ? "1" : "0";
+    bmacBtn.dataset.configured = bmacLink ? "1" : "0";
     $("licenseStatus").textContent = "";
     $("licenseStatus").className = "modal-status";
     syncProUi();
@@ -784,6 +787,11 @@
     var link = (CONFIG.gumroad || {}).buyUrl;
     if (link) { window.open(link, "_blank", "noopener"); }
     else { showToast("Gumroad checkout isn\u2019t connected yet — the seller still needs to add a product link."); }
+  });
+  $("buyBmac").addEventListener("click", function () {
+    var link = (CONFIG.buyMeACoffee || {}).buyUrl;
+    if (link) { window.open(link, "_blank", "noopener"); }
+    else { showToast("Buy Me a Coffee checkout isn\u2019t connected yet — the seller still needs to add a product link."); }
   });
 
   function setLicenseStatus(msg, ok) {

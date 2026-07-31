@@ -343,12 +343,13 @@ section.lp-section { padding: 3.6rem 0; }
           </ul>
           <div class="plan-actions">
             <button class="lp-cta" type="button" id="pricingGumroad">Buy on Gumroad — $29</button>
+            <button class="lp-cta-ghost" type="button" id="pricingBmac">Buy via Buy Me a Coffee</button>
             <button class="lp-cta-ghost" type="button" id="pricingStripe">Pay with Stripe</button>
             <a class="lp-cta-ghost" href="app.html#redeem">Have a code? Redeem it in the studio</a>
           </div>
         </div>
       </div>
-      <p class="price-note" data-reveal>Prices in USD. After purchase you’ll receive a license key — paste it into the studio once and Pro stays unlocked on that browser. Refund and license terms are in the <a href="terms.html" style="color:var(--lp-text);">Terms</a>.</p>
+      <p class="price-note" data-reveal>Prices in USD. Gumroad purchases come with a license key — paste it into the studio once and Pro stays unlocked on that browser. Buy Me a Coffee and Stripe purchases are unlocked with a gift code sent to your email after checkout. Refund and license terms are in the <a href="terms.html" style="color:var(--lp-text);">Terms</a>.</p>
     </div>
   </section>
 
@@ -462,17 +463,22 @@ section.lp-section { padding: 3.6rem 0; }
     renderDemo(randomDemoPalette());
   });
 
-  /* pricing buttons — graceful when checkout keys aren’t configured yet */
+  /* pricing buttons — graceful when checkout links aren’t configured yet */
+  var CHECKOUTS = {
+    gumroad: { link: function () { return (CONFIG.gumroad || {}).buyUrl; }, label: "Gumroad" },
+    bmac: { link: function () { return (CONFIG.buyMeACoffee || {}).buyUrl; }, label: "Buy Me a Coffee" },
+    stripe: { link: function () { return (CONFIG.stripe || {}).paymentLink; }, label: "Stripe" },
+  };
   function openCheckout(kind) {
-    var link = kind === "stripe" ? (CONFIG.stripe || {}).paymentLink : (CONFIG.gumroad || {}).buyUrl;
+    var c = CHECKOUTS[kind];
+    var link = c && c.link();
     if (link) { window.open(link, "_blank", "noopener"); }
     else {
-      UI.showToast(kind === "stripe"
-        ? "Stripe checkout isn\u2019t connected yet — the seller still needs to add a payment link."
-        : "Gumroad checkout isn\u2019t connected yet — the seller still needs to add a product link.");
+      UI.showToast(c.label + " checkout isn\u2019t connected yet — the seller still needs to add a " + (kind === "stripe" ? "payment" : "product") + " link.");
     }
   }
   document.getElementById("pricingGumroad").addEventListener("click", function () { openCheckout("gumroad"); });
+  document.getElementById("pricingBmac").addEventListener("click", function () { openCheckout("bmac"); });
   document.getElementById("pricingStripe").addEventListener("click", function () { openCheckout("stripe"); });
 })();
 </script>

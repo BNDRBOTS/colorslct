@@ -163,18 +163,44 @@ const D = require(path.join(here, "../assets/js/palette-designer.js"));
   check("different seeds produce different palettes", JSON.stringify(a.palette) !== JSON.stringify(c.palette));
   check("designer palette valid", E.isValidPalette(a.palette));
   check("meta reason present", typeof a.meta.reason === "string" && a.meta.reason.length > 10);
+  /* Per-mood contrast policy: neon is dark-surface-first (accents >= 4.5 on
+     bgDark; a fluorescent color cannot also hit 4.5 on near-white). Every
+     other mood guarantees accents >= 4.5 on bgLight and >= 3 on bgDark. */
   let sweepFails = 0;
   for (const h of Object.keys(D.HARMONIES)) for (const m of Object.keys(D.MOODS)) for (let s = 1; s <= 6; s++) {
-    const { palette: p } = D.designPalette({ seed: s * 7919, harmony: h, mood: m });
+    const { palette: p, meta } = D.designPalette({ seed: s * 7919, harmony: h, mood: m });
     if (!E.isValidPalette(p)) { sweepFails++; continue; }
     if (E.contrast(p.textPrimary, p.bgLight) < 6.98) sweepFails++;
-    if (E.contrast(p.primary, p.bgLight) < 4.48) sweepFails++;
-    if (E.contrast(p.accent1, p.bgLight) < 4.48) sweepFails++;
-    if (E.contrast(p.primary, p.bgDark) < 2.98) sweepFails++;
-    if (E.contrast(p.accent1, p.bgDark) < 2.98) sweepFails++;
+    if (meta.contrastRef === "dark") {
+      if (E.contrast(p.primary, p.bgDark) < 4.48) sweepFails++;
+      if (E.contrast(p.accent1, p.bgDark) < 4.48) sweepFails++;
+    } else {
+      if (E.contrast(p.primary, p.bgLight) < 4.48) sweepFails++;
+      if (E.contrast(p.accent1, p.bgLight) < 4.48) sweepFails++;
+      if (E.contrast(p.primary, p.bgDark) < 2.98) sweepFails++;
+      if (E.contrast(p.accent1, p.bgDark) < 2.98) sweepFails++;
+    }
     if (E.contrast(p.bgLight, p.bgDark) < 6.98) sweepFails++;
   }
   eq("designer sweep: contrast guarantees hold (324 cases)", sweepFails, 0);
+  /* Neon must be fluorescent: accent chroma pinned to the sRGB gamut ceiling. */
+  let neonFails = 0;
+  for (let s = 1; s <= 20; s++) {
+    const { palette: p } = D.designPalette({ seed: s * 104729, mood: "neon" });
+    for (const tok of ["primary", "accent1"]) {
+      const [L, C, H] = E.hexToOklch(p[tok]);
+      const ceil = D.maxChroma(L, H);
+      if (ceil > 0 && C < 0.82 * ceil) neonFails++;
+    }
+  }
+  eq("neon accents ride the gamut ceiling (40 cases)", neonFails, 0);
+  /* Seedless generations must spread across the wheel (anti-repetition memory). */
+  {
+    const hues = [];
+    for (let i = 0; i < 18; i++) hues.push(D.designPalette({ mood: "vivid" }).meta.baseHue);
+    const sectors = new Set(hues.map((x) => Math.floor(((x % 360) + 360) % 360 / 45)));
+    check("seedless base hues span >= 5 of 8 wheel sectors", sectors.size >= 5);
+  }
   const g = D.designPalette({ seed: 7, harmony: "golden", mood: "vivid" });
   near("golden angle hue distance", D.hueDist(E.hexToOklch(g.palette.primary)[2], E.hexToOklch(g.palette.accent1)[2]), 137.5, 12);
   const comp = D.designPalette({ seed: 7, harmony: "complementary", mood: "vivid" });

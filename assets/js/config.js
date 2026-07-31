@@ -27,6 +27,15 @@ window.CSLCT_CONFIG = {
     paymentLink: "",
   },
 
+  /* ---- BUY ME A COFFEE ----------------------------------------
+     Paste your page or Extras product link, e.g.
+     "https://buymeacoffee.com/bndr" or "https://buymeacoffee.com/bndr/e/12345".
+     BMAC doesn't issue license keys — unlock those buyers by emailing
+     them a gift code (see giftCodeHashes below).                  */
+  buyMeACoffee: {
+    buyUrl: "",
+  },
+
   /* ---- GUMROAD -----------------------------------------------
      1) buyUrl: your product page, e.g. "https://bndr.gumroad.com/l/colorslct"
      2) productId: Gumroad product ID (Product -> Settings -> Advanced,

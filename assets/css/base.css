@@ -270,8 +270,7 @@ html[data-theme='dark'] body::before {
 .compare-add-btn svg { width: 11px; height: 11px; fill: currentColor; }
 
 /* ---------- action bar & history ---------- */
-.workflow-hint { font-size: 0.66rem; color: var(--text-secondary); margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 700; }
-html[data-theme='dark'] .workflow-hint { color: var(--brand-lime); }
+.workflow-hint { font-size: 0.66rem; color: var(--text-secondary); margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.14em; font-weight: 600; opacity: 0.75; }
 .actions { display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: center; }
 .history-strip { display: flex; gap: 0.4rem; margin-top: 0.7rem; flex-wrap: wrap; align-items: center; min-height: 10px; }
 .history-label { font-size: 0.65rem; color: var(--text-secondary); }
