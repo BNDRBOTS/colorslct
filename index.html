@@ -1,1195 +1,610 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en" data-theme="dark">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>BNDR ColorSLCT · Enterprise Design Tokens</title>
-    <style>
-        :root {
-            --bg-light: #F4F4F6;
-            --text-primary: #1D1D1F;
-            --primary: #0066CC;
-            --accent-1: #E0004D;
-            --bg-dark: #000000;
-            --page-bg: #f8f9fa;
-            --surface: #ffffff;
-            --text: #1D1D1F;
-            --text-secondary: #6e6e73;
-            --border: #e0e0e5;
-            --radius: 12px;
-            --shadow: 0 4px 12px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.02);
-            --font: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-            --transition-duration: 0.2s;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ColorSLCT — loud palettes with the math to back them</title>
+<meta name="description" content="ColorSLCT collides hues the way big campaigns do — acid papers, electric accents, clashes 100–210 degrees apart — and holds every result to published contrast floors. Free in your browser. Pro is $29, paid once.">
+<link rel="stylesheet" href="assets/css/base.css">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"SoftwareApplication","name":"ColorSLCT","applicationCategory":"DesignApplication","operatingSystem":"Web","offers":[{"@type":"Offer","price":"0","priceCurrency":"USD","name":"Free"},{"@type":"Offer","price":"29","priceCurrency":"USD","name":"Pro"}],"publisher":{"@type":"Organization","name":"BNDR LLC","url":"https://bndrllc.com"}}
+</script>
+<style>
+/* ===== loud landing system — each field is its own clash pair, all contrast-verified ===== */
+:root{
+  --ink:#0b0b0e; --lime:#ccff00; --pink:#ff2e6d; --pink-soft:#ff5c8a; --pink-deep:#d6004d;
+  --violet:#2a0e4a; --cream:#fff1dc; --lp-max:1160px;
+}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body.lp{background:var(--ink);color:var(--cream);font-size:1rem;line-height:1.65}
+.lp a{color:inherit}
+.lp ::selection{background:var(--lime);color:var(--ink)}
+.lp-wrap{max-width:var(--lp-max);margin:0 auto;padding:0 1.5rem}
+.skip-link{position:absolute;left:-9999px;top:0;background:var(--lime);color:var(--ink);padding:.75rem 1rem;z-index:100;font-weight:700}
+.skip-link:focus{left:0}
+.lp :focus-visible{outline:3px solid var(--lime);outline-offset:3px;border-radius:2px}
 
-        html[data-theme="dark"] {
-            --page-bg: #000;
-            --surface: #121214;
-            --text: #f5f5f7;
-            --text-secondary: #98989e;
-            --border: #2c2c30;
-            --shadow: 0 4px 12px rgba(0,0,0,0.3);
-        }
+/* type — one family, 400/700, size does the shouting */
+.lp h1,.lp h2,.lp h3,.lp h4{font-weight:700;margin:0;line-height:1.02}
+.lp h1{font-size:clamp(3rem,9vw,6.75rem);letter-spacing:-.02em;text-transform:uppercase;line-height:.98}
+.lp h2{font-size:clamp(2.1rem,4.8vw,3.6rem);letter-spacing:-.015em;text-transform:uppercase}
+.lp h3{font-size:1.3rem}
+.lp h4{font-size:.78rem;text-transform:uppercase;letter-spacing:.12em}
+.lp p{margin:0}
+.kicker{display:flex;align-items:center;gap:.6rem;font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:.14em}
+.kicker::before{content:"";width:2rem;height:3px;background:currentColor}
 
-        @media (prefers-reduced-motion: reduce) {
-            *, *::before, *::after {
-                animation-duration: 0.01ms !important;
-                animation-iteration-count: 1 !important;
-                transition-duration: 0.01ms !important;
-                scroll-behavior: auto !important;
-            }
-        }
+/* fields — full-bleed color zones */
+.field{padding:6rem 0;border-top:3px solid var(--ink)}
+.field-lime{background:var(--lime);color:var(--ink)}
+.field-ink{background:var(--ink);color:var(--cream)}
+.field-pink{background:var(--pink);color:var(--ink)}
+.field-violet{background:var(--violet);color:#fff}
+.field-cream{background:var(--cream);color:var(--ink)}
+.field-ink,.field-violet{border-top-color:var(--pink)}
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+/* header */
+.lp-header{position:sticky;top:0;z-index:50;background:var(--ink);border-bottom:3px solid var(--lime)}
+.lp-header .lp-wrap{display:flex;align-items:center;gap:2rem;min-height:4.25rem}
+.lp-logo{display:inline-flex;align-items:center;gap:.55rem;font-weight:700;text-decoration:none;font-size:1.05rem;min-height:44px;color:var(--cream)}
+.logo-mark{width:16px;height:16px;border-radius:4px;background:conic-gradient(from 210deg,var(--lime),var(--pink),var(--lime));display:inline-block;border:2px solid var(--ink)}
+.lp-header nav{display:flex;gap:1.5rem;margin-left:auto}
+.lp-header nav a{text-decoration:none;color:rgba(255,241,220,.72);font-size:.875rem;display:inline-flex;align-items:center;min-height:44px;transition:color var(--dur) ease-out}
+.lp-header nav a:hover{color:var(--lime)}
+@media (max-width:720px){.lp-header nav{display:none}.lp-header .btn{margin-left:auto}}
 
-        body {
-            font-family: var(--font);
-            background: var(--page-bg);
-            color: var(--text);
-            line-height: 1.5;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            transition: background var(--transition-duration), color var(--transition-duration);
-        }
+/* buttons — thick borders, solid shadows, uppercase */
+.lp .btn{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;min-height:54px;padding:0 1.75rem;border-radius:14px;border:3px solid var(--ink);background:var(--cream);color:var(--ink);font-weight:700;font-size:.9rem;text-transform:uppercase;letter-spacing:.06em;text-decoration:none;cursor:pointer;box-shadow:6px 6px 0 var(--ink);transition:transform var(--dur) ease-out,box-shadow var(--dur) ease-out}
+.lp .btn:hover{transform:translate(-2px,-2px);box-shadow:9px 9px 0 var(--ink)}
+.lp .btn:active{transform:translate(2px,2px);box-shadow:2px 2px 0 var(--ink)}
+.lp .btn-ink{background:var(--ink);color:var(--cream)}
+.lp .btn-lime{background:var(--lime);color:var(--ink)}
+.lp .btn-pink{background:var(--pink);color:var(--ink)}
+.field-ink .btn,.field-violet .btn{border-color:var(--cream);box-shadow:6px 6px 0 rgba(255,241,220,.28)}
+.field-ink .btn:hover,.field-violet .btn:hover{box-shadow:9px 9px 0 rgba(255,241,220,.28)}
+.field-ink .btn-lime,.field-violet .btn-lime{border-color:var(--lime);box-shadow:6px 6px 0 var(--pink)}
+.field-ink .btn-lime:hover,.field-violet .btn-lime:hover{box-shadow:9px 9px 0 var(--pink)}
+.btn-ghost-cream{background:transparent;color:var(--cream);border-color:var(--cream)}
+.btn-ghost-ink{background:transparent;color:var(--ink);border-color:var(--ink)}
 
-        .container {
-            max-width: 1300px;
-            width: 100%;
-            margin: 0 auto;
-            padding: 1rem 0.8rem;
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 1.2rem;
-        }
-        @media (min-width: 600px) {
-            .container {
-                padding: 1.2rem 1rem;
-                gap: 1.5rem;
-            }
-        }
+/* hero */
+.hero{padding:7rem 0 6rem;border-top:0}
+.hero .lp-wrap{display:grid;gap:3rem;grid-template-columns:minmax(0,7fr) minmax(0,5fr);align-items:center}
+@media (max-width:900px){.hero .lp-wrap{grid-template-columns:1fr}}
+.hero-copy{display:grid;gap:1.5rem}
+.hero-copy .lede{font-size:1.15rem;max-width:36rem;color:rgba(11,11,14,.86)}
+.hero-ctas{display:flex;gap:1rem;flex-wrap:wrap}
+.hero-fine{font-size:.85rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em}
+.hero-demo{background:var(--ink);color:var(--cream);border:3px solid var(--ink);border-radius:18px;padding:1.5rem;display:grid;gap:1rem;box-shadow:12px 12px 0 var(--ink)}
+.demo-label{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--lime);display:flex;align-items:center;gap:.5rem}
+.demo-dot{width:8px;height:8px;border-radius:50%;background:var(--pink)}
+@keyframes demoPulse{0%,100%{opacity:1}50%{opacity:.3}}
+.demo-dot{animation:demoPulse 2.4s ease-out infinite}
+@media (prefers-reduced-motion:reduce){.demo-dot{animation:none}}
+#demoRow{display:flex;border-radius:12px;overflow:hidden;border:3px solid var(--cream)}
+#demoRow>div{flex:1;height:9.5rem;position:relative;transition:background .4s ease-out}
+#demoRow code{position:absolute;left:50%;bottom:.5rem;transform:translateX(-50%);font-family:var(--mono);font-size:.6rem;background:rgba(11,11,14,.72);color:var(--cream);padding:.15rem .4rem;border-radius:4px}
+#demoWhy{font-family:var(--mono);font-size:.72rem;color:rgba(255,241,220,.72);min-height:2.5em;line-height:1.5}
+#demoShuffle{justify-self:start}
 
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 1rem;
-        }
-        .logo { display: flex; flex-direction: column; gap: 0.25rem; }
-        .logo h1 {
-            font-size: clamp(1.4rem, 6vw, 1.8rem);
-            font-weight: 600;
-            letter-spacing: -0.02em;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            color: var(--text);
-        }
-        .logo h1 svg {
-            width: 22px;
-            height: 22px;
-            fill: var(--primary);
-            flex-shrink: 0;
-        }
-        @media (min-width: 600px) {
-            .logo h1 svg { width: 24px; height: 24px; }
-        }
-        .subtitle {
-            color: var(--text-secondary);
-            max-width: 500px;
-            font-size: 0.8rem;
-        }
+/* section heads */
+.sec-head{max-width:46rem;display:grid;gap:1rem;margin-bottom:3rem}
+.sec-head p{font-size:1.05rem}
+.field-lime .sec-head p,.field-pink .sec-head p,.field-cream .sec-head p{color:rgba(11,11,14,.82)}
+.field-ink .sec-head p,.field-violet .sec-head p{color:rgba(255,241,220,.78)}
 
-        .theme-btn {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 0.4rem 0.8rem;
-            font-size: 0.8rem;
-            font-weight: 500;
-            cursor: pointer;
-            color: var(--text);
-            display: flex;
-            align-items: center;
-            gap: 0.3rem;
-            transition: background var(--transition-duration), color var(--transition-duration);
-            white-space: nowrap;
-            min-height: 44px;
-        }
-        .theme-btn:hover { background: var(--border); }
-        .theme-btn:focus-visible {
-            outline: 2px solid var(--primary);
-            outline-offset: 2px;
-        }
+/* studio shots on ink */
+.shot-block{display:grid;gap:1.5rem;margin-top:4rem}
+.shot-block:first-of-type{margin-top:0}
+.shot-head{display:grid;gap:.5rem;max-width:42rem}
+.shot-head h3{color:var(--lime);font-size:clamp(1.5rem,3vw,2.1rem);text-transform:uppercase;letter-spacing:-.01em}
+.shot-head p{color:rgba(255,241,220,.78)}
+figure.shot{margin:0;display:grid;gap:.75rem}
+figure.shot img{width:100%;height:auto;display:block;border-radius:16px;border:3px solid var(--pink);box-shadow:12px 12px 0 var(--pink);background:#15151b}
+figure.shot.shot-light img{border-color:var(--lime);box-shadow:12px 12px 0 var(--lime)}
+figure.shot figcaption{font-size:.85rem;color:rgba(255,241,220,.6)}
+.shot-points{display:grid;gap:1.5rem;grid-template-columns:repeat(3,minmax(0,1fr))}
+@media (max-width:720px){.shot-points{grid-template-columns:1fr}}
+.shot-points>div{display:grid;gap:.5rem}
+.shot-points h4{color:var(--pink-soft)}
+.shot-points p{font-size:.9rem;color:rgba(255,241,220,.72)}
+.shot-split{display:grid;gap:3rem;grid-template-columns:minmax(0,2fr) minmax(0,3fr);align-items:start}
+@media (max-width:900px){.shot-split{grid-template-columns:1fr}}
+.shot-split figure.shot{max-width:22rem}
+.shot-split figure.shot img{border-color:var(--pink-soft);box-shadow:10px 10px 0 var(--pink-soft)}
 
-        .card {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 1rem;
-            box-shadow: var(--shadow);
-        }
-        @media (min-width: 600px) {
-            .card { padding: 1.2rem; }
-        }
+/* value cards on pink */
+.cards{display:grid;gap:1.5rem;grid-template-columns:repeat(3,minmax(0,1fr))}
+@media (max-width:900px){.cards{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:640px){.cards{grid-template-columns:1fr}}
+.card{border:3px solid var(--ink);border-radius:16px;background:var(--cream);padding:1.75rem;display:grid;gap:.75rem;align-content:start;box-shadow:8px 8px 0 var(--ink);transition:transform var(--dur) ease-out,box-shadow var(--dur) ease-out}
+.card:hover{transform:translate(-3px,-3px);box-shadow:12px 12px 0 var(--ink)}
+.card h3{font-size:1.15rem}
+.card p{font-size:.95rem;color:rgba(11,11,14,.82)}
 
-        .token-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-            gap: 0.8rem;
-            margin-bottom: 1rem;
-        }
-        @media (min-width: 600px) {
-            .token-grid {
-                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-                gap: 1rem;
-                margin-bottom: 1.2rem;
-            }
-        }
+/* engine spec on violet */
+.spec{border:3px solid var(--lime);border-radius:16px;overflow:hidden;margin-bottom:3rem;box-shadow:10px 10px 0 rgba(204,255,0,.22)}
+.spec-row{display:grid;grid-template-columns:minmax(0,3fr) minmax(0,2fr);gap:1rem;padding:1.1rem 1.5rem;border-top:2px solid rgba(255,255,255,.14)}
+.spec-row:first-child{border-top:0}
+.spec-row dt{color:rgba(255,255,255,.72);font-size:.95rem}
+.spec-row dd{margin:0;font-family:var(--mono);font-size:1rem;color:var(--lime);text-align:right;font-weight:700}
+.spec-row dd b{color:var(--pink-soft);font-weight:700}
+@media (max-width:640px){.spec-row{grid-template-columns:1fr;gap:.25rem}.spec-row dd{text-align:left}}
+.engine-groups{display:grid;gap:3rem;grid-template-columns:repeat(2,minmax(0,1fr))}
+@media (max-width:900px){.engine-groups{grid-template-columns:1fr}}
+.engine-group{display:grid;gap:1.5rem;align-content:start}
+.engine-group>h3{color:#fff;font-size:clamp(1.4rem,2.6vw,1.9rem);text-transform:uppercase;letter-spacing:-.01em}
+.engine-group>p{font-size:.95rem;color:rgba(255,255,255,.8)}
+.engine-points{display:grid;gap:1.25rem}
+.engine-points>div{display:grid;gap:.375rem}
+.engine-points h4{color:var(--lime)}
+.engine-points p{font-size:.9rem;color:rgba(255,255,255,.72)}
 
-        .token-item { display: flex; flex-direction: column; gap: 0.4rem; }
-        .token-header {
-            display: flex;
-            align-items: center;
-            gap: 0.3rem;
-            font-weight: 600;
-            color: var(--text-secondary);
-            font-size: 0.8rem;
-        }
-        .token-header svg { width: 16px; height: 16px; fill: currentColor; }
-        .color-wrap {
-            display: flex;
-            align-items: center;
-            gap: 0.3rem;
-            background: rgba(128,128,128,0.06);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 0.3rem 0.5rem;
-        }
-        .color-wrap input[type="color"] {
-            width: 28px; height: 28px;
-            border: none; background: transparent; cursor: pointer; flex-shrink: 0;
-        }
-        @media (min-width: 600px) {
-            .color-wrap input[type="color"] { width: 32px; height: 32px; }
-        }
-        .hex {
-            font-family: 'SF Mono', monospace;
-            font-size: 0.7rem;
-            color: var(--text);
-            flex: 1;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
+/* steps on cream */
+.steps{display:grid;gap:1.5rem;grid-template-columns:repeat(3,minmax(0,1fr))}
+@media (max-width:720px){.steps{grid-template-columns:1fr}}
+.step{border:3px solid var(--ink);border-radius:16px;background:#fff;padding:1.75rem;display:grid;gap:.75rem;align-content:start;box-shadow:8px 8px 0 var(--ink)}
+.step-num{font-family:var(--mono);font-size:1.4rem;font-weight:700;color:var(--pink-deep)}
+.step h3{font-size:1.2rem}
+.step p{font-size:.95rem;color:rgba(11,11,14,.82)}
 
-        .compare-add-btn {
-            background: none;
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            padding: 0.25rem 0.5rem;
-            font-size: 0.65rem;
-            font-weight: 600;
-            color: var(--text-secondary);
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.2rem;
-            transition: background var(--transition-duration), color var(--transition-duration);
-            min-height: 36px;
-            justify-content: center;
-        }
-        .compare-add-btn:disabled {
-            opacity: 0.4; cursor: not-allowed; pointer-events: none;
-        }
-        .compare-add-btn:not(:disabled):hover {
-            background: rgba(128,128,128,0.08);
-            color: var(--text);
-        }
-        .compare-add-btn:focus-visible {
-            outline: 2px solid var(--primary);
-            outline-offset: 2px;
-        }
-        .compare-add-btn svg { width: 12px; height: 12px; fill: currentColor; }
+/* pricing on ink */
+.plans{display:grid;gap:2rem;grid-template-columns:repeat(2,minmax(0,1fr));max-width:58rem}
+@media (max-width:720px){.plans{grid-template-columns:1fr}}
+.plan{border:3px solid var(--cream);border-radius:18px;padding:2rem;display:grid;gap:1.5rem;align-content:start;background:#15151b;box-shadow:8px 8px 0 rgba(255,241,220,.22)}
+.plan.pro{border-color:var(--lime);box-shadow:10px 10px 0 var(--pink)}
+.plan-head{display:flex;align-items:baseline;gap:.75rem;flex-wrap:wrap}
+.plan-head h3{color:var(--cream);text-transform:uppercase;font-size:1.4rem}
+.plan-price{font-size:2.6rem;font-weight:700;letter-spacing:-.02em;color:var(--lime)}
+.plan-badge{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--ink);background:var(--pink);border-radius:999px;padding:.3rem .7rem}
+.plan h4{color:var(--pink-soft)}
+.plan ul{margin:0;padding:0;list-style:none;display:grid;gap:.65rem}
+.plan li{font-size:.95rem;color:rgba(255,241,220,.8);padding-left:1.3rem;position:relative}
+.plan li::before{content:"—";position:absolute;left:0;color:var(--pink)}
+.plan-ctas{display:grid;gap:.85rem}
+.redeem-line{margin-top:1.75rem;font-size:.9rem;color:rgba(255,241,220,.65)}
+.redeem-line a{color:var(--lime);text-decoration-color:var(--pink);text-underline-offset:3px;font-weight:700}
 
-        .actions {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.4rem;
-            align-items: center;
-        }
-        .btn {
-            padding: 0.45rem 0.8rem;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 0.75rem;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.25rem;
-            border: 1px solid var(--border);
-            transition: background var(--transition-duration), color var(--transition-duration), box-shadow var(--transition-duration);
-            white-space: nowrap;
-            background: transparent;
-            color: var(--text);
-            min-height: 44px;
-            justify-content: center;
-            text-decoration: none;
-        }
-        .btn:focus-visible {
-            outline: 2px solid var(--primary);
-            outline-offset: 2px;
-        }
-        .btn-primary {
-            background: var(--primary);
-            color: #000;
-            border-color: rgba(0,0,0,0.05);
-        }
-        .btn-primary:hover { filter: brightness(0.95); }
-        .btn-secondary:hover { background: rgba(128,128,128,0.05); }
-        .btn-danger { background: var(--accent-1); color: #fff; border-color: transparent; }
-        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+/* faq on cream */
+.faq{max-width:46rem;display:grid;gap:.85rem}
+.faq details{border:3px solid var(--ink);border-radius:14px;background:#fff;box-shadow:6px 6px 0 var(--ink)}
+.faq summary{cursor:pointer;padding:1rem 1.25rem;font-weight:700;font-size:1rem;min-height:56px;display:flex;align-items:center;justify-content:space-between;gap:1rem;list-style:none}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"+";font-family:var(--mono);font-size:1.3rem;color:var(--pink-deep);transition:transform var(--dur) ease-out}
+.faq details[open] summary::after{transform:rotate(45deg)}
+.faq details p{padding:0 1.25rem 1.25rem;font-size:.95rem;color:rgba(11,11,14,.82)}
 
-        .btn.wcag-active {
-            background: var(--accent-1);
-            color: #fff;
-            border-color: transparent;
-            box-shadow: 0 0 0 2px rgba(224,0,77,0.3);
-        }
+/* final on pink */
+.final{text-align:center}
+.final .lp-wrap{display:grid;gap:1.5rem;justify-items:center}
+.final p{max-width:36rem;color:rgba(11,11,14,.86);font-size:1.05rem}
 
-        .history-strip {
-            display: flex;
-            gap: 0.4rem;
-            margin-top: 0.6rem;
-            flex-wrap: wrap;
-            align-items: center;
-        }
-        .history-dot {
-            border: 2px solid var(--border);
-            border-radius: 8px;
-            background-color: transparent;
-            cursor: pointer;
-            transition: transform var(--transition-duration), border-color var(--transition-duration);
-            padding: 2px;
-            display: flex;
-            align-items: center;
-            gap: 1px;
-            min-width: 36px;
-            justify-content: center;
-        }
-        .history-dot:hover { transform: scale(1.15); border-color: var(--text); }
-        .history-dot:focus-visible {
-            outline: 2px solid var(--primary);
-            outline-offset: 2px;
-        }
-        .history-swatch {
-            width: 10px;
-            height: 16px;
-            border-radius: 2px;
-            display: inline-block;
-        }
+/* footer */
+.lp-footer{border-top:3px solid var(--lime);padding:3rem 0;background:var(--ink)}
+.lp-footer .lp-wrap{display:flex;align-items:center;gap:2rem;flex-wrap:wrap}
+.lp-footer nav{display:flex;gap:1.5rem;flex-wrap:wrap}
+.lp-footer nav a{color:rgba(255,241,220,.65);text-decoration:none;font-size:.875rem;display:inline-flex;align-items:center;min-height:44px;transition:color var(--dur) ease-out}
+.lp-footer nav a:hover{color:var(--lime)}
+.lp-footer .fine{margin-left:auto;font-size:.82rem;color:rgba(255,241,220,.5)}
+.lp-footer .fine a{color:inherit}
 
-        .previews-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 1rem;
-        }
-        @media (min-width: 700px) {
-            .previews-grid { grid-template-columns: 1fr 1fr; }
-        }
-
-        .preview-card {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 1rem;
-            box-shadow: var(--shadow);
-        }
-        .mock-ui { display: flex; flex-direction: column; gap: 0.6rem; }
-        .mock-dock {
-            display: flex;
-            gap: 6px;
-            background: rgba(128,128,128,0.05);
-            border-radius: 8px;
-            padding: 6px;
-            flex-wrap: wrap;
-        }
-        .mock-btn {
-            height: 28px;
-            padding: 0 8px;
-            border-radius: 6px;
-            font-size: 0.7rem;
-            font-weight: 600;
-            border: none;
-            background: transparent;
-            color: inherit;
-            cursor: default;
-        }
-        .mock-node {
-            background: rgba(255,255,255,0.85);
-            border: 1px solid rgba(0,0,0,0.05);
-            border-radius: 10px;
-            padding: 0.5rem 0.8rem;
-            font-size: 0.75rem;
-            width: fit-content;
-        }
-
-        .combined-panel {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 1rem;
-        }
-        @media (min-width: 700px) {
-            .combined-panel { grid-template-columns: 1fr 1fr; }
-        }
-
-        .contrast-list { display: flex; flex-direction: column; gap: 0.5rem; }
-        .contrast-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 0.75rem;
-            gap: 0.4rem;
-        }
-        .contrast-pair { display: flex; align-items: center; gap: 0.3rem; min-width: 0; }
-        .contrast-swatch {
-            width: 14px; height: 14px;
-            border-radius: 4px;
-            border: 1px solid var(--border);
-            flex-shrink: 0;
-        }
-        .contrast-badge {
-            border: 1px solid var(--border);
-            border-radius: 20px;
-            padding: 0.1em 0.5em;
-            font-weight: 600;
-            font-size: 0.65rem;
-            text-transform: uppercase;
-            display: flex;
-            align-items: center;
-            gap: 0.2rem;
-            white-space: nowrap;
-        }
-        .badge-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
-        .badge-dot.aaa { background: #2e7d32; }
-        .badge-dot.aa  { background: #f9a825; }
-        .badge-dot.fail { background: #c62828; }
-
-        .compare-panel-inner { display: flex; flex-direction: column; gap: 0.6rem; }
-        .compare-slots {
-            display: flex;
-            gap: 0.4rem;
-            flex-wrap: wrap;
-            min-height: 50px;
-            align-items: flex-start;
-        }
-        .compare-swatch {
-            width: 50px; height: 50px;
-            border-radius: 12px;
-            border: 2px solid var(--border);
-            box-shadow: var(--shadow);
-            position: relative;
-            transition: box-shadow var(--transition-duration);
-            touch-action: none;
-            user-select: none;
-            cursor: grab;
-        }
-        .compare-swatch:active { cursor: grabbing; }
-        .compare-swatch .remove-sw {
-            position: absolute;
-            top: -8px; right: -8px;
-            background: var(--surface);
-            color: var(--text);
-            border-radius: 50%;
-            width: 22px; height: 22px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.8rem;
-            border: 1px solid var(--border);
-            cursor: pointer;
-            line-height: 1;
-            box-shadow: 0 0 4px rgba(0,0,0,0.1);
-        }
-        .compare-swatch .remove-sw:focus-visible {
-            outline: 2px solid var(--primary);
-            outline-offset: 2px;
-        }
-        .dragging {
-            opacity: 0.5;
-            outline: 2px dashed var(--primary);
-        }
-
-        .footer {
-            text-align: center;
-            padding: 1rem;
-            font-size: 0.7rem;
-            color: var(--text-secondary);
-            border-top: 1px solid var(--border);
-            margin-top: 1rem;
-        }
-        .footer a { color: var(--text); text-decoration: none; font-weight: 600; }
-
-        .modal {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.5);
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            padding: 1rem;
-        }
-        .modal.open { display: flex; }
-        .modal-card {
-            background: var(--surface);
-            padding: 1.5rem 1rem;
-            border-radius: var(--radius);
-            max-width: 400px;
-            width: 100%;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
-        }
-        .modal-card h3 { margin-bottom: 1rem; font-size: 1.1rem; }
-        .modal-card input,
-        .modal-card textarea,
-        .modal-card button {
-            width: 100%;
-            margin: 0.35rem 0;
-            padding: 0.6rem;
-            border-radius: 6px;
-            border: 1px solid var(--border);
-            font-family: inherit;
-            font-size: 0.85rem;
-            background: var(--surface);
-            color: var(--text);
-            resize: vertical;
-        }
-        .modal-card textarea { min-height: 60px; }
-        .modal-card button { cursor: pointer; font-weight: 600; min-height: 44px; }
-        .modal-card button:focus-visible {
-            outline: 2px solid var(--primary);
-            outline-offset: 2px;
-        }
-        .modal-card small { display: block; margin-top: 0.5rem; font-size: 0.7rem; color: var(--text-secondary); }
-
-        .visually-hidden {
-            position: absolute;
-            width: 1px; height: 1px;
-            padding: 0; margin: -1px;
-            overflow: hidden;
-            clip: rect(0,0,0,0);
-            white-space: nowrap;
-            border: 0;
-        }
-
-        .toast {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: var(--text);
-            color: var(--page-bg);
-            padding: 0.5rem 1.2rem;
-            border-radius: 30px;
-            font-size: 0.8rem;
-            z-index: 2000;
-            pointer-events: none;
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-        .toast.show { opacity: 1; }
-    </style>
+/* reveal — one axis, 400ms, killed for reduced motion */
+[data-reveal]{opacity:0;transform:translateY(18px);transition:opacity .4s var(--ease),transform .4s var(--ease)}
+[data-reveal].revealed{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){[data-reveal]{opacity:1;transform:none;transition:none}}
+</style>
 </head>
-<body>
-<div class="container">
-    <header>
-        <div class="logo">
-            <h1>
-                <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/></svg>
-                BNDR ColorSLCT
-            </h1>
-            <p class="subtitle">Build, compare, and export WCAG‑safe brand palettes — live in the browser. AI assisted.</p>
+<body class="lp">
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="lp-header">
+  <div class="lp-wrap">
+    <a class="lp-logo" href="index.html"><span class="logo-mark" aria-hidden="true"></span> ColorSLCT</a>
+    <nav aria-label="Primary">
+      <a href="#studio">The studio</a>
+      <a href="#engine">Engine</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#faq">FAQ</a>
+    </nav>
+    <a class="btn btn-lime" id="navOpenApp" href="app.html">Open the studio</a>
+  </div>
+</header>
+
+<main id="main">
+  <section class="field field-lime hero" aria-labelledby="heroTitle">
+    <div class="lp-wrap">
+      <div class="hero-copy">
+        <span class="kicker">Loud color · Real math · No account</span>
+        <h1 id="heroTitle">Make color that hits.</h1>
+        <p class="lede">ColorSLCT collides hues the way big campaigns do — acid papers, electric accents, pairs 100–210° apart — and holds every result to published contrast floors. Loud where it should be. Readable everywhere it counts. It runs on your machine, in your browser.</p>
+        <div class="hero-ctas">
+          <a class="btn btn-ink" href="app.html">Open the studio</a>
+          <a class="btn btn-ghost-ink" href="#engine">See the floors</a>
         </div>
-        <button id="themeToggle" class="theme-btn" type="button" aria-label="Switch color theme" aria-pressed="false">
-            <svg viewBox="0 0 24 24" aria-hidden="true" width="16" height="16" fill="currentColor">
-                <path d="M12 3a9 9 0 1 0 9 9c0-4.97-4.03-9-9-9zm0 2c3.87 0 7 3.13 7 7s-3.13 7-7 7V5z"/>
-            </svg>
-            Dark Mode
-        </button>
-    </header>
+        <span class="hero-fine">Free to use · Pro is $29, paid once</span>
+      </div>
+      <div class="hero-demo">
+        <span class="demo-label"><span class="demo-dot" aria-hidden="true"></span> Live from the engine on this page</span>
+        <div id="demoRow" aria-label="Generated palette"></div>
+        <p id="demoWhy" aria-live="off"></p>
+        <button class="btn btn-lime" id="demoShuffle" type="button">New palette</button>
+      </div>
+    </div>
+  </section>
 
-    <section class="card" aria-labelledby="controls-heading">
-        <h2 id="controls-heading" class="visually-hidden">Palette Controls</h2>
-        <div class="token-grid" id="tokenGrid"></div>
-        <p style="font-size:0.7rem;color:var(--text-secondary);margin-bottom:0.3rem;">1. Choose/generate → 2. Tweak colours → 3. Check contrast → 4. Export CSS</p>
-        <div class="actions" id="actionBar">
-            <button id="loadBNDR" class="btn" type="button">Load BNDR</button>
-            <button id="resetPro" class="btn" type="button">Professional</button>
-            <button id="randomBtn" class="btn btn-primary" type="button">Random</button>
-            <button id="backBtn" class="btn" type="button" disabled>Back</button>
-            <button id="harmonyBtn" class="btn" type="button">Harmony</button>
-            <button id="wcagBtn" class="btn" type="button" aria-pressed="false">WCAG Auto: OFF</button>
-            <button id="exportBtn" class="btn" type="button">Export CSS</button>
-            <button id="aiBtn" class="btn" type="button">AI Suggest</button>
+  <section class="field field-ink" id="studio" aria-labelledby="studioTitle">
+    <div class="lp-wrap">
+      <div class="sec-head" data-reveal>
+        <span class="kicker" style="color:var(--pink)">The studio</span>
+        <h2 id="studioTitle" style="color:var(--cream)">One screen. Zero timid choices.</h2>
+        <p>No wizard, no locked panels. Tokens, moods, ten harmony models, the report, history, and export share one surface — and the same surface fits a phone.</p>
+      </div>
+
+      <div class="shot-block" data-reveal>
+        <div class="shot-head">
+          <h3>The working view</h3>
+          <p>Where a palette gets made: five tokens with live hex entry, mood and harmony chips, blend inputs, one Generate button.</p>
         </div>
-        <div class="history-strip" id="historyStrip" aria-label="Palette history"></div>
-    </section>
+        <figure class="shot">
+          <img src="assets/img/studio-dark.png" alt="ColorSLCT studio in dark theme: a five-swatch palette row with hex codes, mood and harmony chips, and live preview mockups" width="2880" height="1800" loading="lazy" decoding="async">
+          <figcaption>Dark theme at desktop width, on a palette the engine designed at load.</figcaption>
+        </figure>
+        <div class="shot-points">
+          <div>
+            <h4>Reasons, not magic</h4>
+            <p>Each generation prints its harmony, hue angles, paper, and seed under the palette.</p>
+          </div>
+          <div>
+            <h4>History that holds</h4>
+            <p>Five steps of undo, kept between visits when you allow storage.</p>
+          </div>
+          <div>
+            <h4>Preview in place</h4>
+            <p>Buttons, cards, and copy render in your tokens while you edit.</p>
+          </div>
+        </div>
+      </div>
 
-    <div class="previews-grid" id="previewContainer" aria-live="polite"></div>
+      <div class="shot-block" data-reveal>
+        <div class="shot-head">
+          <h3>The same build in daylight</h3>
+          <p>The light theme is drawn from the same tokens — never an inverted filter — and what you check is what ships.</p>
+        </div>
+        <figure class="shot shot-light">
+          <img src="assets/img/studio-light.png" alt="ColorSLCT studio in light theme showing the contrast report with pass marks and numbers for each color pairing" width="2880" height="1800" loading="lazy" decoding="async">
+          <figcaption>Light theme with the contrast report open: every pairing measured, every number printed.</figcaption>
+        </figure>
+        <div class="shot-points">
+          <div>
+            <h4>Contrast report</h4>
+            <p>AA, AAA, and UI thresholds checked live on each pairing.</p>
+          </div>
+          <div>
+            <h4>Compare tray</h4>
+            <p>Pin palettes side by side before you commit.</p>
+          </div>
+          <div>
+            <h4>Share by URL</h4>
+            <p>The URL carries the palette itself. Nothing is uploaded.</p>
+          </div>
+        </div>
+      </div>
 
-    <div class="combined-panel">
-        <section class="card" aria-labelledby="contrast-heading">
-            <h3 id="contrast-heading" style="margin-bottom:0.6rem; font-size:0.85rem; color:var(--text-secondary);">Contrast Ratios <span style="font-weight:400;font-size:0.7rem;display:block;color:var(--text-secondary);">Aim ≥4.5:1 for UI, ≥7:1 for text</span></h3>
-            <div class="contrast-list" id="contrastList"></div>
-        </section>
-        <section class="card" aria-labelledby="compare-heading">
-            <div class="compare-panel-inner">
-                <h3 id="compare-heading" style="font-size:0.85rem; color:var(--text-secondary);">Compare Swatches</h3>
-                <div class="compare-slots" id="compareSlots" aria-label="Drag to reorder swatches"></div>
-                <small style="color:var(--text-secondary);">Add tokens to compare side by side. Drag to reorder.</small>
+      <div class="shot-block shot-split" data-reveal>
+        <figure class="shot">
+          <img src="assets/img/studio-mobile.png" alt="ColorSLCT studio on a 390px-wide phone screen with full-width swatches and touch-sized controls" width="780" height="1688" loading="lazy" decoding="async">
+          <figcaption>390px wide, dark theme, no pinching.</figcaption>
+        </figure>
+        <div class="engine-group">
+          <div class="shot-head">
+            <h3>Phone-sized, never shrunk</h3>
+            <p>Drawn for small screens before wide ones. All controls hold 44px touch areas, swatches stay full-width, and both themes ride along.</p>
+          </div>
+          <div class="engine-points">
+            <div>
+              <h4>Same engine</h4>
+              <p>Generation, floors, and exports match desktop byte for byte.</p>
             </div>
-        </section>
-    </div>
-
-    <div id="exportModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="exportModalLabel">
-        <div class="modal-card">
-            <h3 id="exportModalLabel">Export CSS Variables</h3>
-            <p style="font-size:0.7rem;color:var(--text-secondary);margin-bottom:0.4rem;">Drop these custom properties into your <code>:root</code> — no conversion needed.</p>
-            <pre id="exportOutput" style="white-space:pre-wrap; font-family:monospace; font-size:0.7rem; background:var(--page-bg); padding:0.8rem; border-radius:8px; margin:0.4rem 0; max-height:250px; overflow:auto;"></pre>
-            <button id="copyExport" class="btn btn-primary" type="button">Copy to Clipboard</button>
-            <button id="closeExport" class="btn" type="button">Close</button>
+            <div>
+              <h4>No sideways scroll</h4>
+              <p>Verified at 390px on every build.</p>
+            </div>
+          </div>
         </div>
+      </div>
     </div>
+  </section>
 
-    <div id="aiModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="aiModalLabel">
-        <div class="modal-card">
-            <h3 id="aiModalLabel">DeepSeek Palette AI</h3>
-            <p style="font-size:0.75rem;color:var(--text-secondary);margin-top:-0.5rem;margin-bottom:0.5rem;">Optional: describe your brand to get a palette. Requires your own DeepSeek API key.</p>
-            <label for="apiKeyInput" class="visually-hidden">API Key</label>
-            <input type="password" id="apiKeyInput" placeholder="Your DeepSeek API Key" autocomplete="off">
-            <label for="aiPrompt" class="visually-hidden">Description</label>
-            <textarea id="aiPrompt" rows="2" placeholder="Describe your brand vibe..."></textarea>
-            <button id="generateAI" class="btn btn-primary" type="button">Generate Palette</button>
-            <button id="closeModal" class="btn" type="button">Cancel</button>
-            <small>Your key stays only in this session.</small>
-            <div id="aiStatus" style="margin-top:0.5rem; font-size:0.75rem; color:var(--text-secondary);" aria-live="polite"></div>
+  <section class="field field-pink" id="value" aria-labelledby="valueTitle">
+    <div class="lp-wrap">
+      <div class="sec-head" data-reveal>
+        <span class="kicker">Why it earns your tab</span>
+        <h2 id="valueTitle">Built for color that has to land</h2>
+      </div>
+      <div class="cards">
+        <div class="card" data-reveal>
+          <h3>Clashes on purpose</h3>
+          <p>The Clash engine collides hues 100–210° apart at up to full gamut chroma — the kind of pair big campaigns are built on, made on demand.</p>
         </div>
+        <div class="card" data-reveal>
+          <h3>No two alike</h3>
+          <p>Ten harmony models, four paper personalities, dark surfaces that swing from pitch black to plum and petrol, and a 96-palette memory that re-rolls anything rhyming with a recent run.</p>
+        </div>
+        <div class="card" data-reveal>
+          <h3>Depth by design</h3>
+          <p>Accents overshoot the floor on purpose and land at different depths run to run — rich one click, electric the next, always inside the floors.</p>
+        </div>
+        <div class="card" data-reveal>
+          <h3>The math stays visible</h3>
+          <p>Contrast is enforced while the palette is designed, and the numbers print next to the swatches. What leaves the studio passes.</p>
+        </div>
+        <div class="card" data-reveal>
+          <h3>Your machine, your colors</h3>
+          <p>No account, no upload. Storage only after you accept, and the AI assist keeps your own key in session.</p>
+        </div>
+        <div class="card" data-reveal>
+          <h3>Free to start, cheap to own</h3>
+          <p>The full engine is free. Pro adds every export format and an unlimited library for one payment of $29.</p>
+        </div>
+      </div>
     </div>
+  </section>
 
-    <footer class="footer">
-        BNDR LLC All Rights Reserved &middot; <a href="https://bndrllc.com">bndrllc.com</a>
-    </footer>
+  <section class="field field-violet" id="engine" aria-labelledby="engineTitle">
+    <div class="lp-wrap">
+      <div class="sec-head" data-reveal>
+        <span class="kicker" style="color:var(--lime)">Under the hood</span>
+        <h2 id="engineTitle" style="color:#fff">The floors, published and enforced</h2>
+        <p>Each claim below is enforced in code and re-checked on every build. These are the floors the designer will not cross.</p>
+      </div>
+      <dl class="spec" data-reveal>
+        <div class="spec-row"><dt>Text on the light surface</dt><dd><b>7.0:1</b> or higher</dd></div>
+        <div class="spec-row"><dt>Accents on the light surface</dt><dd><b>3.5:1</b> floor · Pastel 3.0:1</dd></div>
+        <div class="spec-row"><dt>Accents on the dark surface</dt><dd><b>3.0:1</b> floor · Calm &amp; Earthy 2.5:1</dd></div>
+        <div class="spec-row"><dt>Light surface vs dark surface</dt><dd><b>5.5:1</b> or higher</dd></div>
+        <div class="spec-row"><dt>Electric mood chroma</dt><dd><b>85%</b> of the sRGB ceiling at its lightness</dd></div>
+        <div class="spec-row"><dt>Near-repeats across 120 straight runs</dt><dd><b>0</b></dd></div>
+      </dl>
+      <div class="engine-groups">
+        <div class="engine-group" data-reveal>
+          <h3>How a palette gets loud</h3>
+          <div class="engine-points">
+            <div>
+              <h4>Hue, scored — never rolled</h4>
+              <p>Candidate hues are scored against a memory of recent picks and weighted by mood; the wheel gets covered, never camped.</p>
+            </div>
+            <div>
+              <h4>Chroma at the cusp</h4>
+              <p>Saturation is set against the sRGB gamut ceiling for each lightness — loud lands loud, Pastel stays paper-soft, nothing clips.</p>
+            </div>
+            <div>
+              <h4>Depth on purpose</h4>
+              <p>A per-run overshoot past the floor puts accents at genuinely different depths. Rich or electric, always readable.</p>
+            </div>
+          </div>
+        </div>
+        <div class="engine-group" data-reveal>
+          <h3>Tested like software, because it is</h3>
+          <p>3,378 engine checks and 111 assertions run before a build ships, plus a browser suite that drives the product like a person — moods, harmonies, blends, exports, share URLs, licensing, the tour, both themes, and a 390px phone.</p>
+          <div class="engine-points">
+            <div>
+              <h4>Seeds reproduce</h4>
+              <p>A seeded generation returns the same palette every time, on any machine.</p>
+            </div>
+            <div>
+              <h4>Blends stay honest</h4>
+              <p>Feed it two hexes and the result is validated against the same floors as everything else.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 
-    <div id="toast" class="toast" aria-live="assertive" aria-atomic="true"></div>
-</div>
+  <section class="field field-cream" id="how" aria-labelledby="howTitle">
+    <div class="lp-wrap">
+      <div class="sec-head" data-reveal>
+        <span class="kicker" style="color:var(--pink-deep)">The loop</span>
+        <h2 id="howTitle">Three moves to loud</h2>
+      </div>
+      <div class="steps">
+        <div class="step" data-reveal>
+          <span class="step-num">01</span>
+          <h3>Generate or blend</h3>
+          <p>Pick a mood and a harmony — Clash when you want the collision — or feed the engine two hexes you already own. Spin until one bites.</p>
+        </div>
+        <div class="step" data-reveal>
+          <span class="step-num">02</span>
+          <h3>Read the report</h3>
+          <p>Every pairing measured against AA, AAA, and UI thresholds — numbers printed, nothing hidden behind a checkmark.</p>
+        </div>
+        <div class="step" data-reveal>
+          <span class="step-num">03</span>
+          <h3>Export and go</h3>
+          <p>CSS variables, SCSS, Tailwind, W3C JSON, or SVG — named tokens, ready to paste into the codebase.</p>
+        </div>
+      </div>
+    </div>
+  </section>
 
+  <section class="field field-ink" id="pricing" aria-labelledby="pricingTitle">
+    <div class="lp-wrap">
+      <div class="sec-head" data-reveal>
+        <span class="kicker" style="color:var(--lime)">Pricing</span>
+        <h2 id="pricingTitle" style="color:var(--cream)">One price. Paid once.</h2>
+        <p>No subscription, no seats, no renewal email.</p>
+      </div>
+      <div class="plans">
+        <div class="plan" data-reveal>
+          <div class="plan-head">
+            <h3>Free</h3>
+            <span class="plan-price">$0</span>
+          </div>
+          <div>
+            <h4>What is in it</h4>
+            <ul>
+              <li>The full designer — every mood, every harmony</li>
+              <li>Live contrast report on all pairings</li>
+              <li>CSS variables export</li>
+              <li>Three saved palettes and share URLs</li>
+              <li>Light and dark themes</li>
+            </ul>
+          </div>
+          <div class="plan-ctas">
+            <a class="btn btn-ghost-cream" href="app.html">Start in the studio</a>
+          </div>
+        </div>
+        <div class="plan pro" data-reveal>
+          <div class="plan-head">
+            <h3>Pro</h3>
+            <span class="plan-price">$29</span>
+            <span class="plan-badge">One payment</span>
+          </div>
+          <div>
+            <h4>Everything in Free, plus</h4>
+            <ul>
+              <li>SCSS, Tailwind, W3C JSON, and SVG exports</li>
+              <li>Unlimited palette library</li>
+              <li>Gift codes to hand a copy to someone</li>
+              <li>Every future update included</li>
+            </ul>
+          </div>
+          <div class="plan-ctas">
+            <button class="btn btn-lime" id="pricingGumroad" type="button">Buy on Gumroad — $29</button>
+            <button class="btn btn-ghost-cream" id="pricingStripe" type="button">Pay with Stripe</button>
+            <button class="btn btn-ghost-cream" id="pricingBmac" type="button">Buy Me a Coffee</button>
+          </div>
+        </div>
+      </div>
+      <p class="redeem-line">Bought already? <a href="app.html#redeem">Redeem your key in the studio</a>.</p>
+    </div>
+  </section>
+
+  <section class="field field-cream" id="faq" aria-labelledby="faqTitle">
+    <div class="lp-wrap">
+      <div class="sec-head" data-reveal>
+        <span class="kicker" style="color:var(--pink-deep)">FAQ</span>
+        <h2 id="faqTitle">Straight answers</h2>
+      </div>
+      <div class="faq" data-reveal>
+        <details>
+          <summary>Do I need an account?</summary>
+          <p>No. The studio opens and works without a login, and the free plan has no signup either.</p>
+        </details>
+        <details>
+          <summary>Where does my work live?</summary>
+          <p>In your browser's storage, after you accept the consent banner. Decline it and the studio keeps working — it only stops remembering between visits.</p>
+        </details>
+        <details>
+          <summary>What does Pro add?</summary>
+          <p>SCSS, Tailwind, W3C JSON, and SVG exports, an unlimited library, gift codes, and future updates. The designer itself is identical on both plans.</p>
+        </details>
+        <details>
+          <summary>Is it one payment?</summary>
+          <p>$29 once, licensed per person. Keys are redeemed in the studio and verified without any server.</p>
+        </details>
+        <details>
+          <summary>How does the AI option work?</summary>
+          <p>It is optional. You paste your own DeepSeek key, it lives only in that session, and the engine validates whatever comes back before it touches your palette.</p>
+        </details>
+        <details>
+          <summary>Does it work on a phone?</summary>
+          <p>It does. The studio is drawn for 390px and up, with 44px touch areas and both themes.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <section class="field field-pink final" aria-labelledby="finalTitle">
+    <div class="lp-wrap" data-reveal>
+      <span class="kicker" style="justify-content:center">No signup between you and it</span>
+      <h2 id="finalTitle">Go make something loud.</h2>
+      <p>The studio designs its opening palette live, on your machine — a set nobody has seen before, with its reasoning printed underneath.</p>
+      <a class="btn btn-ink" href="app.html">Open the studio</a>
+    </div>
+  </section>
+</main>
+
+<footer class="lp-footer">
+  <div class="lp-wrap">
+    <a class="lp-logo" href="index.html"><span class="logo-mark" aria-hidden="true"></span> ColorSLCT</a>
+    <nav aria-label="Footer">
+      <a href="app.html">Studio</a>
+      <a href="#pricing">Pricing</a>
+      <a href="terms.html">Terms</a>
+      <a href="privacy.html">Privacy</a>
+      <a href="mailto:support@bndrllc.com" id="footerSupport">Support</a>
+    </nav>
+    <span class="fine">© <span data-year>2026</span> BNDR LLC · <a href="https://bndrllc.com">bndrllc.com</a></span>
+  </div>
+</footer>
+
+<div id="toast" class="toast" role="status" aria-live="polite" aria-atomic="true"></div>
+
+<script src="assets/js/config.js"></script>
+<script src="assets/js/color-engine.js"></script>
+<script src="assets/js/palette-designer.js"></script>
+<script src="assets/js/shared.js"></script>
 <script>
-(function() {
+(function () {
+  "use strict";
+  var E = window.ColorEngine;
+  var UI = window.CslctUI;
+  var D = window.PaletteDesigner;
+  var CONFIG = window.CSLCT_CONFIG || {};
 
-    /* ── Color Conversion & Math (Oklch, WCAG) ── */
-    function hexToRgb(hex) {
-        const c = hex.replace('#','');
-        return [
-            parseInt(c.substring(0,2),16),
-            parseInt(c.substring(2,4),16),
-            parseInt(c.substring(4,6),16)
-        ];
-    }
-    function rgbToHex(r,g,b) {
-        return '#' + [r,g,b].map(v => v.toString(16).padStart(2,'0')).join('');
-    }
+  var support = (CONFIG.company || {}).supportEmail;
+  if (support) {
+    document.getElementById("footerSupport").href = "mailto:" + support;
+  }
 
-    function srgbToLinear(c) {
-        c /= 255;
-        return c <= 0.04045 ? c/12.92 : Math.pow((c+0.055)/1.055, 2.4);
-    }
-    function linearToSrgb(c) {
-        return c <= 0.0031308 ? 12.92*c : 1.055*Math.pow(c,1/2.4)-0.055;
-    }
-
-    function rgbToOklab(r,g,b) {
-        let lr = srgbToLinear(r), lg = srgbToLinear(g), lb = srgbToLinear(b);
-        let l = 0.4122214708*lr + 0.5363325363*lg + 0.0514459929*lb;
-        let m = 0.2119034982*lr + 0.6806995451*lg + 0.1073969566*lb;
-        let s = 0.0883024619*lr + 0.2817188376*lg + 0.6299787005*lb;
-        l = Math.cbrt(l); m = Math.cbrt(m); s = Math.cbrt(s);
-        return [
-            0.2104542553*l + 0.7936177850*m - 0.0040720468*s,
-            1.9779984951*l - 2.4285922050*m + 0.4505937099*s,
-            0.0259040371*l + 0.7827717662*m - 0.8086757660*s
-        ];
-    }
-
-    function oklabToRgb(L,a,b) {
-        let l = L + 0.3963377774*a + 0.2158037573*b;
-        let m = L - 0.1055613458*a - 0.0638541728*b;
-        let s = L - 0.0894841775*a - 1.2914855480*b;
-        l = l*l*l; m = m*m*m; s = s*s*s;
-        let lr =  4.0767416621*l - 3.3077115913*m + 0.2309699292*s;
-        let lg = -1.2684380046*l + 2.6097574011*m - 0.3413193965*s;
-        let lb = -0.0041960863*l - 0.7034186147*m + 1.7076147010*s;
-        return [
-            Math.round(Math.max(0, Math.min(1, linearToSrgb(lr))) * 255),
-            Math.round(Math.max(0, Math.min(1, linearToSrgb(lg))) * 255),
-            Math.round(Math.max(0, Math.min(1, linearToSrgb(lb))) * 255)
-        ];
-    }
-
-    function oklabToOklch(L,a,b) {
-        let C = Math.sqrt(a*a + b*b);
-        let h = Math.atan2(b,a) * 180 / Math.PI;
-        if (h < 0) h += 360;
-        return [L, C, h];
-    }
-
-    function oklchToOklab(L,C,h) {
-        let rad = h * Math.PI / 180;
-        return [L, C * Math.cos(rad), C * Math.sin(rad)];
-    }
-
-    function hexToOklch(hex) {
-        let [r,g,b] = hexToRgb(hex);
-        let [L,a,bLab] = rgbToOklab(r,g,b);
-        return oklabToOklch(L,a,bLab);
-    }
-
-    function oklchToHex(L,C,h) {
-        let [l,a,b] = oklchToOklab(L,C,h);
-        let [r,g,bCol] = oklabToRgb(l,a,b);
-        return rgbToHex(r,g,bCol);
-    }
-
-    function luminance(hex) {
-        let [r,g,b] = hexToRgb(hex);
-        let rs = srgbToLinear(r), gs = srgbToLinear(g), bs = srgbToLinear(b);
-        return 0.2126*rs + 0.7152*gs + 0.0722*bs;
-    }
-
-    function contrast(hex1, hex2) {
-        let l1 = luminance(hex1), l2 = luminance(hex2);
-        let light = Math.max(l1,l2), dark = Math.min(l1,l2);
-        return (light+0.05)/(dark+0.05);
-    }
-
-    /* ── State ── */
-    const defaultPro = { bgLight:'#F4F4F6', textPrimary:'#1D1D1F', primary:'#0066CC', accent1:'#E0004D', bgDark:'#000000' };
-    const bndrColors = { bgLight:'#E8E4DF', textPrimary:'#0A0A0B', primary:'#CCFF00', accent1:'#ff0055', bgDark:'#020202' };
-
-    let currentPalette = { ...defaultPro };
-    let historyStack = [];
-    let compareSwatches = [];
-    let lastFocusedEl = null;
-    let wcagMode = false;   // persistent WCAG enforcement toggle
-
-    const $ = (id) => document.getElementById(id);
-
-    /* ── Toast helper ── */
-    function showToast(msg) {
-        const t = $('toast');
-        t.textContent = msg;
-        t.classList.add('show');
-        clearTimeout(t._timeout);
-        t._timeout = setTimeout(() => t.classList.remove('show'), 2500);
-    }
-
-    /* ── WCAG enforcement (returns palette with best‑effort contrast) ── */
-    function enforceWCAG(pal) {
-        const newPal = { ...pal };
-        const targetText = 7, targetUI = 4.5;
-        const { bgLight } = newPal;
-        const failing = [];
-
-        function adjustToken(token, target) {
-            if (contrast(newPal[token], bgLight) < target) {
-                let [L,C,H] = hexToOklch(newPal[token]);
-                let steps = 0;
-                while (contrast(oklchToHex(L,C,H), bgLight) < target && L > 0.05 && steps < 60) {
-                    L = Math.max(0.05, L - 0.02);
-                    steps++;
-                }
-                newPal[token] = oklchToHex(L,C,H);
-                if (contrast(newPal[token], bgLight) < target) {
-                    failing.push(token);
-                }
-            }
-        }
-
-        adjustToken('textPrimary', targetText);
-        adjustToken('primary', targetUI);
-        adjustToken('accent1', targetUI);
-
-        if (failing.length) {
-            showToast(`WCAG enforcement: could not fully meet contrast for ${failing.join(', ')}. Adjust manually.`);
-        }
-        return newPal;
-    }
-
-    /* ── Palette application pipeline ── */
-    function applyPalette(pal) {
-        currentPalette = { ...pal };
-        renderTokens();
-        updateAll();
-    }
-
-    /* ── Apply new palette, pushing history and optionally enforcing WCAG ── */
-    function applyNewPalette(pal) {
-        let finalPal = wcagMode ? enforceWCAG(pal) : pal;
-        pushHistory(currentPalette);
-        applyPalette(finalPal);
-    }
-
-    /* ── Sync CSS Custom Properties ── */
-    function syncCSSVariables() {
-        const root = document.documentElement;
-        root.style.setProperty('--bg-light', currentPalette.bgLight);
-        root.style.setProperty('--text-primary', currentPalette.textPrimary);
-        root.style.setProperty('--primary', currentPalette.primary);
-        root.style.setProperty('--accent-1', currentPalette.accent1);
-        root.style.setProperty('--bg-dark', currentPalette.bgDark);
-    }
-
-    function updateAll() {
-        syncCSSVariables();
-        updatePreview();
-        updateContrast();
-        renderCompare();
-        updateHistoryStrip();
-        updateCompareButtonStates();
-        $('backBtn').disabled = historyStack.length === 0;
-    }
-
-    /* ── Token Grid ── */
-    function renderTokens() {
-        const tokens = ['bgLight','textPrimary','primary','accent1','bgDark'];
-        const tokenInfo = {
-            bgLight: { label: 'Background Light', hint: 'Page & card backgrounds' },
-            textPrimary: { label: 'Text / Foreground', hint: 'Primary text, headings' },
-            primary: { label: 'Primary Accent', hint: 'Buttons, links, active UI' },
-            accent1: { label: 'Secondary Accent', hint: 'CTAs, warnings, highlights' },
-            bgDark: { label: 'Background Dark / Void', hint: 'Dark sections, deepest shadows' }
-        };
-        const tokenGrid = $('tokenGrid');
-        tokenGrid.innerHTML = tokens.map(t => `
-            <div class="token-item">
-                <div class="token-header">
-                    <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6" fill="${currentPalette[t]}"/></svg>
-                    ${tokenInfo[t].label}
-                    <span style="font-size:0.6rem;color:var(--text-secondary);margin-left:auto;">${tokenInfo[t].hint}</span>
-                </div>
-                <div class="color-wrap">
-                    <input type="color" id="color-${t}" value="${currentPalette[t]}" aria-label="Select ${tokenInfo[t].label} color">
-                    <span class="hex" id="hex-${t}">${currentPalette[t]}</span>
-                </div>
-                <button class="compare-add-btn" data-token="${t}" type="button" aria-label="Add ${tokenInfo[t].label} to compare">
-                    <svg viewBox="0 0 12 12" aria-hidden="true"><rect x="5" y="0" width="2" height="12"/><rect x="0" y="5" width="12" height="2"/></svg>
-                    Compare
-                </button>
-            </div>
-        `).join('');
-
-        tokens.forEach(t => {
-            const input = $(`color-${t}`);
-            const hexSpan = $(`hex-${t}`);
-            input.addEventListener('input', () => {
-                const val = input.value;
-                currentPalette[t] = val;
-                hexSpan.textContent = val;
-                updateAll();
-            });
-        });
-
-        tokenGrid.querySelectorAll('.compare-add-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                const token = btn.dataset.token;
-                addToCompare(currentPalette[token], token);
-            });
-        });
-
-        updateCompareButtonStates();
-    }
-
-    function updateCompareButtonStates() {
-        const full = compareSwatches.length >= 4;
-        document.querySelectorAll('.compare-add-btn').forEach(btn => {
-            btn.disabled = full;
-        });
-    }
-
-    /* ── Previews ── */
-    function updatePreview() {
-        const { bgLight, textPrimary, primary, accent1, bgDark } = currentPalette;
-        const cRgb = hexToRgb(textPrimary).join(',');
-        const bRgb = hexToRgb(bgLight).join(',');
-        $('previewContainer').innerHTML = `
-            <div class="preview-card" style="background:${bgLight};">
-                <div class="mock-ui">
-                    <div style="color:${textPrimary}; font-weight:600;">Primary text on light bg</div>
-                    <div style="color:rgba(${cRgb},0.6);">Secondary</div>
-                    <div class="mock-dock">
-                        <button class="mock-btn" type="button" style="color:rgba(${cRgb},0.6);">Default</button>
-                        <button class="mock-btn" type="button" style="background:${primary}; color:#000;">Primary</button>
-                        <button class="mock-btn" type="button" style="background:${accent1}; color:#fff;">Accent</button>
-                    </div>
-                    <div class="mock-node" style="color:${textPrimary};">BNDR node</div>
-                </div>
-            </div>
-            <div class="preview-card" style="background:${bgDark};">
-                <div class="mock-ui">
-                    <div style="color:${bgLight}; font-weight:600;">Light text on dark bg</div>
-                    <div style="color:rgba(${bRgb},0.6);">Secondary</div>
-                    <div class="mock-dock" style="background:rgba(${cRgb},0.4);">
-                        <button class="mock-btn" type="button" style="color:rgba(${bRgb},0.7);">Default</button>
-                        <button class="mock-btn" type="button" style="background:${primary}; color:#000;">Primary</button>
-                        <button class="mock-btn" type="button" style="background:${accent1}; color:#fff;">Accent</button>
-                    </div>
-                    <div class="mock-node" style="background:rgba(${cRgb},0.8); color:${bgLight};">BNDR node</div>
-                </div>
-            </div>
-        `;
-    }
-
-    /* ── WCAG Contrast Table ── */
-    function updateContrast() {
-        const { bgLight, textPrimary, primary, accent1 } = currentPalette;
-        const pairs = [
-            { label:'Text on light bg', fg:textPrimary, bg:bgLight },
-            { label:'Primary on light bg', fg:primary, bg:bgLight },
-            { label:'Accent on light bg', fg:accent1, bg:bgLight },
-            { label:'Light bg on dark', fg:bgLight, bg:textPrimary }
-        ];
-        $('contrastList').innerHTML = pairs.map(p => {
-            const ratio = contrast(p.fg, p.bg);
-            const level = ratio >= 7 ? 'AAA' : (ratio >= 4.5 ? 'AA' : 'FAIL');
-            const cls = level === 'AAA' ? 'aaa' : (level === 'AA' ? 'aa' : 'fail');
-            return `
-                <div class="contrast-row">
-                    <div class="contrast-pair">
-                        <span class="contrast-swatch" style="background:${p.fg};" aria-hidden="true"></span>
-                        <span class="contrast-swatch" style="background:${p.bg};" aria-hidden="true"></span>
-                        <span>${p.label}</span>
-                    </div>
-                    <span class="contrast-badge">
-                        <span class="badge-dot ${cls}" aria-hidden="true"></span>
-                        ${ratio.toFixed(1)}:1 ${level}
-                    </span>
-                </div>
-            `;
-        }).join('');
-    }
-
-    /* ── Compare Bucket ── */
-    function addToCompare(hex, role) {
-        if (compareSwatches.length >= 4) {
-            showToast('Compare bucket full (max 4)');
-            return;
-        }
-        compareSwatches.push({ hex, role, id: Date.now() });
-        renderCompare();
-    }
-
-    function renderCompare() {
-        const slots = $('compareSlots');
-        slots.innerHTML = compareSwatches.map((s,i) => `
-            <div class="compare-swatch" style="background:${s.hex};" data-id="${s.id}" role="button" aria-label="Swatch ${s.role}">
-                <span class="remove-sw" data-id="${s.id}" aria-label="Remove swatch" role="button" tabindex="0">&times;</span>
-            </div>
-        `).join('');
-        initCompareDrag();
-        updateCompareButtonStates();
-    }
-
-    function initCompareDrag() {
-        const slots = $('compareSlots');
-        const swatches = slots.querySelectorAll('.compare-swatch');
-        let dragEl = null;
-
-        function onPointerDown(e) {
-            if (e.target.classList.contains('remove-sw')) return;
-            dragEl = e.currentTarget;
-            dragEl.setPointerCapture(e.pointerId);
-            dragEl.classList.add('dragging');
-            e.preventDefault();
-        }
-
-        function onPointerMove(e) {
-            if (!dragEl) return;
-            const target = document.elementFromPoint(e.clientX, e.clientY);
-            if (target && target.classList.contains('compare-swatch') && target !== dragEl) {
-                const dragId = dragEl.dataset.id;
-                const targetId = target.dataset.id;
-                const fromIdx = compareSwatches.findIndex(s => s.id == dragId);
-                const toIdx = compareSwatches.findIndex(s => s.id == targetId);
-                if (fromIdx !== -1 && toIdx !== -1 && fromIdx !== toIdx) {
-                    const [moved] = compareSwatches.splice(fromIdx, 1);
-                    compareSwatches.splice(toIdx, 0, moved);
-                    renderCompare();
-                    dragEl = slots.querySelector(`[data-id="${dragId}"]`);
-                    if (dragEl) dragEl.classList.add('dragging');
-                }
-            }
-        }
-
-        function onPointerUp(e) {
-            if (!dragEl) return;
-            dragEl.classList.remove('dragging');
-            dragEl.releasePointerCapture(e.pointerId);
-            dragEl = null;
-        }
-
-        swatches.forEach(sw => {
-            sw.addEventListener('pointerdown', onPointerDown);
-            sw.addEventListener('pointermove', onPointerMove);
-            sw.addEventListener('pointerup', onPointerUp);
-            sw.addEventListener('pointercancel', onPointerUp);
-        });
-
-        slots.querySelectorAll('.remove-sw').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                const id = btn.dataset.id;
-                compareSwatches = compareSwatches.filter(s => s.id != id);
-                renderCompare();
-            });
-            btn.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    btn.click();
-                }
-            });
-        });
-    }
-
-    /* ── History Management ── */
-    function pushHistory(pal) {
-        historyStack.unshift({ ...pal });
-        if (historyStack.length > 5) historyStack.pop();
-    }
-
-    function updateHistoryStrip() {
-        const strip = $('historyStrip');
-        strip.innerHTML = historyStack.map((pal, i) => {
-            const colors = [pal.bgLight, pal.textPrimary, pal.primary, pal.accent1, pal.bgDark];
-            const swatchesHTML = colors.map(c => `<span class="history-swatch" style="background:${c};"></span>`).join('');
-            return `<button class="history-dot" data-index="${i}" type="button" aria-label="Restore palette ${i+1}">${swatchesHTML}</button>`;
-        }).join('');
-
-        strip.querySelectorAll('.history-dot').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const idx = parseInt(btn.dataset.index);
-                historyStack = historyStack.slice(0, idx+1);
-                const restored = historyStack[idx];
-                applyPalette({ ...restored });
-            });
-        });
-    }
-
-    /* ── Random Palette (guaranteed WCAG compliant) ── */
-    function randomOklchPalette() {
-        const baseH = Math.random() * 360;
-        const bgLightH = (baseH + 20) % 360;
-        const textPrimaryH = (baseH + 180) % 360;
-        let palette = {
-            bgLight: oklchToHex(0.95, 0.03, bgLightH),
-            textPrimary: oklchToHex(0.18, 0.04, textPrimaryH),
-            primary: oklchToHex(0.62, 0.18, baseH),
-            accent1: oklchToHex(0.62, 0.18, (baseH + 150) % 360),
-            bgDark: '#020202'
-        };
-        // Ensure textPrimary contrast >=7
-        if (contrast(palette.textPrimary, palette.bgLight) < 7) {
-            palette.textPrimary = oklchToHex(0.15, 0.02, textPrimaryH);
-        }
-        // Always enforce UI contrast (4.5) for primary and accent1, without toast
-        palette = enforceWCAG(palette);
-        return palette;
-    }
-
-    /* ── Event Listeners ── */
-    $('randomBtn').addEventListener('click', () => {
-        applyNewPalette(randomOklchPalette());
+  /* live hero demo — the same designer engine that powers the studio */
+  var demoRow = document.getElementById("demoRow");
+  var demoWhy = document.getElementById("demoWhy");
+  var demoMoods = ["vivid", "calm", "neon", "pastel", "earthy", "professional"];
+  var demoHarmonies = ["auto", "clash", "triadic", "complementary", "golden", "analogous", "split"];
+  function designDemo() {
+    return D.designPalette({
+      mood: demoMoods[Math.floor(Math.random() * demoMoods.length)],
+      harmony: demoHarmonies[Math.floor(Math.random() * demoHarmonies.length)],
     });
+  }
+  function renderDemo(result) {
+    var pal = result.palette;
+    demoRow.innerHTML = E.TOKENS.map(function (t) {
+      return '<div style="background:' + pal[t] + ';"><code>' + pal[t] + "</code></div>";
+    }).join("");
+    if (result.meta && result.meta.reason) demoWhy.textContent = result.meta.reason;
+  }
+  renderDemo(designDemo());
+  var reduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (!reduced) {
+    setInterval(function () {
+      if (!document.hidden) renderDemo(designDemo());
+    }, 4500);
+  }
+  document.getElementById("demoShuffle").addEventListener("click", function () {
+    renderDemo(designDemo());
+  });
 
-    $('backBtn').addEventListener('click', () => {
-        if (historyStack.length) {
-            const prev = historyStack.shift();
-            applyPalette(prev);
-            updateHistoryStrip();
-        }
-    });
-
-    $('harmonyBtn').addEventListener('click', () => {
-        const shift = 30;
-        const pal = { ...currentPalette };
-        ['bgLight','textPrimary','primary','accent1'].forEach(t => {
-            if (pal[t]) {
-                const [L,C,H] = hexToOklch(pal[t]);
-                pal[t] = oklchToHex(L, C, (H+shift)%360);
-            }
-        });
-        applyNewPalette(pal);
-    });
-
-    $('wcagBtn').addEventListener('click', () => {
-        wcagMode = !wcagMode;
-        const btn = $('wcagBtn');
-        btn.setAttribute('aria-pressed', wcagMode);
-        btn.innerHTML = wcagMode ? 'WCAG Auto: ON' : 'WCAG Auto: OFF';
-        btn.classList.toggle('wcag-active', wcagMode);
-        if (wcagMode) {
-            // Immediately enforce current palette without pushing history
-            const enforced = enforceWCAG(currentPalette);
-            if (JSON.stringify(enforced) !== JSON.stringify(currentPalette)) {
-                applyPalette(enforced);
-            }
-            showToast('WCAG enforcement ON – any new palette will be adjusted');
-        } else {
-            showToast('WCAG enforcement OFF');
-        }
-    });
-
-    $('loadBNDR').addEventListener('click', () => applyNewPalette(bndrColors));
-    $('resetPro').addEventListener('click', () => applyNewPalette(defaultPro));
-
-    /* ── Export Modal ── */
-    $('exportBtn').addEventListener('click', () => {
-        const p = currentPalette;
-        const css = `:root {\n  --bg-light: ${p.bgLight};\n  --text-primary: ${p.textPrimary};\n  --primary: ${p.primary};\n  --accent-1: ${p.accent1};\n  --bg-dark: ${p.bgDark};\n}`;
-        $('exportOutput').textContent = css;
-        openModal('exportModal', $('exportBtn'));
-    });
-    $('closeExport').addEventListener('click', () => closeModal('exportModal'));
-    $('copyExport').addEventListener('click', () => {
-        const text = $('exportOutput').textContent;
-        const btn = $('copyExport');
-        const orig = btn.textContent;
-        const done = () => { btn.textContent = 'Copied!'; setTimeout(() => btn.textContent = orig, 1500); };
-        if (navigator.clipboard && navigator.clipboard.writeText) {
-            navigator.clipboard.writeText(text).then(done).catch(() => fallbackCopy(text, done));
-        } else {
-            fallbackCopy(text, done);
-        }
-    });
-
-    function fallbackCopy(text, callback) {
-        const textarea = document.createElement('textarea');
-        textarea.value = text;
-        textarea.style.position = 'fixed';
-        textarea.style.opacity = '0';
-        document.body.appendChild(textarea);
-        textarea.select();
-        try {
-            document.execCommand('copy');
-            showToast('Copied to clipboard');
-        } catch (e) {
-            showToast('Copy failed – please copy manually');
-        }
-        document.body.removeChild(textarea);
-        if (callback) callback();
+  /* pricing buttons — graceful when checkout links aren\u2019t configured yet */
+  var CHECKOUTS = {
+    gumroad: { link: function () { return (CONFIG.gumroad || {}).buyUrl; }, label: "Gumroad" },
+    bmac: { link: function () { return (CONFIG.buyMeACoffee || {}).buyUrl; }, label: "Buy Me a Coffee" },
+    stripe: { link: function () { return (CONFIG.stripe || {}).paymentLink; }, label: "Stripe" },
+  };
+  function openCheckout(kind) {
+    var c = CHECKOUTS[kind];
+    var link = c && c.link();
+    if (link) { window.open(link, "_blank", "noopener"); }
+    else {
+      UI.showToast(c.label + " checkout isn\u2019t connected yet — the seller has yet to add a " + (kind === "stripe" ? "payment" : "product") + " URL.");
     }
-
-    /* ── AI Modal ── */
-    $('aiBtn').addEventListener('click', () => openModal('aiModal', $('aiBtn')));
-    $('closeModal').addEventListener('click', () => closeModal('aiModal'));
-    $('generateAI').addEventListener('click', async () => {
-        const key = $('apiKeyInput').value.trim();
-        const prompt = $('aiPrompt').value.trim() || 'professional SaaS brand';
-        const status = $('aiStatus');
-        if (!key) {
-            status.textContent = 'Please enter your API key.';
-            return;
-        }
-        status.textContent = 'Generating…';
-        try {
-            const res = await fetch('https://api.deepseek.com/v1/chat/completions', {
-                method: 'POST',
-                headers: { 'Content-Type':'application/json', 'Authorization':`Bearer ${key}` },
-                body: JSON.stringify({
-                    model: 'deepseek-chat',
-                    messages: [
-                        { role: 'system', content: 'You are a design token generator. You output only a JSON object with keys "bgLight", "textPrimary", "primary", "accent1", "bgDark". Each value is a hex color like "#AABBCC". No extra text, no markdown fences.\n\nToken roles:\n- "bgLight": lightest background (aim Oklch L≈0.95, C≈0.03)\n- "textPrimary": darkest text/foreground (aim Oklch L≈0.18, C≈0.04)\n- "primary": vibrant accent (medium lightness, Oklch C≥0.15)\n- "accent1": secondary accent (vibrant, medium lightness, Oklch C≥0.15, hue >90° from primary)\n- "bgDark": deepest dark background (near black, distinct from textPrimary; avoid pure #000000)\n\nEnsure strong chroma for accents, distinct hues (≥120° apart), and clear luminance hierarchy.\nExample: {"bgLight":"#F4F4F6","textPrimary":"#1D1D1F","primary":"#0066CC","accent1":"#E0004D","bgDark":"#0A0A1A"}' },
-                        { role: 'user', content: `Current palette: ${JSON.stringify(currentPalette)}\nModify this palette according to: ${prompt}\nReturn only the modified JSON.` }
-                    ],
-                    temperature: 0.8
-                })
-            });
-            if (!res.ok) throw new Error(`API error ${res.status}`);
-            const data = await res.json();
-            let content = data.choices?.[0]?.message?.content;
-            if (!content) throw new Error('Empty response');
-            const jsonMatch = content.match(/\{[\s\S]*\}/);
-            if (jsonMatch) content = jsonMatch[0];
-            const json = JSON.parse(content);
-            if (json.bgLight && json.textPrimary && json.primary && json.accent1 && json.bgDark) {
-                applyNewPalette(json);
-                closeModal('aiModal');
-                status.textContent = '';
-                showToast('AI palette applied');
-            } else {
-                throw new Error('Invalid palette structure');
-            }
-        } catch (e) {
-            status.textContent = 'AI error: ' + e.message;
-            showToast('AI failed – check API key or prompt');
-        }
-    });
-
-    /* ── Modal helpers ── */
-    function openModal(id, triggerEl) {
-        const modal = $(id);
-        modal.classList.add('open');
-        lastFocusedEl = triggerEl || document.activeElement;
-        const firstInput = modal.querySelector('input, textarea, button');
-        if (firstInput) firstInput.focus();
-    }
-
-    function closeModal(id) {
-        const modal = $(id);
-        modal.classList.remove('open');
-        if (lastFocusedEl) lastFocusedEl.focus();
-    }
-
-    /* ── Theme Toggle ── */
-    const themeBtn = $('themeToggle');
-    function setTheme(isDark) {
-        document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
-        themeBtn.setAttribute('aria-pressed', isDark.toString());
-        themeBtn.innerHTML = isDark
-            ? `<svg viewBox="0 0 24 24" aria-hidden="true" width="16" height="16" fill="currentColor"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg> Light Mode`
-            : `<svg viewBox="0 0 24 24" aria-hidden="true" width="16" height="16" fill="currentColor"><path d="M12 3a9 9 0 1 0 9 9c0-4.97-4.03-9-9-9zm0 2c3.87 0 7 3.13 7 7s-3.13 7-7 7V5z"/></svg> Dark Mode`;
-        localStorage.setItem('bndr-theme', isDark ? 'dark' : 'light');
-    }
-    const savedTheme = localStorage.getItem('bndr-theme') || 'light';
-    setTheme(savedTheme === 'dark');
-    themeBtn.addEventListener('click', () => {
-        const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-        setTheme(!isDark);
-    });
-
-    /* ── Global dismiss ── */
-    window.addEventListener('click', (e) => {
-        if (e.target.classList.contains('modal')) {
-            e.target.classList.remove('open');
-            if (lastFocusedEl) lastFocusedEl.focus();
-        }
-    });
-    window.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') {
-            document.querySelectorAll('.modal.open').forEach(m => {
-                m.classList.remove('open');
-                if (lastFocusedEl) lastFocusedEl.focus();
-            });
-        }
-    });
-
-    /* ── Initial render ── */
-    renderTokens();
-    updateAll();
+  }
+  document.getElementById("pricingGumroad").addEventListener("click", function () { openCheckout("gumroad"); });
+  document.getElementById("pricingBmac").addEventListener("click", function () { openCheckout("bmac"); });
+  document.getElementById("pricingStripe").addEventListener("click", function () { openCheckout("stripe"); });
 })();
 </script>
 </body>
